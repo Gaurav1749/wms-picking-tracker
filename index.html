@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WMS Picking Tracker — Maersk</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  /* Maersk Brand Palette */
+  --mb:#00243D;        /* Maersk dark navy */
+  --ml:#0073AB;        /* Maersk sky blue */
+  --ma:#42B0D5;        /* Maersk light blue accent */
+  --mg:#F5A623;        /* Maersk gold accent */
+  --bg:#EFF5FA;        /* page background */
+  --surf:#FFFFFF;
+  --surf2:#E8F3FA;
+  --brd:#C2D9EE;--brdl:#DCEEF9;
+  --tx:#00243D;--txm:#4A6D87;
+  --pend:#B85C00;--pend-bg:#FFF3E5;--pend-brd:#FFCC8A;
+  --run:#0073AB;--run-bg:#E3F4FF;--run-brd:#7EC8E8;
+  --comp:#0D6B33;--comp-bg:#E5F7ED;--comp-brd:#80CFA0;
+  --red:#C0392B;--red-bg:#FDECEA;--red-brd:#F5A8A4;
+  --night:#3B1FA5;--night-bg:#EEEAF8;--night-brd:#B4ADE0;
+  --day-col:#B85C00;--day-bg:#FFF3E5;--day-brd:#FFCC8A;
+  --shad:0 2px 12px rgba(0,36,61,.08);
+  --shad2:0 4px 24px rgba(0,36,61,.12);
+  --r:12px;--rs:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--tx);font-family:'IBM Plex Sans',sans-serif;min-height:100vh;font-size:14px;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-thumb{background:var(--ml);border-radius:3px;}
+
+/* ─── LOGIN ─── */
+#ls{display:flex;align-items:center;justify-content:center;min-height:100vh;
+    background:linear-gradient(160deg,#001528 0%,#00243D 45%,#004A7A 100%);
+    position:relative;overflow:hidden;}
+#ls::before{content:'';position:absolute;top:-120px;right:-120px;width:480px;height:480px;
+    background:radial-gradient(circle,rgba(0,115,171,.18) 0%,transparent 70%);pointer-events:none;}
+#ls::after{content:'';position:absolute;bottom:-80px;left:-80px;width:360px;height:360px;
+    background:radial-gradient(circle,rgba(66,176,213,.12) 0%,transparent 70%);pointer-events:none;}
+.lcard{background:#fff;border-radius:20px;padding:0;width:420px;box-shadow:0 32px 80px rgba(0,0,0,.35);overflow:hidden;position:relative;z-index:1;}
+.lcard-top{background:linear-gradient(135deg,#001B2E 0%,#00324F 60%,#004A6E 100%);padding:32px 36px 28px;position:relative;overflow:hidden;}
+.lcard-top::after{content:'';position:absolute;bottom:-30px;right:-30px;width:150px;height:150px;
+    background:radial-gradient(circle,rgba(0,115,171,.25) 0%,transparent 70%);}
+.lcard-body{padding:28px 36px 32px;}
+.llogo{display:flex;align-items:center;gap:14px;margin-bottom:6px;}
+.lico{width:48px;height:48px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);
+    border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.llogo h1{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.2px;}
+.llogo p{font-size:9.5px;color:rgba(255,255,255,.55);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.lsubtitle{color:rgba(255,255,255,.45);font-size:11px;margin-top:4px;letter-spacing:.3px;}
+.flabel{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--txm);display:block;margin-bottom:5px;}
+.fc{width:100%;padding:11px 14px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:inherit;font-size:13.5px;color:var(--tx);background:#fff;outline:none;transition:.2s;margin-bottom:14px;}
+.fc:focus{border-color:var(--ml);box-shadow:0 0 0 3px rgba(0,115,171,.12);}
+.lbtn{width:100%;padding:12px;background:linear-gradient(135deg,var(--mb) 0%,#005580 100%);color:#fff;border:none;border-radius:var(--rs);font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;transition:.2s;letter-spacing:.2px;box-shadow:0 4px 14px rgba(0,36,61,.25);}
+.lbtn:hover{background:linear-gradient(135deg,#005580 0%,var(--ml) 100%);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,36,61,.3);}
+.lerr{color:var(--red);font-size:12px;margin-top:-8px;margin-bottom:12px;display:none;font-weight:600;}
+
+/* ─── APP ─── */
+#app{display:none;flex-direction:column;min-height:100vh;}
+.hdr{background:linear-gradient(90deg,#001B2E 0%,#00243D 60%,#003355 100%);
+    color:#fff;height:60px;padding:0 24px;display:flex;align-items:center;
+    justify-content:space-between;position:sticky;top:0;z-index:300;
+    box-shadow:0 2px 16px rgba(0,0,0,.28);border-bottom:2px solid rgba(0,115,171,.4);}
+.hdrl{display:flex;align-items:center;gap:16px;}
+.hlogo{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.hlogo-icon{width:30px;height:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+    border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.hlogo-text{color:#fff;font-weight:700;font-size:15px;letter-spacing:-.1px;}
+.hlogo-text span{color:#42B0D5;}
+.hdv{width:1px;height:20px;background:rgba(255,255,255,.15);}
+.hrole{font-size:11px;color:rgba(255,255,255,.55);font-weight:500;letter-spacing:.2px;}
+.hdrr{display:flex;align-items:center;gap:10px;}
+.ubadge{background:rgba(0,115,171,.25);border:1px solid rgba(0,115,171,.4);padding:5px 14px;
+    border-radius:20px;font-size:12px;font-weight:600;color:#A8D8F0;}
+.logoutbtn{background:transparent;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.65);
+    padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;}
+.logoutbtn:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.35);}
+
+/* ─── TABS ─── */
+.tabs{background:#fff;border-bottom:2px solid var(--brd);padding:0 24px;display:flex;overflow-x:auto;
+    position:sticky;top:60px;z-index:200;box-shadow:0 2px 8px rgba(0,36,61,.06);}
+.tbtn{background:transparent;border:none;color:var(--txm);padding:14px 20px;font-family:inherit;
+    font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;
+    margin-bottom:-2px;transition:.2s;letter-spacing:.1px;}
+.tbtn:hover:not(.locked){color:var(--ml);}
+.tbtn.active{color:var(--mb);border-bottom-color:var(--ml);}
+.tbtn.locked{opacity:.25;cursor:not-allowed;pointer-events:none;}
+
+/* ─── CONTENT ─── */
+.content{padding:22px 26px;flex:1;max-width:1860px;width:100%;margin:0 auto;}
+.tpanel{display:none;}
+.tpanel.active{display:block;animation:fi .2s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+/* ─── TOOLBAR ─── */
+.fbar{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:11px 16px;
+    margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:var(--shad);}
+.sw{position:relative;flex:1;min-width:170px;}
+.sw input{width:100%;padding:8px 10px 8px 32px;border:1.5px solid var(--brd);border-radius:var(--rs);
+    font-family:inherit;font-size:12.5px;color:var(--tx);outline:none;transition:.2s;background:var(--bg);}
+.sw input:focus{border-color:var(--ml);box-shadow:0 0 0 2px rgba(0,115,171,.08);}
+.si{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--txm);pointer-events:none;}
+.sby{padding:8px 11px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:inherit;
+    font-size:12px;color:var(--tx);outline:none;background:var(--bg);cursor:pointer;transition:.2s;}
+.sby:focus{border-color:var(--ml);}
+.bsep{width:1px;height:26px;background:var(--brd);flex-shrink:0;}
+.flbl{font-size:10px;font-weight:700;color:var(--txm);letter-spacing:.5px;white-space:nowrap;text-transform:uppercase;}
+.chips{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+.chip{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;
+    border:1.5px solid var(--brd);background:#fff;color:var(--txm);transition:.15s;font-family:inherit;white-space:nowrap;}
+.chip:hover{border-color:var(--ml);color:var(--ml);background:var(--surf2);}
+.call{background:var(--mb)!important;color:#fff!important;border-color:var(--mb)!important;}
+.cp{background:var(--pend-bg)!important;color:var(--pend)!important;border-color:var(--pend-brd)!important;}
+.cr{background:var(--run-bg)!important;color:var(--run)!important;border-color:var(--run-brd)!important;}
+.cc{background:var(--comp-bg)!important;color:var(--comp)!important;border-color:var(--comp-brd)!important;}
+
+/* ─── TABLE ─── */
+.tcard{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);overflow:hidden;box-shadow:var(--shad);}
+.twrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead tr{background:linear-gradient(90deg,#001B2E 0%,#00324F 100%);}
+th{padding:11px 13px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.8px;
+    text-transform:uppercase;color:rgba(255,255,255,.78);white-space:nowrap;}
+td{padding:10px 13px;border-bottom:1px solid var(--brdl);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:#EAF4FC;}
+/* Summary wave detail alternating rows */
+#sum-body tr:nth-child(even) td{background:#F5FAFD;}
+#sum-body tr:nth-child(even) td:first-child{background:#EAF3FA;}
+
+/* ── WAVE KEY BADGE ── */
+.wk{
+  font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:11.5px;
+  padding:5px 11px;border-radius:8px;display:inline-flex;align-items:center;
+  gap:6px;cursor:pointer;transition:.18s;border:2px solid;letter-spacing:.3px;
+  box-shadow:0 2px 6px rgba(0,0,0,.10);
+}
+.wk:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15);}
+/* full-allocation wave — deep teal/green */
+.wkf{
+  background:linear-gradient(135deg,#0F5132 0%,#1A7A40 100%);
+  color:#fff;border-color:#0A3D22;
+}
+/* partial-allocation wave — deep navy blue */
+.wkp{
+  background:linear-gradient(135deg,#0D2B6B 0%,#154EA0 100%);
+  color:#fff;border-color:#091D52;
+}
+@keyframes pulser{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.4);}55%{box-shadow:0 0 0 8px rgba(192,57,43,0);}}
+.wkov{animation:pulser 1.6s ease-in-out infinite;}
+.ovtag{display:inline-block;background:#C0392B;color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700;margin-left:4px;vertical-align:middle;letter-spacing:.3px;}
+
+/* ── FLOOR-TABLE STATUS CHIPS (action buttons) ── */
+.schips{display:flex;gap:3px;}
+.schip{padding:4px 10px;border-radius:20px;font-size:10.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--brd);background:#fff;color:var(--txm);transition:.13s;font-family:inherit;white-space:nowrap;}
+.schip.dis{opacity:.25;pointer-events:none;}
+.sp.act{background:var(--pend-bg);color:var(--pend);border-color:var(--pend-brd);}
+.sr.act{background:var(--run-bg);color:var(--run);border-color:var(--run-brd);}
+.sc.act{background:var(--comp-bg);color:var(--comp);border-color:var(--comp-brd);}
+.schip:not(.act):not(.dis):hover{border-color:var(--ml);color:var(--ml);}
+
+/* uid */
+.uid-inp{padding:4px 8px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:'IBM Plex Mono',monospace;font-size:11px;width:88px;outline:none;transition:.2s;background:var(--bg);color:var(--tx);}
+.uid-inp:focus{border-color:var(--ml);}
+.uid-inp.dis{opacity:.3;cursor:not-allowed;background:var(--brdl);pointer-events:none;}
+.uname{font-size:11px;color:var(--ml);font-weight:600;white-space:nowrap;}
+.tc{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txm);white-space:nowrap;}
+
+/* action btns */
+.abtn{padding:3px 8px;border-radius:var(--rs);font-size:10.5px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;transition:.13s;white-space:nowrap;}
+.ebtn{background:#fff;color:var(--ml);border-color:var(--run-brd);}
+.ebtn:hover{background:var(--run-bg);}
+.dbtn{background:#fff;color:var(--red);border-color:var(--red-brd);}
+.dbtn:hover{background:var(--red-bg);}
+
+/* ── SUMMARY STATUS BADGE PILLS ── */
+.fb{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;
+  letter-spacing:.5px;text-transform:uppercase;border:none;
+  box-shadow:0 1px 4px rgba(0,0,0,.12);
+}
+.fb::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+/* PENDING — amber */
+.fb-pending{background:linear-gradient(135deg,#FEF3E7,#FDDBB4);color:#7A3800;}
+.fb-pending::before{background:#C05E00;}
+/* RUNNING — sky blue */
+.fb-running{background:linear-gradient(135deg,#E0F3FF,#B3E0FF);color:#004E7A;}
+.fb-running::before{background:#0073AB;}
+/* COMPLETED — rich emerald */
+.fb-completed{background:linear-gradient(135deg,#D4F5E2,#B8EDCC);color:#0A5C2A;box-shadow:0 1px 4px rgba(10,92,42,.15);}
+.fb-completed::before{background:#1A7A40;}
+/* N/A */
+.fb-na{background:#EEF2F5;color:#6B8FA8;box-shadow:none;}
+.fb-na::before{background:#B0C8D8;}
+
+/* ─── UPLOAD CARDS ─── */
+.up-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.up-card{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:16px 18px;flex:1;min-width:280px;box-shadow:var(--shad);}
+.up-card-hd{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--txm);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.up-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.upbtn{background:var(--mb);color:#fff;border:none;padding:8px 16px;border-radius:var(--rs);font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;transition:.2s;}
+.upbtn:hover{background:var(--ml);}
+.upbtn.alt{background:#fff;color:var(--ml);border:1.5px solid var(--run-brd);}
+.upbtn.alt:hover{background:var(--run-bg);}
+.upst{font-size:11px;color:var(--txm);font-family:'IBM Plex Mono',monospace;}
+.upst.ok{color:var(--comp);}
+
+/* ─── SHIFT TABS ─── */
+.shift-tabs{display:flex;background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);overflow:hidden;box-shadow:var(--shad);width:fit-content;}
+.stab{padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;font-family:inherit;color:var(--txm);transition:.2s;display:flex;align-items:center;gap:7px;}
+.stab.day.act{background:var(--day-bg);color:var(--day-col);}
+.stab.night.act{background:var(--night-bg);color:var(--night);}
+.stab:not(:last-child){border-right:1px solid var(--brd);}
+
+/* ─── FLOOR SUMMARY TABLE ─── */
+.fst{width:100%;border-collapse:collapse;}
+.fst th{padding:10px 14px;background:var(--mb);color:rgba(255,255,255,.82);font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;text-align:left;white-space:nowrap;}
+.fst td{padding:10px 14px;border-bottom:1px solid var(--brdl);vertical-align:middle;}
+.fst tbody tr:last-child td{border-bottom:none;font-weight:700;background:var(--surf2);}
+.cnt{font-size:16px;font-weight:700;color:var(--mb);}
+.cnt.g{color:var(--comp);}.cnt.r{color:var(--run);}.cnt.o{color:var(--pend);}
+
+/* ─── DASHBOARD ─── */
+.sectitle{font-size:14px;font-weight:700;color:var(--mb);margin-bottom:14px;padding-bottom:9px;
+    border-bottom:2px solid var(--brd);display:flex;align-items:center;gap:8px;letter-spacing:.1px;}
+.sectitle::before{content:'';width:4px;height:18px;background:var(--ml);border-radius:2px;flex-shrink:0;}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;}
+.kpi{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:20px 22px;
+    box-shadow:var(--shad);position:relative;overflow:hidden;}
+.kpi::after{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--ml);border-radius:4px 0 0 4px;}
+.kpi-lbl{font-size:9px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--txm);margin-bottom:8px;}
+.kpi-val{font-size:32px;font-weight:700;line-height:1;color:var(--mb);}
+.kpi-sub{font-size:10.5px;color:var(--txm);margin-top:5px;}
+.grn{color:var(--comp)!important;}.red{color:var(--red)!important;}.blu{color:var(--ml)!important;}
+.fprow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;}
+.fpc{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:14px 18px;text-align:center;flex:1;min-width:110px;box-shadow:var(--shad);}
+.fpc-l{font-size:11px;font-weight:700;color:var(--txm);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;}
+.fpc-n{font-size:26px;font-weight:700;color:var(--mb);line-height:1;}
+.fpc-s{font-size:10px;color:var(--txm);margin-top:3px;}
+.fpc.tot{border-color:var(--ml);background:var(--run-bg);}
+.fpc.tot .fpc-l,.fpc.tot .fpc-n{color:var(--ml);}
+.ppogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:20px;}
+.ppocard{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:16px;box-shadow:var(--shad);}
+.ppo-t{font-size:10px;font-weight:700;color:var(--txm);letter-spacing:.4px;text-transform:uppercase;margin-bottom:4px;}
+.ppo-v{font-size:26px;font-weight:700;color:var(--mb);}
+.ppo-s{font-size:10.5px;color:var(--txm);margin-top:3px;}
+
+/* ─── ROSTER ─── */
+.rt{width:100%;border-collapse:collapse;}
+.rt th{padding:8px 12px;background:var(--mb);color:rgba(255,255,255,.82);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;text-align:left;}
+.rt td{padding:7px 12px;border-bottom:1px solid var(--brdl);}
+.rt tbody tr:last-child td{border-bottom:none;}
+
+/* ─── QR MODAL ─── */
+.qrov{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,36,61,.55);backdrop-filter:blur(5px);align-items:center;justify-content:center;}
+.qrov.open{display:flex;}
+.qrbox{background:#fff;border-radius:16px;padding:32px 36px;width:340px;text-align:center;position:relative;box-shadow:0 24px 60px rgba(0,36,61,.25);animation:pop .2s ease;}
+@keyframes pop{from{transform:scale(.88);opacity:0;}to{transform:scale(1);opacity:1;}}
+.qrcls{position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:18px;color:var(--txm);cursor:pointer;}
+.qrcls:hover{color:var(--red);}
+.qrlbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--txm);margin-bottom:5px;}
+.qrwave{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--mb);margin-bottom:3px;}
+.qrmeta{font-size:11px;color:var(--txm);margin-bottom:20px;}
+.qrwrap{background:#fff;border:2px solid var(--brd);border-radius:10px;padding:12px;display:inline-block;margin-bottom:18px;}
+.qrrow{display:flex;justify-content:center;gap:22px;}
+.qrri .qrrl{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--txm);}
+.qrri .qrrv{font-size:15px;font-weight:700;color:var(--mb);margin-top:2px;}
+
+/* ─── EDIT MODAL ─── */
+.mov{display:none;position:fixed;inset:0;z-index:900;background:rgba(0,36,61,.45);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+.mov.open{display:flex;}
+.mbox{background:#fff;border-radius:14px;padding:28px 30px;width:480px;position:relative;box-shadow:0 20px 50px rgba(0,36,61,.2);animation:pop .2s ease;}
+.mbox h2{font-size:16px;font-weight:700;color:var(--mb);margin-bottom:20px;}
+.mcls{position:absolute;top:12px;right:14px;background:transparent;border:none;font-size:18px;color:var(--txm);cursor:pointer;}
+.mcls:hover{color:var(--red);}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.mgrid.full{grid-template-columns:1fr;}
+.mf label{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--txm);display:block;margin-bottom:4px;}
+.mf input,.mf select{width:100%;padding:8px 10px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:inherit;font-size:13px;color:var(--tx);background:var(--bg);outline:none;transition:.2s;}
+.mf input:focus,.mf select:focus{border-color:var(--ml);}
+.macts{display:flex;gap:10px;justify-content:flex-end;margin-top:8px;}
+.mbtn{padding:9px 20px;border-radius:var(--rs);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;border:none;}
+.mbtn.pri{background:var(--mb);color:#fff;}.mbtn.pri:hover{background:var(--ml);}
+.mbtn.sec{background:#fff;color:var(--txm);border:1.5px solid var(--brd);}.mbtn.sec:hover{border-color:var(--ml);color:var(--ml);}
+
+/* ─── TOAST ─── */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--mb);color:#fff;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.2);}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.warn{background:var(--red);}
+
+/* empty */
+.empty{text-align:center;padding:46px;color:var(--txm);}
+.empi{font-size:36px;margin-bottom:10px;}
+.lockover{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:12px;color:var(--txm);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="ls">
+  <div class="lcard">
+    <div class="lcard-top">
+      <div class="llogo">
+        <div class="lico">&#x1F6A2;</div>
+        <div>
+          <h1>WMS Picking Tracker</h1>
+          <p>Maersk Warehouse Operations</p>
+        </div>
+      </div>
+      <div class="lsubtitle">Real-time wave management &amp; floor tracking</div>
+    </div>
+    <div class="lcard-body">
+    <label class="flabel">Role</label>
+    <select class="fc" id="l-role" onchange="onRoleChg()">
+      <option value="">— Select Role —</option>
+      <option value="supervisor">Supervisor</option>
+      <option value="floor">Floor TL</option>
+    </select>
+    <div id="l-fw" style="display:none">
+      <label class="flabel">Your Floor</label>
+      <select class="fc" id="l-floor">
+        <option value="A">Floor A</option><option value="B">Floor B</option>
+        <option value="C">Floor C</option><option value="D">Floor D</option>
+      </select>
+    </div>
+    <div id="l-pw" style="display:none">
+      <label class="flabel">Supervisor PIN</label>
+      <input class="fc" type="password" id="l-pin" placeholder="Enter PIN (default: 1234)" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="lerr" id="l-err">Incorrect PIN.</div>
+    <button class="lbtn" onclick="doLogin()">Sign In &#x2192;</button>
+    </div><!-- /lcard-body -->
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="hdr">
+    <div class="hdrl">
+      <div class="hlogo">
+        <div class="hlogo-icon">&#x1F6A2;</div>
+        <div class="hlogo-text">WMS <span>Picking</span> Tracker</div>
+      </div>
+      <div class="hdv"></div>
+      <div class="hrole" id="h-role">—</div>
+    </div>
+    <div class="hdrr">
+      <div class="ubadge" id="h-badge">—</div>
+      <button class="logoutbtn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tbtn" id="tb-A" onclick="showTab('A')">🏭 Floor A</button>
+    <button class="tbtn" id="tb-B" onclick="showTab('B')">🏭 Floor B</button>
+    <button class="tbtn" id="tb-C" onclick="showTab('C')">🏭 Floor C</button>
+    <button class="tbtn" id="tb-D" onclick="showTab('D')">🏭 Floor D</button>
+    <button class="tbtn" id="tb-summary" onclick="showTab('summary')">📊 Summary</button>
+    <button class="tbtn locked" id="tb-dashboard" onclick="showTab('dashboard')">📈 Dashboard</button>
+  </div>
+
+  <div class="content">
+
+    <!-- FLOOR PANELS -->
+    <div class="tpanel" id="panel-A">
+      <div class="fbar">
+        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-A" oninput="renderTable('A')"></div>
+        <select class="sby" id="sby-A" onchange="renderTable('A')">
+          <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
+          <option value="userId">User ID</option><option value="type">Type</option>
+          <option value="status">Status</option><option value="userName">User Name</option>
+        </select>
+        <div class="bsep"></div><span class="flbl">Filter:</span>
+        <div class="chips">
+          <span class="chip call" id="cf-A-all" onclick="setFlt('A','all')">All</span>
+          <span class="chip" id="cf-A-Pending" onclick="setFlt('A','Pending')">Pending</span>
+          <span class="chip" id="cf-A-Running" onclick="setFlt('A','Running')">Running</span>
+          <span class="chip" id="cf-A-Completed" onclick="setFlt('A','Completed')">Completed</span>
+          <span class="chip" id="cf-A-Partial" onclick="setFlt('A','Partial')" style="background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;">Partial</span>
+        </div>
+      </div>
+      <div class="tcard"><div class="twrap"><table>
+        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>User ID</th><th>User Name</th><th>Done (min)</th><th id="th-A"></th></tr></thead>
+        <tbody id="tbody-A"></tbody>
+      </table></div></div>
+    </div>
+
+    <div class="tpanel" id="panel-B">
+      <div class="fbar">
+        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-B" oninput="renderTable('B')"></div>
+        <select class="sby" id="sby-B" onchange="renderTable('B')">
+          <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
+          <option value="userId">User ID</option><option value="type">Type</option>
+          <option value="status">Status</option><option value="userName">User Name</option>
+        </select>
+        <div class="bsep"></div><span class="flbl">Filter:</span>
+        <div class="chips">
+          <span class="chip call" id="cf-B-all" onclick="setFlt('B','all')">All</span>
+          <span class="chip" id="cf-B-Pending" onclick="setFlt('B','Pending')">Pending</span>
+          <span class="chip" id="cf-B-Running" onclick="setFlt('B','Running')">Running</span>
+          <span class="chip" id="cf-B-Completed" onclick="setFlt('B','Completed')">Completed</span>
+          <span class="chip" id="cf-B-Partial" onclick="setFlt('B','Partial')" style="background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;">Partial</span>
+        </div>
+      </div>
+      <div class="tcard"><div class="twrap"><table>
+        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>User ID</th><th>User Name</th><th>Done (min)</th><th id="th-B"></th></tr></thead>
+        <tbody id="tbody-B"></tbody>
+      </table></div></div>
+    </div>
+
+    <div class="tpanel" id="panel-C">
+      <div class="fbar">
+        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-C" oninput="renderTable('C')"></div>
+        <select class="sby" id="sby-C" onchange="renderTable('C')">
+          <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
+          <option value="userId">User ID</option><option value="type">Type</option>
+          <option value="status">Status</option><option value="userName">User Name</option>
+        </select>
+        <div class="bsep"></div><span class="flbl">Filter:</span>
+        <div class="chips">
+          <span class="chip call" id="cf-C-all" onclick="setFlt('C','all')">All</span>
+          <span class="chip" id="cf-C-Pending" onclick="setFlt('C','Pending')">Pending</span>
+          <span class="chip" id="cf-C-Running" onclick="setFlt('C','Running')">Running</span>
+          <span class="chip" id="cf-C-Completed" onclick="setFlt('C','Completed')">Completed</span>
+          <span class="chip" id="cf-C-Partial" onclick="setFlt('C','Partial')" style="background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;">Partial</span>
+        </div>
+      </div>
+      <div class="tcard"><div class="twrap"><table>
+        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>User ID</th><th>User Name</th><th>Done (min)</th><th id="th-C"></th></tr></thead>
+        <tbody id="tbody-C"></tbody>
+      </table></div></div>
+    </div>
+
+    <div class="tpanel" id="panel-D">
+      <div class="fbar">
+        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-D" oninput="renderTable('D')"></div>
+        <select class="sby" id="sby-D" onchange="renderTable('D')">
+          <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
+          <option value="userId">User ID</option><option value="type">Type</option>
+          <option value="status">Status</option><option value="userName">User Name</option>
+        </select>
+        <div class="bsep"></div><span class="flbl">Filter:</span>
+        <div class="chips">
+          <span class="chip call" id="cf-D-all" onclick="setFlt('D','all')">All</span>
+          <span class="chip" id="cf-D-Pending" onclick="setFlt('D','Pending')">Pending</span>
+          <span class="chip" id="cf-D-Running" onclick="setFlt('D','Running')">Running</span>
+          <span class="chip" id="cf-D-Completed" onclick="setFlt('D','Completed')">Completed</span>
+          <span class="chip" id="cf-D-Partial" onclick="setFlt('D','Partial')" style="background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;">Partial</span>
+        </div>
+      </div>
+      <div class="tcard"><div class="twrap"><table>
+        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>User ID</th><th>User Name</th><th>Done (min)</th><th id="th-D"></th></tr></thead>
+        <tbody id="tbody-D"></tbody>
+      </table></div></div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="tpanel" id="panel-summary">
+
+      <!-- Upload area — supervisor only, injected by JS -->
+      <div id="sum-uploads"></div>
+
+      <!-- Shift selector + search -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+        <div class="shift-tabs">
+          <button class="stab day act" id="stab-day" onclick="setShift('day')">☀️ Day Shift <span style="font-size:10px;opacity:.65;margin-left:2px">07:00 – 19:00</span></button>
+          <button class="stab night" id="stab-night" onclick="setShift('night')">🌙 Night Shift <span style="font-size:10px;opacity:.65;margin-left:2px">19:00 – 07:00</span></button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div class="sw" style="min-width:200px;"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="sum-q" oninput="renderSummary()"></div>
+          <select class="sby" id="sum-by" onchange="renderSummary()">
+            <option value="all">All Fields</option><option value="wavekey">Wave Key</option><option value="status">Overall Status</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Floor counts -->
+      <div class="tcard" style="margin-bottom:16px;">
+        <div style="padding:11px 14px;background:var(--surf2);border-bottom:1.5px solid var(--brd);display:flex;align-items:center;gap:10px;">
+          <span style="font-size:13px;font-weight:700;color:var(--mb)">📊 Floor-wise Counts</span>
+          <span id="shift-lbl" style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--day-bg);color:var(--day-col);border:1px solid var(--day-brd)">☀️ Day Shift</span>
+        </div>
+        <div class="twrap"><table class="fst">
+          <thead><tr><th>Floor</th><th>Total Waves</th><th>In Progress</th><th>Completed</th><th>Pending</th><th>Total Pickers</th></tr></thead>
+          <tbody id="fsum-body"></tbody>
+        </table></div>
+      </div>
+
+      <!-- Wave detail table -->
+      <div style="font-size:15px;font-weight:700;color:var(--mb);margin-bottom:10px;">Wave Detail</div>
+      <div class="tcard"><div class="twrap"><table>
+        <thead><tr><th style="background:#00324F;border-right:3px solid #F5A623;padding-left:16px;font-size:11px;letter-spacing:.8px;color:#FFD580;">&#9670; WAVE KEY</th><th style="background:#004060;">Floor A</th><th style="background:#004060;">Floor B</th><th style="background:#004060;">Floor C</th><th style="background:#004060;">Floor D</th><th style="background:#003050;border-left:2px solid rgba(255,255,255,.15);">Overall</th><th style="background:#003050;">Completion</th></tr></thead>
+        <tbody id="sum-body"></tbody>
+      </table></div></div>
+
+      <!-- Roster hidden from UI -->
+      <div id="roster-wrap" style="display:none!important;visibility:hidden;">
+        <div style="font-size:15px;font-weight:700;color:var(--mb);margin-bottom:10px;">👥 Roster</div>
+        <div class="tcard"><div class="twrap"><table class="rt">
+          <thead><tr><th>User ID</th><th>Name</th><th>Floor</th><th>Shift</th></tr></thead>
+          <tbody id="roster-body"></tbody>
+        </table></div></div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="tpanel" id="panel-dashboard">
+      <div id="dash-lock" class="lockover" style="display:none">
+        <div style="font-size:44px">🔒</div><div style="font-size:16px;font-weight:700;">Supervisor Access Only</div>
+      </div>
+      <div id="dash-content">
+        <div class="sectitle">Operations Dashboard</div>
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+          <button class="chip call" id="dstab-day" onclick="setDashShift('day')">☀️ Day Shift</button>
+          <button class="chip" id="dstab-night" onclick="setDashShift('night')">🌙 Night Shift</button>
+        </div>
+        <div class="kgrid">
+          <div class="kpi"><div class="kpi-lbl">Total Picked Qty</div><div class="kpi-val grn" id="d-picked">0</div><div class="kpi-sub">Alloc Qty · Completed waves</div></div>
+          <div class="kpi"><div class="kpi-lbl">Total Wave Short Pick</div><div class="kpi-val red" id="d-short">0</div><div class="kpi-sub">Order − Alloc · Completed only</div></div>
+          <div class="kpi"><div class="kpi-lbl">Avg Wave Completion</div><div class="kpi-val blu" id="d-avg">—</div><div class="kpi-sub">Average minutes per wave</div></div>
+        </div>
+        <div class="sectitle">Floor-wise Pickers</div>
+        <div class="fprow" id="d-fp"></div>
+        <div class="sectitle">Order Type — PPO (Pieces Per Order)</div>
+        <div class="ppogrid" id="d-ppo"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ═══ CHAT BUBBLE ═══ -->
+  <div id="chat-bubble" style="display:none;position:fixed;bottom:28px;right:28px;z-index:800;">
+    <button id="chat-btn" onclick="toggleChat()" style="width:56px;height:56px;border-radius:50%;background:var(--mb);border:none;cursor:pointer;box-shadow:0 4px 18px rgba(0,36,61,.35);display:flex;align-items:center;justify-content:center;font-size:22px;transition:.2s;position:relative;">
+      &#x1F4AC;
+      <span id="chat-unread" style="display:none;position:absolute;top:-2px;right:-2px;background:#C0392B;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;align-items:center;justify-content:center;padding:0 4px;font-family:inherit;">0</span>
+    </button>
+    <div id="chat-panel" style="display:none;position:absolute;bottom:68px;right:0;width:360px;background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,36,61,.22);border:1.5px solid #C5DFF0;overflow:hidden;flex-direction:column;">
+      <div style="background:#00243D;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:20px;">&#x1F3ED;</div>
+          <div>
+            <div style="color:#fff;font-weight:700;font-size:14px;">Picking War Room</div>
+            <div style="color:rgba(255,255,255,.6);font-size:10px;font-weight:500;" id="chat-online">Common Chat Room</div>
+          </div>
+        </div>
+        <button onclick="toggleChat()" style="background:transparent;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;line-height:1;">&#x2715;</button>
+      </div>
+      <div id="chat-msgs" style="height:320px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#F7FAFD;"></div>
+      <div style="padding:10px 12px;border-top:1.5px solid #C5DFF0;display:flex;gap:8px;background:#fff;align-items:center;">
+        <input id="chat-inp" type="text" placeholder="Type a message..." maxlength="300"
+          style="flex:1;padding:8px 12px;border:1.5px solid #C5DFF0;border-radius:20px;font-family:inherit;font-size:13px;outline:none;color:#00243D;"
+          onkeydown="if(event.key==='Enter')sendChatMsg()"
+          onfocus="this.style.borderColor='#0073AB'"
+          onblur="this.style.borderColor='#C5DFF0'">
+        <button onclick="sendChatMsg()" title="Send" style="background:#00243D;color:#fff;border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;" onmouseover="this.style.background='#0073AB'" onmouseout="this.style.background='#00243D'">&#x27A4;</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══ RESET PASSWORD MODAL ═══ -->
+  <div id="reset-ov" style="display:none;position:fixed;inset:0;z-index:1100;background:rgba(0,20,40,.60);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;padding:32px 34px;width:420px;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:pop .2s ease;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+        <div style="width:40px;height:40px;background:#FDECEA;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">&#x26A0;&#xFE0F;</div>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#C0392B;">Reset All Waves</div>
+          <div style="font-size:11px;color:#7A3800;margin-top:1px;">This action cannot be undone</div>
+        </div>
+      </div>
+      <div style="background:#FFF8F0;border:1px solid #F5BC84;border-radius:8px;padding:10px 14px;margin:14px 0;font-size:12px;color:#7A3800;line-height:1.5;">
+        All wave keys across <strong>all 4 floors</strong> will be permanently deleted. Chat history and roster will be preserved.
+      </div>
+      <label style="font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#4A7A9B;display:block;margin-bottom:5px;">Supervisor Password</label>
+      <input type="password" id="reset-pw" placeholder="Enter password to confirm" maxlength="30"
+        style="width:100%;padding:10px 13px;border:1.5px solid #C5DFF0;border-radius:6px;font-family:inherit;font-size:14px;color:#00243D;background:#fff;outline:none;margin-bottom:6px;"
+        onfocus="this.style.borderColor='#C0392B'"
+        onblur="this.style.borderColor='#C5DFF0'"
+        onkeydown="if(event.key==='Enter')confirmReset()">
+      <div id="reset-err" style="color:#C0392B;font-size:11px;margin-bottom:12px;display:none;font-weight:600;">&#x2715; Incorrect password. Try again.</div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button onclick="closeReset()" style="padding:9px 20px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:#4A7A9B;border:1.5px solid #C5DFF0;transition:.2s;" onmouseover="this.style.borderColor='#0073AB'" onmouseout="this.style.borderColor='#C5DFF0'">Cancel</button>
+        <button onclick="confirmReset()" style="padding:9px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#C0392B;color:#fff;border:none;transition:.2s;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">&#x1F5D1; Delete All Waves</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- QR MODAL -->
+<div class="qrov" id="qrov" onclick="closeQR(event)">
+  <div class="qrbox">
+    <button class="qrcls" onclick="closeQR(null,true)">✕</button>
+    <div class="qrlbl">Wave Key QR Code</div>
+    <div class="qrwave" id="qrwave">—</div>
+    <div class="qrmeta" id="qrmeta">—</div>
+    <div class="qrwrap"><div id="qrcont"></div></div>
+    <div class="qrrow">
+      <div class="qrri"><div class="qrrl">Order Qty</div><div class="qrrv" id="qroq" style="color:var(--ml)">—</div></div>
+      <div class="qrri"><div class="qrrl">Alloc Qty</div><div class="qrrv" id="qraq" style="color:var(--comp)">—</div></div>
+      <div class="qrri"><div class="qrrl">Status</div><div class="qrrv" id="qrst">—</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="mov" id="edit-mov" onclick="closeEdit(event)">
+  <div class="mbox">
+    <button class="mcls" onclick="closeEdit(null,true)">✕</button>
+    <h2>✏️ Edit Wave Key</h2>
+    <input type="hidden" id="edit-orig">
+    <div class="mgrid">
+      <div class="mf"><label>Wave Key</label><input type="text" id="edit-wk"></div>
+      <div class="mf"><label>No. of Orders</label><input type="number" id="edit-no"></div>
+    </div>
+    <div class="mgrid">
+      <div class="mf"><label>Order Qty</label><input type="number" id="edit-oq"></div>
+      <div class="mf"><label>Allocated Qty</label><input type="number" id="edit-aq"></div>
+    </div>
+    <div class="mgrid full">
+      <div class="mf"><label>Type / BuildParmKey</label><input type="text" id="edit-tp"></div>
+    </div>
+    <div class="macts">
+      <button class="mbtn sec" onclick="closeEdit(null,true)">Cancel</button>
+      <button class="mbtn pri" onclick="saveEdit()">Save to All Floors</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════
+const PIN = '1234';
+const FL  = ['A','B','C','D'];
+const LS_WAVES  = 'wms_v6_waves';
+const LS_ROSTER = 'wms_v6_roster';
+
+// ═══════════════════════════════════════════════════
+// STATE  (restored from localStorage on page load)
+// ═══════════════════════════════════════════════════
+let role=null, myFloor=null;
+let activeShift = 'day';      // set properly after loadWaves()
+let dashShift   = 'day';      // set properly after loadWaves()
+
+// fd[floor] = array of wave records — lives in localStorage
+let fd = {A:[],B:[],C:[],D:[]};
+
+// rosterDB[UID] = {name, floor, shift} — lives in localStorage
+let rosterDB = {};
+
+// Default roster (always present until supervisor uploads new one)
+const DEFAULT_ROSTER = {
+  'U001':{name:'Raj Kumar',    floor:'A', shift:'Day'},
+  'U002':{name:'Priya Singh',  floor:'A', shift:'Day'},
+  'U003':{name:'Amit Verma',   floor:'B', shift:'Day'},
+  'U004':{name:'Sunita Sharma',floor:'B', shift:'Day'},
+  'U005':{name:'Vikram Das',   floor:'C', shift:'Day'},
+  'U006':{name:'Neha Gupta',   floor:'C', shift:'Night'},
+  'U007':{name:'Rohit Yadav',  floor:'D', shift:'Night'},
+  'U008':{name:'Anjali Mehta', floor:'D', shift:'Night'},
+  'U009':{name:'Suresh Patel', floor:'A', shift:'Night'},
+  'U010':{name:'Kavita Nair',  floor:'B', shift:'Night'},
+};
+
+// ui filter state
+let flt = {A:'all',B:'all',C:'all',D:'all'};
+
+// ═══════════════════════════════════════════════════
+// SHIFT HELPERS
+//   Day   shift: 07:00 ≤ h < 19:00
+//   Night shift: h ≥ 19 or h < 7
+//
+// CROSSOVER RULE (req #1):
+//   At 19:00 → all Pending/Running waves move to Night shift
+//   At 07:00 → all Pending/Running waves move to Day shift
+//   Completed waves stay on the shift they were completed in
+//
+// Each wave stores r.assignedShift which is updated at crossover.
+// ═══════════════════════════════════════════════════
+function curShift(){
+  const h = new Date().getHours();
+  return (h >= 7 && h < 19) ? 'day' : 'night';
+}
+function shiftOfDate(d){
+  const h = new Date(d).getHours();
+  return (h >= 7 && h < 19) ? 'day' : 'night';
+}
+function waveShift(r){
+  // Completed → shift determined by when it was completed (endTime)
+  if(r.status === 'Completed' && r.endTime){
+    try { return shiftOfDate(parseTime(r.endTime)); } catch(e){}
+  }
+  // Pending / Running → use stored assignedShift (updated at crossover)
+  // Fall back to curShift() if not set
+  return r.assignedShift || curShift();
+}
+
+// Called every 5 min by timer — re-assigns Pending/Running waves to current shift
+function applyCrossover(){
+  const cs = curShift();
+  let changed = false;
+  FL.forEach(f=>{
+    fd[f].forEach(r=>{
+      if(r.status !== 'Completed' && r.assignedShift !== cs){
+        r.assignedShift = cs;
+        changed = true;
+      }
+    });
+  });
+  if(changed) saveWaves();
+}
+
+// ═══════════════════════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════════════════════
+function saveWaves(){
+  try { localStorage.setItem(LS_WAVES, JSON.stringify(fd)); } catch(e){ console.warn('saveWaves:',e); }
+}
+function loadWaves(){
+  try {
+    const raw = localStorage.getItem(LS_WAVES);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    FL.forEach(f=>{
+      if(Array.isArray(parsed[f])){
+        fd[f] = parsed[f].map(r=>({
+          ...r,
+          uploadDate: r.uploadDate ? new Date(r.uploadDate) : null,
+          startDate:  r.startDate  ? new Date(r.startDate)  : null,
+        }));
+      }
+    });
+  } catch(e){ console.warn('loadWaves error',e); }
+}
+function saveRoster(){
+  try { localStorage.setItem(LS_ROSTER, JSON.stringify(rosterDB)); } catch(e){}
+}
+function loadRoster(){
+  try {
+    const raw = localStorage.getItem(LS_ROSTER);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      // Merge with default roster — uploaded roster takes priority
+      rosterDB = Object.assign({}, DEFAULT_ROSTER, parsed);
+    } else {
+      rosterDB = Object.assign({}, DEFAULT_ROSTER);
+    }
+  } catch(e){
+    rosterDB = Object.assign({}, DEFAULT_ROSTER);
+  }
+}
+
+// ── Startup (order matters) ──
+loadWaves();
+loadRoster();
+applyCrossover(); // stamp assignedShift on any waves that lack it
+purgeD1();        // delete yesterday completed waves on page load
+activeShift = curShift();
+dashShift   = curShift();
+
+// ═══════════════════════════════════════════════════
+// PURGE: delete D-1 completed waves
+// "D-1 completed" = wave completed on a previous calendar day (before today 00:00:00)
+// Pending/Running waves are NEVER auto-deleted.
+// ═══════════════════════════════════════════════════
+function purgeD1(){
+  const todayMidnight = new Date();
+  todayMidnight.setHours(0,0,0,0);
+  let changed = false;
+  FL.forEach(f=>{
+    const before = fd[f].length;
+    fd[f] = fd[f].filter(r=>{
+      if(r.status !== 'Completed') return true;   // keep Pending/Running always
+      if(!r.endTime) return true;
+      try {
+        const et = parseTime(r.endTime);
+        return et >= todayMidnight;               // keep if completed today
+      } catch(e){ return true; }
+    });
+    if(fd[f].length !== before) changed = true;
+  });
+  if(changed){ saveWaves(); }
+}
+
+// ═══════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════
+let _tt = null;
+function toast(msg, warn=false){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show' + (warn ? ' warn' : '');
+  if(_tt) clearTimeout(_tt);
+  _tt = setTimeout(()=> el.className='', 3600);
+}
+
+// ═══════════════════════════════════════════════════
+// LOGIN / LOGOUT
+// ═══════════════════════════════════════════════════
+function onRoleChg(){
+  const v = document.getElementById('l-role').value;
+  document.getElementById('l-fw').style.display = v==='floor' ? 'block':'none';
+  document.getElementById('l-pw').style.display = v==='supervisor' ? 'block':'none';
+  document.getElementById('l-err').style.display = 'none';
+}
+function doLogin(){
+  const r = document.getElementById('l-role').value;
+  if(!r){ alert('Select a role.'); return; }
+  if(r==='supervisor' && document.getElementById('l-pin').value !== PIN){
+    document.getElementById('l-err').style.display='block'; return;
+  }
+  role = r;
+  myFloor = r==='floor' ? document.getElementById('l-floor').value : null;
+  document.getElementById('ls').style.display  = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('h-badge').textContent = role==='supervisor' ? '👤 Supervisor' : `👤 Floor ${myFloor} TL`;
+  document.getElementById('h-role').textContent  = role==='supervisor' ? 'Supervisor View' : `Floor ${myFloor} — Team Lead`;
+  activeShift = curShift();
+  dashShift   = curShift();
+  setupAccess();
+  FL.forEach(f=>renderTable(f));
+  initChat();
+  // Supervisor starts on Floor A; Floor TL starts directly on their own floor
+  showTab(role==='supervisor' ? 'A' : myFloor);
+}
+function doLogout(){
+  // Data stays in localStorage — only reset session vars
+  role=null; myFloor=null;
+  document.getElementById('l-role').value='';
+  document.getElementById('l-pin').value='';
+  ['l-fw','l-pw'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('l-err').style.display='none';
+  document.getElementById('ls').style.display  = 'flex';
+  document.getElementById('app').style.display = 'none';
+  destroyChat();
+}
+
+// ═══════════════════════════════════════════════════
+// ACCESS SETUP
+// ═══════════════════════════════════════════════════
+function setupAccess(){
+  const sup = role === 'supervisor';
+
+  // Floor tabs: supervisor sees all 4; Floor TL sees ONLY their floor tab
+  FL.forEach(f=>{
+    const btn = document.getElementById('tb-'+f);
+    if(!btn) return;
+    if(sup){
+      // Supervisor: all floor tabs visible and clickable
+      btn.style.display = '';
+      btn.classList.remove('locked');
+    } else {
+      // Floor TL: show only their own floor, completely hide others
+      if(f === myFloor){
+        btn.style.display = '';
+        btn.classList.remove('locked');
+      } else {
+        btn.style.display = 'none';   // completely hidden — not even visible
+      }
+    }
+  });
+
+  // Summary tab — open to all; Dashboard — supervisor only
+  document.getElementById('tb-summary').classList.remove('locked');
+  document.getElementById('tb-dashboard').classList.toggle('locked', !sup);
+  document.getElementById('dash-lock').style.display    = sup ? 'none' : 'flex';
+  document.getElementById('dash-content').style.display = sup ? 'block' : 'none';
+
+  // Action column headers in floor tables
+  FL.forEach(f=>{
+    const th = document.getElementById('th-'+f);
+    if(th) th.textContent = sup ? 'Actions' : '';
+  });
+
+  // Upload area in Summary — supervisor only
+  const ua = document.getElementById('sum-uploads');
+  if(sup){
+    ua.innerHTML = `
+      <div class="up-grid">
+        <div class="up-card">
+          <div class="up-card-hd">📥 Wave Dump Upload</div>
+          <div class="up-row">
+            <input type="file" id="fi-wave" accept=".csv,.xlsx,.xls" style="display:none" onchange="importWaves(event)">
+            <button class="upbtn" onclick="document.getElementById('fi-wave').click()">📂 Upload Wave Excel / CSV</button>
+            <span class="upst ok" id="us-wave">${countWaves()} waves in system</span>
+          </div>
+          <div style="margin-top:7px;font-size:10.5px;color:var(--txm)">Required columns: <b>Wavekey, OrderQty, AllocatedQty</b></div>
+        </div>
+        <div class="up-card">
+          <div class="up-card-hd">👥 Roster Upload</div>
+          <div class="up-row">
+            <input type="file" id="fi-roster" accept=".csv,.xlsx,.xls" style="display:none" onchange="importRoster(event)">
+            <button class="upbtn alt" onclick="document.getElementById('fi-roster').click()">📂 Upload Roster Excel / CSV</button>
+            <span class="upst ok" id="us-roster">${Object.keys(rosterDB).length} users in roster (includes default)</span>
+          </div>
+          <div style="margin-top:7px;font-size:10.5px;color:var(--txm)">Required columns: <b>UserID, Name</b> — Optional: <b>Floor, Shift</b></div>
+        </div>
+        <div class="up-card" style="border-color:#F5A8A4;background:#FFF8F8;max-width:280px;">
+          <div class="up-card-hd" style="color:#C0392B;">&#x26A0; Danger Zone</div>
+          <div class="up-row">
+            <button class="upbtn" onclick="openReset()" style="background:#C0392B;border:none;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">&#x1F5D1; Reset All Waves</button>
+            <span style="font-size:11px;color:#C0392B;font-weight:500;">Deletes all wave data</span>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    ua.innerHTML = '';
+  }
+
+  renderRoster();
+}
+
+function countWaves(){ return fd['A'] ? fd['A'].length : 0; }
+
+// ═══════════════════════════════════════════════════
+// WAVE IMPORT → dedup, push to all 4 floors
+// ═══════════════════════════════════════════════════
+function importWaves(evt){
+  const file = evt.target.files[0]; if(!file) return;
+  readFile(file, rows => pushWaves(rows, file.name));
+}
+function readFile(file, cb){
+  const csv = file.name.toLowerCase().endsWith('.csv');
+  const reader = new FileReader();
+  reader.onload = e=>{
+    let rows=[];
+    if(csv){
+      const lines = e.target.result.split('\n').filter(l=>l.trim());
+      const h = lines[0].split(',').map(v=>v.trim().replace(/"/g,''));
+      for(let i=1;i<lines.length;i++){
+        const vals = lines[i].split(',').map(v=>v.trim().replace(/"/g,''));
+        const o={}; h.forEach((k,j)=>o[k]=vals[j]||''); rows.push(o);
+      }
+    } else {
+      const wb = XLSX.read(e.target.result,{type:'binary'});
+      rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+    }
+    cb(rows);
+  };
+  if(csv) reader.readAsText(file); else reader.readAsBinaryString(file);
+}
+function col(sample, alts){
+  for(const a of alts)
+    for(const k of Object.keys(sample))
+      if(k.toLowerCase().replace(/[\s_]/g,'') === a.toLowerCase().replace(/[\s_]/g,'')) return k;
+  return null;
+}
+function pushWaves(rows, fname){
+  if(!rows.length){ alert('No data found.'); return; }
+  const s   = rows[0];
+  const wkC = col(s,['Wavekey','WaveKey','Wave Key','WAVEKEY']);
+  const noC = col(s,['NoOfOrders','NoofOrders','No of Orders','NOOFORDERS','NumOrders']);
+  const oqC = col(s,['OrderQty','Order Qty','ORDERQTY','OrderQuantity']);
+  const aqC = col(s,['AllocatedQty','Allocated Qty','AllocQty','ALLOCATEDQTY']);
+  const bkC = col(s,['BuildParmKey','Build Parm Key','BUILDPARMKEY','Type']);
+  if(!wkC){ alert('Cannot find "Wavekey" column. Check headers.'); return; }
+
+  const now    = new Date();
+  const nowStr = fmtTime(now);
+
+  // Dedup incoming rows by wave key first
+  const seenIn = new Set();
+  const deduped = rows.filter(row=>{
+    const wk = String(row[wkC]||'').trim();
+    if(!wk || seenIn.has(wk)) return false;
+    seenIn.add(wk); return true;
+  });
+
+  let added=0, skipped=0;
+  deduped.forEach(row=>{
+    const wk = String(row[wkC]||'').trim(); if(!wk) return;
+    if(fd['A'].find(r=>r.wavekey===wk)){ skipped++; return; }  // already in system
+    FL.forEach(f=>{
+      fd[f].push({
+        wavekey: wk,
+        noOfOrders: row[noC] || 0,
+        orderQty:   Number(row[oqC])||0,
+        allocQty:   Number(row[aqC])||0,
+        type: row[bkC]||'',
+        status: 'Pending',
+        assignedShift: curShift(),   // stamp current shift at upload time
+        uploadTime: nowStr, uploadDate: now,
+        startTime:'', startDate:null,
+        endTime:'',   userId:'', userName:'', completionMin:''
+      });
+    });
+    added++;
+  });
+
+  // Sort each floor: ascending by wave key number
+  FL.forEach(f=>{
+    fd[f].sort((a,b)=>{
+      const na=parseFloat(a.wavekey.replace(/[^0-9.]/g,'')), nb=parseFloat(b.wavekey.replace(/[^0-9.]/g,''));
+      if(!isNaN(na)&&!isNaN(nb)) return na-nb;
+      return String(a.wavekey).localeCompare(String(b.wavekey));
+    });
+  });
+  saveWaves();
+  const el = document.getElementById('us-wave');
+  if(el) el.innerHTML = `\u2705 ${added} added \u00b7 ${skipped} dup skipped \u00b7 ${nowStr}`;
+  FL.forEach(f=>renderTable(f));
+  toast(`\u2705 ${added} waves added to all floors${skipped?` \u00b7 ${skipped} duplicates skipped`:''}`);
+}
+
+// ═══════════════════════════════════════════════════
+// ROSTER IMPORT
+// ═══════════════════════════════════════════════════
+function importRoster(evt){
+  const file = evt.target.files[0]; if(!file) return;
+  readFile(file, rows => buildRoster(rows, file.name));
+}
+function buildRoster(rows, fname){
+  if(!rows.length){ alert('No rows found.'); return; }
+  const s    = rows[0];
+  const uidC = col(s,['UserID','User ID','userid','UserId','EmpID','EmployeeID','ID']);
+  const nmC  = col(s,['Name','FullName','Full Name','EmployeeName','Employee Name']);
+  const flC  = col(s,['Floor','floor']);
+  const shC  = col(s,['Shift','shift']);
+  if(!uidC||!nmC){ alert('Roster needs "UserID" and "Name" columns.'); return; }
+
+  // Start fresh from defaults, then overlay uploaded data
+  const newRoster = Object.assign({}, DEFAULT_ROSTER);
+  rows.forEach(row=>{
+    const uid  = String(row[uidC]||'').trim().toUpperCase();
+    const name = String(row[nmC ]||'').trim();
+    if(!uid||!name) return;
+    newRoster[uid] = { name, floor: flC?String(row[flC]||'').trim():'', shift: shC?String(row[shC]||'').trim():'' };
+  });
+  rosterDB = newRoster;
+  saveRoster();
+
+  const el = document.getElementById('us-roster');
+  if(el) el.innerHTML = `✅ ${Object.keys(rosterDB).length} users · ${fname}`;
+  renderRoster();
+  // Re-resolve names for existing waves
+  FL.forEach(f=>{ fd[f].forEach(r=>{ if(r.userId) r.userName=getName(r.userId); }); });
+  saveWaves();
+  FL.forEach(f=>renderTable(f));
+  toast(`✅ Roster updated — ${Object.keys(rosterDB).length} users`);
+}
+function getName(uid){ if(!uid) return ''; const u=rosterDB[uid]; return u ? u.name : 'Unknown'; }
+
+function renderRoster(){ /* roster hidden from UI — data still used internally for name lookup */ }
+
+// ═══════════════════════════════════════════════════
+// FILTER STATE
+// ═══════════════════════════════════════════════════
+function setFlt(f,v){
+  flt[f]=v;
+  ['all','Pending','Running','Completed','Partial'].forEach(x=>{
+    const el=document.getElementById(`cf-${f}-${x}`); if(!el) return;
+    el.className='chip';
+    if(x===v){
+      if(x==='all')       el.classList.add('call');
+      else if(x==='Pending')   el.classList.add('cp');
+      else if(x==='Running')   el.classList.add('cr');
+      else if(x==='Completed') el.classList.add('cc');
+      else if(x==='Partial')   el.style.cssText='background:#154EA0;color:#fff;border-color:#154EA0;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;';
+    } else {
+      // Reset Partial chip to default blue style when not active
+      if(x==='Partial') el.style.cssText='background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;';
+    }
+  });
+  renderTable(f);
+}
+function filteredRows(f){
+  const q   = (document.getElementById('srch-'+f)?.value||'').toLowerCase().trim();
+  const by  = document.getElementById('sby-'+f)?.value||'all';
+  return fd[f].filter(r=>{
+    // Status/Partial filter
+    if(flt[f]==='Partial'){
+      if(r.allocQty >= r.orderQty) return false;  // only show partial (blue) waves
+    } else if(flt[f]!=='all'){
+      if(r.status!==flt[f]) return false;
+    }
+    if(!q) return true;
+    const vals = by==='all'
+      ? [r.wavekey,r.userId,r.type,r.status,r.userName,String(r.orderQty),String(r.allocQty)]
+      : [String(r[by]||'')];
+    return vals.some(v=>(v||'').toLowerCase().includes(q));
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER FLOOR TABLE
+// ═══════════════════════════════════════════════════
+function renderTable(f){
+  const tbody = document.getElementById('tbody-'+f); if(!tbody) return;
+  const canEdit = role==='supervisor' || myFloor===f;
+  const isSup   = role==='supervisor';
+  const rows = filteredRows(f);
+  const now  = new Date();
+
+  if(!rows.length){
+    const msg = fd[f].length ? 'No results for current filter' : 'Awaiting supervisor wave upload';
+    const ico = fd[f].length ? '🔍' : '📦';
+    tbody.innerHTML=`<tr><td colspan="13"><div class="empty"><div class="empi">${ico}</div><p>${msg}</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r=>{
+    const ri = fd[f].indexOf(r);
+    const partial = r.allocQty < r.orderQty;
+    const overdue = r.status==='Pending' && r.uploadDate && (now - new Date(r.uploadDate))/60000 >= 120;
+    const wkCls   = 'wk '+(partial?'wkp':'wkf')+(overdue?' wkov':'');
+    const ovTag   = overdue ? `<span class="ovtag">⚠ OVERDUE</span>` : '';
+
+    const isPend=r.status==='Pending', isRun=r.status==='Running', isDone=r.status==='Completed';
+    const pdis = (!canEdit||isRun||isDone)?'dis':'';
+    const rdis = (!canEdit||!isPend)?'dis':'';
+    const cdis = (!canEdit||!isRun)?'dis':'';
+    const pact=isPend?'act':'', ract=isRun?'act':'', cact=isDone?'act':'';
+    // UID enabled on Pending or Running (scan on Pending auto-starts)
+    const uidDis = (!canEdit||isDone)?'dis':'';
+
+    const actCell = isSup
+      ? `<td style="white-space:nowrap">
+           <button class="abtn ebtn" onclick="openEdit('${r.wavekey}')">✏️</button>
+           <button class="abtn dbtn" style="margin-left:3px" onclick="delWave('${r.wavekey}')">🗑</button>
+         </td>`
+      : '<td></td>';
+
+    return `<tr>
+      <td><span class="${wkCls}" onclick="openQR('${r.wavekey}','${f}')">${r.wavekey}</span>${ovTag}</td>
+      <td>${r.noOfOrders}</td><td>${r.orderQty}</td><td>${r.allocQty}</td><td>${r.type}</td>
+      <td><div class="schips">
+        <button class="schip sp ${pact} ${pdis}" onclick="setSt('${f}',${ri},'Pending')">Pending</button>
+        <button class="schip sr ${ract} ${rdis}" onclick="setSt('${f}',${ri},'Running')">Running</button>
+        <button class="schip sc ${cact} ${cdis}" onclick="setSt('${f}',${ri},'Completed')">Completed</button>
+      </div></td>
+      <td class="tc">${r.uploadTime}</td>
+      <td class="tc">${r.startTime||'—'}</td>
+      <td class="tc">${r.endTime||'—'}</td>
+      <td><input class="uid-inp ${uidDis}" type="text" value="${r.userId}" placeholder="${isPend?'Scan to start':'Scan ID'}"
+        ${uidDis?'disabled':''}
+        onkeydown="if(event.key==='Enter'||event.key==='Tab'){event.preventDefault();onUID('${f}',${ri},this);}"
+        onchange="onUID('${f}',${ri},this)"></td>
+      <td class="uname">${r.userName||'—'}</td>
+      <td class="tc">${r.completionMin!==''?r.completionMin+' min':'—'}</td>
+      ${actCell}
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// STATUS TRANSITIONS
+// ═══════════════════════════════════════════════════
+function setSt(f, i, st){
+  const r = fd[f][i]; if(!r) return;
+  const now = new Date();
+  if(st==='Running' && r.status==='Pending'){
+    r.startTime=fmtTime(now); r.startDate=now;
+  } else if(st==='Completed' && r.status==='Running'){
+    r.endTime=fmtTime(now);
+    r.completionMin = r.startDate ? Math.round((now-r.startDate)/60000) : 0;
+  } else return; // invalid transition
+  r.status=st;
+  saveWaves();
+  renderTable(f);
+}
+
+// ═══════════════════════════════════════════════════
+// UID SCAN — auto-start Pending + conflict check
+// ═══════════════════════════════════════════════════
+function onUID(f, i, inp){
+  const r = fd[f][i]; if(!r) return;
+  const uid = inp.value.trim().toUpperCase();
+  if(!uid){ r.userId=''; r.userName=''; saveWaves(); renderTable(f); return; }
+
+  // Conflict: uid already Running on another wave across ALL floors
+  for(const fl of FL){
+    for(const row of fd[fl]){
+      if(row===r) continue;
+      if(row.userId===uid && row.status==='Running'){
+        toast(`⚠ ${uid} is already running wave ${row.wavekey} on Floor ${fl}. Complete it first.`, true);
+        inp.value=''; return;
+      }
+    }
+  }
+
+  const canEdit = role==='supervisor' || myFloor===f;
+  if(!canEdit){ toast('⚠ You can only edit your own floor.',true); inp.value=''; return; }
+
+  if(r.status==='Pending'){
+    const now=new Date();
+    r.startTime=fmtTime(now); r.startDate=now; r.status='Running';
+    r.userId=uid; r.userName=getName(uid);
+    toast(`▶ Wave ${r.wavekey} started — ${r.userName||uid}`);
+  } else if(r.status==='Running'){
+    r.userId=uid; r.userName=getName(uid);
+    toast(`✅ ${r.userName||uid} assigned to ${r.wavekey}`);
+  } else { inp.value=r.userId; return; }
+
+  saveWaves();
+  renderTable(f);
+}
+
+// ═══════════════════════════════════════════════════
+// EDIT WAVE (supervisor only — propagates to all floors)
+// ═══════════════════════════════════════════════════
+function openEdit(wk){
+  const r = fd['A'].find(x=>x.wavekey===wk); if(!r) return;
+  document.getElementById('edit-orig').value = wk;
+  document.getElementById('edit-wk').value   = r.wavekey;
+  document.getElementById('edit-no').value   = r.noOfOrders;
+  document.getElementById('edit-oq').value   = r.orderQty;
+  document.getElementById('edit-aq').value   = r.allocQty;
+  document.getElementById('edit-tp').value   = r.type;
+  document.getElementById('edit-mov').classList.add('open');
+}
+function closeEdit(e, force){
+  if(force||(e&&e.target===document.getElementById('edit-mov')))
+    document.getElementById('edit-mov').classList.remove('open');
+}
+function saveEdit(){
+  const orig = document.getElementById('edit-orig').value;
+  const newWk = document.getElementById('edit-wk').value.trim();
+  if(!newWk){ toast('Wave key cannot be empty.',true); return; }
+  if(newWk!==orig && fd['A'].find(r=>r.wavekey===newWk)){
+    toast(`Wave key "${newWk}" already exists.`,true); return;
+  }
+  FL.forEach(f=>{
+    const r = fd[f].find(x=>x.wavekey===orig); if(!r) return;
+    r.wavekey       = newWk;
+    r.noOfOrders    = document.getElementById('edit-no').value || r.noOfOrders;
+    r.orderQty      = Number(document.getElementById('edit-oq').value) || r.orderQty;
+    r.allocQty      = Number(document.getElementById('edit-aq').value) || r.allocQty;
+    r.type          = document.getElementById('edit-tp').value.trim() || r.type;
+  });
+  saveWaves();
+  closeEdit(null,true);
+  FL.forEach(f=>renderTable(f));
+  toast(`✅ Wave "${newWk}" updated on all floors`);
+}
+
+// ═══════════════════════════════════════════════════
+// DELETE WAVE (supervisor only — all floors)
+// ═══════════════════════════════════════════════════
+function delWave(wk){
+  if(!confirm(`Delete wave "${wk}" from ALL floors? Cannot be undone.`)) return;
+  FL.forEach(f=>{ fd[f]=fd[f].filter(r=>r.wavekey!==wk); });
+  saveWaves();
+  FL.forEach(f=>renderTable(f));
+  if(document.getElementById('panel-summary').classList.contains('active')) renderSummary();
+  toast(`🗑 Wave "${wk}" deleted from all floors`);
+}
+
+// ═══════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════
+function showTab(id){
+  if(id==='dashboard' && role!=='supervisor') return;
+  // Floor TL can only access their own floor panel, summary
+  if(role==='floor' && FL.includes(id) && id!==myFloor) return;
+  document.querySelectorAll('.tpanel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  const tbBtn = document.getElementById('tb-'+id);
+  if(tbBtn) tbBtn.classList.add('active');
+  if(id==='summary')   renderSummary();
+  if(id==='dashboard') renderDashboard();
+}
+
+// ═══════════════════════════════════════════════════
+// SUMMARY — shift tabs
+// ═══════════════════════════════════════════════════
+function setShift(s){
+  activeShift = s;
+  document.getElementById('stab-day').classList.toggle('act', s==='day');
+  document.getElementById('stab-night').classList.toggle('act', s==='night');
+  const lbl = document.getElementById('shift-lbl');
+  if(s==='day'){
+    lbl.textContent='☀️ Day Shift';
+    lbl.style.cssText='font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--day-bg);color:var(--day-col);border:1px solid var(--day-brd)';
+  } else {
+    lbl.textContent='🌙 Night Shift';
+    lbl.style.cssText='font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--night-bg);color:var(--night);border:1px solid var(--night-brd)';
+  }
+  renderSummary();
+}
+
+function renderSummary(){
+  renderFloorCounts();
+  renderWaveDetail();
+}
+
+// For summary display: wave appears on a shift if
+//   Completed   → its endTime hour falls in that shift window
+//   Pending/Running → always shows on activeShift (current live work)
+function rowMatchesShift(r){
+  return waveShift(r) === activeShift;
+}
+
+function renderFloorCounts(){
+  const tbody = document.getElementById('fsum-body');
+  let tW=0,tR=0,tC=0,tP=0,tPick=0;
+  const rows = FL.map(f=>{
+    const sr = fd[f].filter(rowMatchesShift);
+    const running  = sr.filter(r=>r.status==='Running').length;
+    const comp     = sr.filter(r=>r.status==='Completed').length;
+    const pend     = sr.filter(r=>r.status==='Pending').length;
+    const pickers  = new Set(sr.filter(r=>r.userId).map(r=>r.userId)).size;
+    tW+=sr.length; tR+=running; tC+=comp; tP+=pend; tPick+=pickers;
+    return {f,total:sr.length,running,comp,pend,pickers};
+  });
+  if(!tW){
+    tbody.innerHTML=`<tr><td colspan="6"><div class="empty" style="padding:20px"><div class="empi">📊</div><p>No ${activeShift} shift waves</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML =
+    rows.map(({f,total,running,comp,pend,pickers})=>`
+      <tr>
+        <td><strong>Floor ${f}</strong></td>
+        <td><span class="cnt">${total}</span></td>
+        <td><span class="cnt r">${running}</span></td>
+        <td><span class="cnt g">${comp}</span></td>
+        <td><span class="cnt o">${pend}</span></td>
+        <td><span class="cnt">${pickers}</span></td>
+      </tr>`).join('') +
+    `<tr>
+      <td><strong>TOTAL</strong></td>
+      <td><span class="cnt">${tW}</span></td>
+      <td><span class="cnt r">${tR}</span></td>
+      <td><span class="cnt g">${tC}</span></td>
+      <td><span class="cnt o">${tP}</span></td>
+      <td><span class="cnt">${tPick}</span></td>
+    </tr>`;
+}
+
+function renderWaveDetail(){
+  // Collect all wave keys present in the active shift
+  const allK = new Set();
+  FL.forEach(f=>fd[f].filter(rowMatchesShift).forEach(r=>allK.add(r.wavekey)));
+
+  const tbody = document.getElementById('sum-body');
+  const q  = (document.getElementById('sum-q')?.value||'').toLowerCase().trim();
+  const by = document.getElementById('sum-by')?.value||'all';
+
+  if(!allK.size){
+    tbody.innerHTML=`<tr><td colspan="7"><div class="empty"><div class="empi">📊</div><p>No ${activeShift} shift waves yet</p></div></td></tr>`;
+    return;
+  }
+
+  const html=[];
+  allK.forEach(wk=>{
+    const sts={}; let maxMins=null;
+    FL.forEach(f=>{
+      const row = fd[f].find(r=>r.wavekey===wk && rowMatchesShift(r));
+      sts[f] = row ? row.status : null;
+      if(row && row.status==='Completed' && row.completionMin!==''){
+        const m=Number(row.completionMin);
+        if(!isNaN(m) && (maxMins===null || m>maxMins)) maxMins=m;
+      }
+    });
+    const act = FL.filter(f=>sts[f]!==null); if(!act.length) return;
+    const done = act.every(f=>sts[f]==='Completed');
+    const ov = done ? 'Completed' : 'Pending';
+    const ct = (done && maxMins!==null) ? maxMins+' min' : '—';
+    let wkc='wk wkf';
+    FL.forEach(f=>{const row=fd[f].find(r=>r.wavekey===wk);if(row&&row.allocQty<row.orderQty)wkc='wk wkp';});
+
+    // Search filter
+    if(q){
+      if(by==='wavekey' && !wk.toLowerCase().includes(q)) return;
+      if(by==='status'  && !ov.toLowerCase().includes(q)) return;
+      if(by==='all' && ![wk,ov,...FL.map(f=>sts[f]||'')].some(v=>v.toLowerCase().includes(q))) return;
+    }
+
+    const fcols = FL.map(f=>sts[f]
+      ? `<td><span class="fb fb-${sts[f].toLowerCase()}">${sts[f]}</span></td>`
+      : `<td><span class="fb fb-na">N/A</span></td>`).join('');
+    html.push(`<tr><td style="background:#F0F7FB;border-left:4px solid #F5A623;padding-left:14px;"><span class="${wkc}">${wk}</span></td>${fcols}<td style="background:#F5F9FC;">${ct!=='—'?`<span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#00324F,#0073AB);color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;box-shadow:0 2px 5px rgba(0,50,79,.25);">&#x23F1; ${ct}</span>`:'<span style="color:#B0C8D8;font-size:13px;font-weight:700;">&#8212;</span>'}</td></tr>`);
+  });
+
+  tbody.innerHTML = html.length ? html.join('') : `<tr><td colspan="7"><div class="empty"><div class="empi">🔍</div><p>No results</p></div></td></tr>`;
+}
+
+// ═══════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════
+function setDashShift(s){
+  dashShift = s;
+  document.getElementById('dstab-day').className   = 'chip'+(s==='day'?' call':'');
+  document.getElementById('dstab-night').className = 'chip'+(s==='night'?' call':'');
+  renderDashboard();
+}
+function renderDashboard(){
+  let picked=0, shortPick=0;
+  const fp={A:0,B:0,C:0,D:0};
+  const typeMap={};
+
+  // For avg completion: collect max completionMin per wave key across all floors
+  const waveMaxTime={};  // wavekey -> max completionMin across all floors
+  // For short pick AND picked qty: use Floor A as master (same wave on all 4 floors — avoid 4x count)
+  const waveShortPick={};  // wavekey -> (orderQty - allocQty)  [completed only]
+
+  // Floor-wise picker counts — loop all floors
+  FL.forEach(f=>{
+    const sr = fd[f].filter(r=>waveShift(r)===dashShift);
+    fp[f] = new Set(sr.filter(r=>r.userId).map(r=>r.userId)).size;
+    // Collect max completionMin per wave across all floors
+    sr.forEach(r=>{
+      if(r.status==='Completed'){
+        const t = Number(r.completionMin);
+        if(r.completionMin!=='' && !isNaN(t)){
+          if(waveMaxTime[r.wavekey]===undefined || t>waveMaxTime[r.wavekey])
+            waveMaxTime[r.wavekey]=t;
+        }
+      }
+    });
+  });
+
+  // Picked qty + Short pick: Floor A only (one entry per unique wave — avoids 4x multiplication)
+  fd['A'].filter(r=>waveShift(r)===dashShift && r.status==='Completed').forEach(r=>{
+    picked += r.allocQty;                                        // sum allocQty once per wave
+    const diff = Math.max(0, r.orderQty - r.allocQty);
+    waveShortPick[r.wavekey] = diff;
+  });
+  shortPick = Object.values(waveShortPick).reduce((a,b)=>a+b, 0);
+
+  // Avg completion = average of the max time recorded per wave
+  const maxTimes = Object.values(waveMaxTime);
+  const avg = maxTimes.length ? Math.round(maxTimes.reduce((a,b)=>a+b,0)/maxTimes.length) : null;
+
+  // PPO from Floor A (same wave on all floors — avoid double count)
+  fd['A'].filter(r=>waveShift(r)===dashShift).forEach(r=>{
+    const t=r.type||'Unknown';
+    if(!typeMap[t]) typeMap[t]={oqty:0,noo:0,cnt:0};
+    typeMap[t].oqty+=r.orderQty;
+    typeMap[t].noo+=Number(r.noOfOrders)||0;
+    typeMap[t].cnt++;
+  });
+
+  document.getElementById('d-picked').textContent = picked.toLocaleString();
+  document.getElementById('d-short').textContent  = shortPick.toLocaleString();
+  document.getElementById('d-avg').textContent = avg!==null ? avg+' min' : '—';
+
+  const tot = Object.values(fp).reduce((a,b)=>a+b,0);
+  document.getElementById('d-fp').innerHTML =
+    FL.map(f=>`<div class="fpc"><div class="fpc-l">Floor ${f}</div><div class="fpc-n">${fp[f]}</div><div class="fpc-s">Unique Pickers</div></div>`).join('') +
+    `<div class="fpc tot"><div class="fpc-l">All Floors</div><div class="fpc-n">${tot}</div><div class="fpc-s">Total Sum</div></div>`;
+
+  const ppo = Object.entries(typeMap).map(([t,d])=>{
+    const v = d.noo>0 ? (d.oqty/d.noo).toFixed(2) : '—';
+    return `<div class="ppocard"><div class="ppo-t">${t}</div><div class="ppo-v">${v}</div><div class="ppo-s">Pieces/Order · ${d.cnt} waves</div></div>`;
+  }).join('');
+  document.getElementById('d-ppo').innerHTML = ppo||'<div style="color:var(--txm);font-size:13px">No data yet.</div>';
+}
+
+// ═══════════════════════════════════════════════════
+// QR
+// ═══════════════════════════════════════════════════
+function openQR(wk,f){
+  const r=fd[f].find(x=>x.wavekey===wk); if(!r) return;
+  document.getElementById('qrwave').textContent=wk;
+  document.getElementById('qrmeta').textContent=`Floor ${f} · ${r.type}`;
+  document.getElementById('qroq').textContent=r.orderQty;
+  document.getElementById('qraq').textContent=r.allocQty;
+  const sc={Pending:'var(--pend)',Running:'var(--run)',Completed:'var(--comp)'};
+  const se=document.getElementById('qrst'); se.textContent=r.status; se.style.color=sc[r.status]||'';
+  document.getElementById('qrcont').innerHTML='';
+  new QRCode(document.getElementById('qrcont'),{text:wk,width:180,height:180,colorDark:'#00243D',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  document.getElementById('qrov').classList.add('open');
+}
+function closeQR(e,force){
+  if(force||(e&&e.target===document.getElementById('qrov')))
+    document.getElementById('qrov').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+function fmtTime(d){
+  return d.toLocaleString('en-IN',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+}
+function parseTime(s){
+  try{
+    const p=s.split(', ');
+    const [d,m,y]=p[0].split('/');
+    const [h,mi,se]=p[1].split(':');
+    return new Date(2000+parseInt(y), parseInt(m)-1, parseInt(d), parseInt(h), parseInt(mi), parseInt(se));
+  } catch(e){ return new Date(); }
+}
+
+// ─── Auto-timers ───
+// Every 5 minutes: re-evaluate shift (handles 07:00 and 19:00 crossover automatically)
+setInterval(()=>{
+  if(!role) return;
+  applyCrossover(); // move Pending/Running to current shift if boundary crossed
+  // Re-render all tables
+  FL.forEach(f=>renderTable(f));
+  if(document.getElementById('panel-summary').classList.contains('active'))   renderSummary();
+  if(document.getElementById('panel-dashboard').classList.contains('active')) renderDashboard();
+  // Auto-purge D-1 completed waves (catches midnight)
+  purgeD1();
+}, 5*60*1000);
+
+// Every 60s: refresh overdue indicators
+setInterval(()=>{ if(role) FL.forEach(f=>renderTable(f)); }, 60*1000);
+
+// ═══════════════════════════════════════════════════════
+// PICKING WAR ROOM — CHAT
+// Uses localStorage as shared store (all users on same browser/device)
+// Polls every 2s for new messages
+// ═══════════════════════════════════════════════════════
+const LS_CHAT     = 'wms_chat_v1';
+const CHAT_MAX    = 200;   // max messages kept
+let chatOpen      = false;
+let chatLastRead  = 0;     // timestamp of last message user has seen
+let chatPollTimer = null;
+let chatSenderName = '';   // display name for current session
+
+function chatDisplayName(){
+  if(role === 'supervisor') return 'Supervisor';
+  if(role === 'floor') return 'Floor ' + myFloor + ' TL';
+  return 'Unknown';
+}
+
+function loadChatMsgs(){
+  try{
+    const raw = localStorage.getItem(LS_CHAT);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e){ return []; }
+}
+function saveChatMsgs(msgs){
+  try{ localStorage.setItem(LS_CHAT, JSON.stringify(msgs)); } catch(e){}
+}
+
+function sendChatMsg(){
+  const inp = document.getElementById('chat-inp');
+  const txt = (inp.value||'').trim();
+  if(!txt) return;
+  const msgs = loadChatMsgs();
+  const msg = {
+    id: Date.now() + Math.random(),
+    ts: Date.now(),
+    sender: chatDisplayName(),
+    role: role,
+    floor: myFloor,
+    text: txt
+  };
+  msgs.push(msg);
+  // Keep only last CHAT_MAX messages
+  if(msgs.length > CHAT_MAX) msgs.splice(0, msgs.length - CHAT_MAX);
+  saveChatMsgs(msgs);
+  inp.value = '';
+  chatLastRead = msg.ts;
+  renderChatMsgs(msgs, true);
+}
+
+function renderChatMsgs(msgs, scrollBottom){
+  const box = document.getElementById('chat-msgs');
+  if(!box) return;
+  const me = chatDisplayName();
+
+  if(!msgs.length){
+    box.innerHTML = '<div style="text-align:center;color:#7AAEC8;font-size:12px;padding:30px 10px;">No messages yet.<br>Start the conversation!</div>';
+    return;
+  }
+
+  let lastDate = '';
+  box.innerHTML = msgs.map(m=>{
+    const isMine = m.sender === me;
+    const d = new Date(m.ts);
+    const dateStr = d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+    const timeStr = d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:false});
+
+    let dateSep = '';
+    if(dateStr !== lastDate){
+      lastDate = dateStr;
+      dateSep = `<div style="text-align:center;margin:6px 0 2px;"><span style="background:#DFF0FA;color:#4A7A9B;font-size:10px;font-weight:600;padding:2px 10px;border-radius:10px;">${dateStr}</span></div>`;
+    }
+
+    // Color coding by sender type
+    const bubbleBg = isMine ? '#00243D' : (m.role==='supervisor' ? '#FEF3E7' : '#E5F6FF');
+    const bubbleColor = isMine ? '#fff' : (m.role==='supervisor' ? '#C05E00' : '#00243D');
+    const align = isMine ? 'flex-end' : 'flex-start';
+    const nameColor = m.role==='supervisor' ? '#C05E00' : '#0073AB';
+
+    return `${dateSep}<div style="display:flex;flex-direction:column;align-items:${align};gap:1px;">
+      ${!isMine ? `<span style="font-size:10px;font-weight:700;color:${nameColor};margin-left:4px;">${m.sender}</span>` : ''}
+      <div style="max-width:78%;background:${bubbleBg};color:${bubbleColor};padding:8px 12px;border-radius:${isMine?'14px 14px 4px 14px':'14px 14px 14px 4px'};font-size:13px;line-height:1.45;word-break:break-word;box-shadow:0 1px 4px rgba(0,0,0,.08);">
+        ${escapeHtml(m.text)}
+      </div>
+      <span style="font-size:9.5px;color:#7AAEC8;margin:${isMine?'0 4px 0 0':'0 0 0 4px'}">${timeStr}</span>
+    </div>`;
+  }).join('');
+
+  if(scrollBottom) box.scrollTop = box.scrollHeight;
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function pollChat(){
+  if(!chatOpen) {
+    // Count unread even when closed
+    const msgs = loadChatMsgs();
+    const unread = msgs.filter(m=>m.ts > chatLastRead && m.sender !== chatDisplayName()).length;
+    const badge = document.getElementById('chat-unread');
+    if(badge){
+      if(unread > 0){
+        badge.style.display='flex';
+        badge.textContent = unread > 99 ? '99+' : String(unread);
+      } else {
+        badge.style.display='none';
+      }
+    }
+    return;
+  }
+  const msgs = loadChatMsgs();
+  renderChatMsgs(msgs, false);
+  // Auto scroll only if user was already at bottom
+  const box = document.getElementById('chat-msgs');
+  if(box && box.scrollHeight - box.scrollTop - box.clientHeight < 60){
+    box.scrollTop = box.scrollHeight;
+  }
+  // Update last read
+  if(msgs.length) chatLastRead = Math.max(chatLastRead, msgs[msgs.length-1].ts);
+  const badge = document.getElementById('chat-unread');
+  if(badge) badge.style.display='none';
+}
+
+function toggleChat(){
+  chatOpen = !chatOpen;
+  const panel = document.getElementById('chat-panel');
+  const btn   = document.getElementById('chat-btn');
+  if(!panel) return;
+  panel.style.display = chatOpen ? 'flex' : 'none';
+  panel.style.flexDirection = 'column';
+  if(chatOpen){
+    btn.style.background = '#0073AB';
+    const msgs = loadChatMsgs();
+    if(msgs.length) chatLastRead = msgs[msgs.length-1].ts;
+    renderChatMsgs(msgs, true);
+    const badge = document.getElementById('chat-unread');
+    if(badge) badge.style.display='none';
+    setTimeout(()=>document.getElementById('chat-inp')?.focus(), 100);
+  } else {
+    btn.style.background = '#00243D';
+  }
+}
+
+function initChat(){
+  const bubble = document.getElementById('chat-bubble');
+  if(bubble) bubble.style.display = 'block';
+  // Set initial lastRead to now so we don't show old messages as unread on login
+  const msgs = loadChatMsgs();
+  if(msgs.length) chatLastRead = msgs[msgs.length-1].ts;
+  // Poll every 2 seconds
+  if(chatPollTimer) clearInterval(chatPollTimer);
+  chatPollTimer = setInterval(pollChat, 2000);
+}
+
+function destroyChat(){
+  const bubble = document.getElementById('chat-bubble');
+  if(bubble) bubble.style.display = 'none';
+  chatOpen = false;
+  const panel = document.getElementById('chat-panel');
+  if(panel) panel.style.display='none';
+  if(chatPollTimer){ clearInterval(chatPollTimer); chatPollTimer=null; }
+}
+
+
+// ═══════════════════════════════════════════════════
+// RESET ALL WAVES (Supervisor only, password protected)
+// ═══════════════════════════════════════════════════
+const RESET_PASS = 'GC@123';
+function openReset(){
+  const ov = document.getElementById('reset-ov');
+  document.getElementById('reset-pw').value = '';
+  document.getElementById('reset-err').style.display = 'none';
+  ov.style.display = 'flex';
+  setTimeout(()=>document.getElementById('reset-pw').focus(), 100);
+}
+function closeReset(){
+  document.getElementById('reset-ov').style.display = 'none';
+}
+function confirmReset(){
+  const pw = document.getElementById('reset-pw').value;
+  if(pw !== RESET_PASS){
+    document.getElementById('reset-err').style.display = 'block';
+    document.getElementById('reset-pw').value = '';
+    document.getElementById('reset-pw').focus();
+    return;
+  }
+  // Correct password — delete all waves
+  FL.forEach(f=>{ fd[f]=[]; });
+  saveWaves();
+  FL.forEach(f=>renderTable(f));
+  if(document.getElementById('panel-summary').classList.contains('active')) renderSummary();
+  closeReset();
+  // Update wave count display
+  const el = document.getElementById('us-wave');
+  if(el) el.innerHTML = '0 waves in system';
+  toast('\u2705 All waves have been reset successfully');
+}
+// Close reset modal on overlay click
+document.getElementById('reset-ov')?.addEventListener('click', function(e){
+  if(e.target === this) closeReset();
+});
+
+</script>
+</body>
+</html>

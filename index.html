@@ -7,6 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <style>
 :root{
   /* Maersk Brand Palette */
@@ -637,27 +640,46 @@ tbody tr:hover td{background:#EAF4FC;}
 
 <script>
 // ═══════════════════════════════════════════════════
+// FIREBASE INIT
+// ═══════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyCgDyu1fG9xykc1bnOqtdb-xH0DcxS5oUY",
+  authDomain: "wms-picking-tracker.firebaseapp.com",
+  databaseURL: "https://wms-picking-tracker-default-rtdb.firebaseio.com",
+  projectId: "wms-picking-tracker",
+  storageBucket: "wms-picking-tracker.firebasestorage.app",
+  messagingSenderId: "995311790603",
+  appId: "1:995311790603:web:03078f806ab4aa4e12750e"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Firebase paths
+const FB_WAVES  = 'wms/waves';
+const FB_ROSTER = 'wms/roster';
+const FB_CHAT   = 'wms/chat';
+
+// ═══════════════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════════════
 const PIN = '1234';
 const FL  = ['A','B','C','D'];
-const LS_WAVES  = 'wms_v6_waves';
-const LS_ROSTER = 'wms_v6_roster';
 
 // ═══════════════════════════════════════════════════
-// STATE  (restored from localStorage on page load)
+// STATE
 // ═══════════════════════════════════════════════════
 let role=null, myFloor=null;
-let activeShift = 'day';      // set properly after loadWaves()
-let dashShift   = 'day';      // set properly after loadWaves()
+let activeShift = 'day';
+let dashShift   = 'day';
+let appReady    = false;   // true after Firebase data first loaded
 
-// fd[floor] = array of wave records — lives in localStorage
+// fd[floor] = array of wave records — synced with Firebase
 let fd = {A:[],B:[],C:[],D:[]};
 
-// rosterDB[UID] = {name, floor, shift} — lives in localStorage
+// rosterDB[UID] = {name, floor, shift} — synced with Firebase
 let rosterDB = {};
 
-// Default roster (always present until supervisor uploads new one)
+// Default roster
 const DEFAULT_ROSTER = {
   'U001':{name:'Raj Kumar',    floor:'A', shift:'Day'},
   'U002':{name:'Priya Singh',  floor:'A', shift:'Day'},
@@ -720,50 +742,107 @@ function applyCrossover(){
 }
 
 // ═══════════════════════════════════════════════════
-// PERSISTENCE
+// PERSISTENCE — Firebase Realtime Database
 // ═══════════════════════════════════════════════════
+
+// Helper: convert wave object dates to strings for Firebase storage
+function waveToFB(r){
+  return {
+    ...r,
+    uploadDate: r.uploadDate ? r.uploadDate.toISOString() : null,
+    startDate:  r.startDate  ? r.startDate.toISOString()  : null,
+  };
+}
+// Helper: restore date strings back to Date objects after reading from Firebase
+function waveFromFB(r){
+  return {
+    ...r,
+    uploadDate: r.uploadDate ? new Date(r.uploadDate) : null,
+    startDate:  r.startDate  ? new Date(r.startDate)  : null,
+  };
+}
+
+// Save all 4 floors to Firebase
 function saveWaves(){
-  try { localStorage.setItem(LS_WAVES, JSON.stringify(fd)); } catch(e){ console.warn('saveWaves:',e); }
+  const payload = {};
+  FL.forEach(f=>{ payload[f] = fd[f].map(waveToFB); });
+  db.ref(FB_WAVES).set(payload).catch(e=>console.warn('saveWaves error:',e));
 }
-function loadWaves(){
-  try {
-    const raw = localStorage.getItem(LS_WAVES);
-    if(!raw) return;
-    const parsed = JSON.parse(raw);
-    FL.forEach(f=>{
-      if(Array.isArray(parsed[f])){
-        fd[f] = parsed[f].map(r=>({
-          ...r,
-          uploadDate: r.uploadDate ? new Date(r.uploadDate) : null,
-          startDate:  r.startDate  ? new Date(r.startDate)  : null,
-        }));
-      }
-    });
-  } catch(e){ console.warn('loadWaves error',e); }
-}
+
+// Save roster to Firebase
 function saveRoster(){
-  try { localStorage.setItem(LS_ROSTER, JSON.stringify(rosterDB)); } catch(e){}
+  db.ref(FB_ROSTER).set(rosterDB).catch(e=>console.warn('saveRoster error:',e));
 }
-function loadRoster(){
-  try {
-    const raw = localStorage.getItem(LS_ROSTER);
-    if(raw){
-      const parsed = JSON.parse(raw);
-      // Merge with default roster — uploaded roster takes priority
-      rosterDB = Object.assign({}, DEFAULT_ROSTER, parsed);
+
+// ── Real-time listeners — set up once, keep in sync forever ──
+let wavesListenerReady = false;
+let rosterListenerReady = false;
+
+function attachWavesListener(){
+  db.ref(FB_WAVES).on('value', snap=>{
+    const val = snap.val();
+    if(val){
+      FL.forEach(f=>{
+        if(Array.isArray(val[f])){
+          fd[f] = val[f].map(waveFromFB);
+        } else {
+          fd[f] = [];
+        }
+      });
+    } else {
+      FL.forEach(f=>{ fd[f]=[]; });
+    }
+    if(!wavesListenerReady){
+      wavesListenerReady = true;
+      checkStartupReady();
+    } else if(appReady){
+      // Live update while app is running
+      applyCrossover();
+      purgeD1();
+      FL.forEach(f=>renderTable(f));
+      const sumPanel = document.getElementById('panel-summary');
+      if(sumPanel && sumPanel.classList.contains('active')) renderSummary();
+    }
+  });
+}
+
+function attachRosterListener(){
+  db.ref(FB_ROSTER).on('value', snap=>{
+    const val = snap.val();
+    if(val){
+      rosterDB = Object.assign({}, DEFAULT_ROSTER, val);
     } else {
       rosterDB = Object.assign({}, DEFAULT_ROSTER);
     }
-  } catch(e){
-    rosterDB = Object.assign({}, DEFAULT_ROSTER);
+    if(!rosterListenerReady){
+      rosterListenerReady = true;
+      checkStartupReady();
+    } else if(appReady){
+      // Re-resolve names for any displayed waves
+      FL.forEach(f=>{ fd[f].forEach(r=>{ if(r.userId) r.userName=getName(r.userId); }); });
+      FL.forEach(f=>renderTable(f));
+    }
+  });
+}
+
+function checkStartupReady(){
+  if(wavesListenerReady && rosterListenerReady){
+    applyCrossover();
+    purgeD1();
+    activeShift = curShift();
+    dashShift   = curShift();
+    appReady = true;
+    // If user already logged in (rare race), re-render
+    if(role){
+      FL.forEach(f=>renderTable(f));
+      showTab(role==='supervisor' ? 'A' : myFloor);
+    }
   }
 }
 
-// ── Startup (order matters) ──
-loadWaves();
-loadRoster();
-applyCrossover(); // stamp assignedShift on any waves that lack it
-purgeD1();        // delete yesterday completed waves on page load
+// ── Startup — attach listeners immediately ──
+attachWavesListener();
+attachRosterListener();
 activeShift = curShift();
 dashShift   = curShift();
 
@@ -820,6 +899,7 @@ function doLogin(){
   }
   role = r;
   myFloor = r==='floor' ? document.getElementById('l-floor').value : null;
+  // Show loading screen while Firebase data loads
   document.getElementById('ls').style.display  = 'none';
   document.getElementById('app').style.display = 'flex';
   document.getElementById('h-badge').textContent = role==='supervisor' ? '👤 Supervisor' : `👤 Floor ${myFloor} TL`;
@@ -827,10 +907,35 @@ function doLogin(){
   activeShift = curShift();
   dashShift   = curShift();
   setupAccess();
-  FL.forEach(f=>renderTable(f));
-  initChat();
-  // Supervisor starts on Floor A; Floor TL starts directly on their own floor
-  showTab(role==='supervisor' ? 'A' : myFloor);
+
+  function enterApp(){
+    FL.forEach(f=>renderTable(f));
+    initChat();
+    showTab(role==='supervisor' ? 'A' : myFloor);
+  }
+
+  if(appReady){
+    enterApp();
+  } else {
+    // Show connecting indicator and wait
+    toast('🔄 Connecting to database…');
+    const waitInterval = setInterval(()=>{
+      if(appReady){
+        clearInterval(waitInterval);
+        enterApp();
+        toast('✅ Connected!');
+      }
+    }, 200);
+    // Timeout after 8 seconds — fallback with empty data
+    setTimeout(()=>{
+      if(!appReady){
+        clearInterval(waitInterval);
+        appReady = true;
+        enterApp();
+        toast('⚠ Offline mode — check connection', true);
+      }
+    }, 8000);
+  }
 }
 function doLogout(){
   // Data stays in localStorage — only reset session vars
@@ -1512,12 +1617,12 @@ setInterval(()=>{ if(role) FL.forEach(f=>renderTable(f)); }, 60*1000);
 // Uses localStorage as shared store (all users on same browser/device)
 // Polls every 2s for new messages
 // ═══════════════════════════════════════════════════════
-const LS_CHAT     = 'wms_chat_v1';
-const CHAT_MAX    = 200;   // max messages kept
+const CHAT_MAX    = 200;
 let chatOpen      = false;
-let chatLastRead  = 0;     // timestamp of last message user has seen
-let chatPollTimer = null;
-let chatSenderName = '';   // display name for current session
+let chatLastRead  = 0;
+let chatPollTimer = null;   // unused with Firebase but kept for destroyChat compat
+let chatSenderName = '';
+let chatFBListener = null;  // Firebase onValue unsubscribe ref
 
 function chatDisplayName(){
   if(role === 'supervisor') return 'Supervisor';
@@ -1525,36 +1630,22 @@ function chatDisplayName(){
   return 'Unknown';
 }
 
-function loadChatMsgs(){
-  try{
-    const raw = localStorage.getItem(LS_CHAT);
-    return raw ? JSON.parse(raw) : [];
-  } catch(e){ return []; }
-}
-function saveChatMsgs(msgs){
-  try{ localStorage.setItem(LS_CHAT, JSON.stringify(msgs)); } catch(e){}
-}
-
 function sendChatMsg(){
   const inp = document.getElementById('chat-inp');
   const txt = (inp.value||'').trim();
   if(!txt) return;
-  const msgs = loadChatMsgs();
+  inp.value = '';
   const msg = {
-    id: Date.now() + Math.random(),
     ts: Date.now(),
     sender: chatDisplayName(),
     role: role,
-    floor: myFloor,
+    floor: myFloor || '',
     text: txt
   };
-  msgs.push(msg);
-  // Keep only last CHAT_MAX messages
-  if(msgs.length > CHAT_MAX) msgs.splice(0, msgs.length - CHAT_MAX);
-  saveChatMsgs(msgs);
-  inp.value = '';
+  // Push to Firebase — listener will render it for everyone
+  const newRef = db.ref(FB_CHAT).push();
+  newRef.set(msg).catch(e=>{ console.warn('chat send error:',e); toast('Failed to send message',true); });
   chatLastRead = msg.ts;
-  renderChatMsgs(msgs, true);
 }
 
 function renderChatMsgs(msgs, scrollBottom){
@@ -1602,34 +1693,7 @@ function escapeHtml(s){
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function pollChat(){
-  if(!chatOpen) {
-    // Count unread even when closed
-    const msgs = loadChatMsgs();
-    const unread = msgs.filter(m=>m.ts > chatLastRead && m.sender !== chatDisplayName()).length;
-    const badge = document.getElementById('chat-unread');
-    if(badge){
-      if(unread > 0){
-        badge.style.display='flex';
-        badge.textContent = unread > 99 ? '99+' : String(unread);
-      } else {
-        badge.style.display='none';
-      }
-    }
-    return;
-  }
-  const msgs = loadChatMsgs();
-  renderChatMsgs(msgs, false);
-  // Auto scroll only if user was already at bottom
-  const box = document.getElementById('chat-msgs');
-  if(box && box.scrollHeight - box.scrollTop - box.clientHeight < 60){
-    box.scrollTop = box.scrollHeight;
-  }
-  // Update last read
-  if(msgs.length) chatLastRead = Math.max(chatLastRead, msgs[msgs.length-1].ts);
-  const badge = document.getElementById('chat-unread');
-  if(badge) badge.style.display='none';
-}
+function pollChat(){ /* replaced by Firebase real-time listener */ }
 
 function toggleChat(){
   chatOpen = !chatOpen;
@@ -1640,11 +1704,10 @@ function toggleChat(){
   panel.style.flexDirection = 'column';
   if(chatOpen){
     btn.style.background = '#0073AB';
-    const msgs = loadChatMsgs();
-    if(msgs.length) chatLastRead = msgs[msgs.length-1].ts;
-    renderChatMsgs(msgs, true);
+    // Mark all current messages as read
     const badge = document.getElementById('chat-unread');
     if(badge) badge.style.display='none';
+    chatLastRead = Date.now();
     setTimeout(()=>document.getElementById('chat-inp')?.focus(), 100);
   } else {
     btn.style.background = '#00243D';
@@ -1654,12 +1717,43 @@ function toggleChat(){
 function initChat(){
   const bubble = document.getElementById('chat-bubble');
   if(bubble) bubble.style.display = 'block';
-  // Set initial lastRead to now so we don't show old messages as unread on login
-  const msgs = loadChatMsgs();
-  if(msgs.length) chatLastRead = msgs[msgs.length-1].ts;
-  // Poll every 2 seconds
-  if(chatPollTimer) clearInterval(chatPollTimer);
-  chatPollTimer = setInterval(pollChat, 2000);
+  chatLastRead = Date.now(); // don't show old messages as unread on login
+
+  // Detach any existing listener
+  if(chatFBListener){
+    db.ref(FB_CHAT).off('value', chatFBListener);
+    chatFBListener = null;
+  }
+
+  // Attach Firebase real-time listener for chat
+  chatFBListener = db.ref(FB_CHAT).orderByChild('ts').limitToLast(CHAT_MAX)
+    .on('value', snap=>{
+      const msgs = [];
+      snap.forEach(child=>{ msgs.push(child.val()); });
+      msgs.sort((a,b)=>a.ts-b.ts);
+
+      if(chatOpen){
+        // Panel open — render and mark read
+        const box = document.getElementById('chat-msgs');
+        const atBottom = box ? (box.scrollHeight - box.scrollTop - box.clientHeight < 80) : true;
+        renderChatMsgs(msgs, atBottom);
+        if(msgs.length) chatLastRead = msgs[msgs.length-1].ts;
+        const badge = document.getElementById('chat-unread');
+        if(badge) badge.style.display='none';
+      } else {
+        // Panel closed — update unread badge
+        const unread = msgs.filter(m=>m.ts > chatLastRead && m.sender !== chatDisplayName()).length;
+        const badge = document.getElementById('chat-unread');
+        if(badge){
+          if(unread > 0){
+            badge.style.display='flex';
+            badge.textContent = unread > 99 ? '99+' : String(unread);
+          } else {
+            badge.style.display='none';
+          }
+        }
+      }
+    });
 }
 
 function destroyChat(){
@@ -1668,6 +1762,11 @@ function destroyChat(){
   chatOpen = false;
   const panel = document.getElementById('chat-panel');
   if(panel) panel.style.display='none';
+  // Detach Firebase chat listener
+  if(chatFBListener){
+    db.ref(FB_CHAT).off('value', chatFBListener);
+    chatFBListener = null;
+  }
   if(chatPollTimer){ clearInterval(chatPollTimer); chatPollTimer=null; }
 }
 
@@ -1694,16 +1793,36 @@ function confirmReset(){
     document.getElementById('reset-pw').focus();
     return;
   }
-  // Correct password — delete all waves
+
+  // 1. Clear local state immediately
   FL.forEach(f=>{ fd[f]=[]; });
-  saveWaves();
+
+  // 2. Write empty arrays to Firebase for all 4 floors
+  //    (set empty object so listener fires and all devices clear too)
+  const emptyPayload = {};
+  FL.forEach(f=>{ emptyPayload[f] = []; });
+
+  db.ref(FB_WAVES).set(emptyPayload)
+    .then(()=>{
+      toast('\u2705 All waves deleted from database successfully');
+    })
+    .catch(e=>{
+      console.warn('reset error:', e);
+      toast('\u26A0 Reset failed — check database connection', true);
+    });
+
+  // 3. Update UI immediately (don't wait for Firebase callback)
   FL.forEach(f=>renderTable(f));
-  if(document.getElementById('panel-summary').classList.contains('active')) renderSummary();
-  closeReset();
-  // Update wave count display
+  const sumPanel = document.getElementById('panel-summary');
+  if(sumPanel && sumPanel.classList.contains('active')) renderSummary();
+  const dashPanel = document.getElementById('panel-dashboard');
+  if(dashPanel && dashPanel.classList.contains('active')) renderDashboard();
+
+  // 4. Update upload counter
   const el = document.getElementById('us-wave');
   if(el) el.innerHTML = '0 waves in system';
-  toast('\u2705 All waves have been reset successfully');
+
+  closeReset();
 }
 // Close reset modal on overlay click
 document.getElementById('reset-ov')?.addEventListener('click', function(e){

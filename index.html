@@ -641,6 +641,18 @@ tbody tr:hover td{background:#EAF4FC;}
         </div>
       </div>
 
+      <!-- Status filter chips for Summary -->
+      <div class="fbar" style="margin-bottom:14px;">
+        <span class="flbl">Filter:</span>
+        <div class="chips">
+          <span class="chip call" id="sf-all"       onclick="setSumFlt('all')">All</span>
+          <span class="chip"      id="sf-Pending"   onclick="setSumFlt('Pending')">Pending</span>
+          <span class="chip"      id="sf-Running"   onclick="setSumFlt('Running')">Running</span>
+          <span class="chip"      id="sf-Completed" onclick="setSumFlt('Completed')">Completed</span>
+          <span class="chip"      id="sf-Partial"   onclick="setSumFlt('Partial')" style="background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;">Partial</span>
+        </div>
+      </div>
+
       <!-- Floor counts -->
       <div class="tcard" style="margin-bottom:16px;">
         <div style="padding:11px 14px;background:var(--surf2);border-bottom:1.5px solid var(--brd);display:flex;align-items:center;gap:10px;">
@@ -702,7 +714,7 @@ tbody tr:hover td{background:#EAF4FC;}
       <span id="chat-unread" style="display:none;position:absolute;top:-2px;right:-2px;background:#C0392B;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;align-items:center;justify-content:center;padding:0 4px;font-family:inherit;">0</span>
     </button>
     <div id="chat-panel" style="display:none;position:absolute;bottom:68px;right:0;width:360px;background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,36,61,.22);border:1.5px solid #C5DFF0;overflow:hidden;flex-direction:column;">
-      <div style="background:#00243D;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="background:#00243D;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
         <div style="display:flex;align-items:center;gap:10px;">
           <div style="font-size:20px;">&#x1F3ED;</div>
           <div>
@@ -712,14 +724,14 @@ tbody tr:hover td{background:#EAF4FC;}
         </div>
         <button onclick="toggleChat()" style="background:transparent;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;line-height:1;">&#x2715;</button>
       </div>
-      <div id="chat-msgs" style="height:320px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#F7FAFD;"></div>
-      <div style="padding:10px 12px;border-top:1.5px solid #C5DFF0;display:flex;gap:8px;background:#fff;align-items:center;">
+      <div id="chat-msgs" style="height:320px;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;background:#F7FAFD;"></div>
+      <div style="padding:10px 12px;border-top:1.5px solid #C5DFF0;display:flex;gap:8px;background:#fff;align-items:center;flex-shrink:0;">
         <input id="chat-inp" type="text" placeholder="Type a message..." maxlength="300"
-          style="flex:1;padding:8px 12px;border:1.5px solid #C5DFF0;border-radius:20px;font-family:inherit;font-size:13px;outline:none;color:#00243D;"
-          onkeydown="if(event.key==='Enter')sendChatMsg()"
+          style="flex:1;min-width:0;padding:8px 12px;border:1.5px solid #C5DFF0;border-radius:20px;font-family:inherit;font-size:13px;outline:none;color:#00243D;background:#fff;"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMsg();}"
           onfocus="this.style.borderColor='#0073AB'"
           onblur="this.style.borderColor='#C5DFF0'">
-        <button onclick="sendChatMsg()" title="Send" style="background:#00243D;color:#fff;border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;" onmouseover="this.style.background='#0073AB'" onmouseout="this.style.background='#00243D'">&#x27A4;</button>
+        <button onclick="sendChatMsg()" title="Send" style="background:#00243D;color:#fff;border:none;width:36px;height:36px;min-width:36px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;" onmouseover="this.style.background='#0073AB'" onmouseout="this.style.background='#00243D'">&#x27A4;</button>
       </div>
     </div>
   </div>
@@ -866,6 +878,7 @@ const DEFAULT_ROSTER = {
 
 // ui filter state
 let flt = {A:'all',B:'all',C:'all',D:'all'};
+let sumFlt = 'all'; // summary tab filter
 
 // ═══════════════════════════════════════════════════
 // SHIFT HELPERS
@@ -1618,6 +1631,27 @@ function setShift(s){
   renderSummary();
 }
 
+// ═══════════════════════════════════════════════════
+// SUMMARY — status filter
+// ═══════════════════════════════════════════════════
+function setSumFlt(v){
+  sumFlt = v;
+  ['all','Pending','Running','Completed','Partial'].forEach(x=>{
+    const el = document.getElementById('sf-'+x); if(!el) return;
+    el.className = 'chip';
+    if(x === v){
+      if(x==='all')         el.classList.add('call');
+      else if(x==='Pending')   el.classList.add('cp');
+      else if(x==='Running')   el.classList.add('cr');
+      else if(x==='Completed') el.classList.add('cc');
+      else if(x==='Partial')   el.style.cssText='background:#154EA0;color:#fff;border-color:#154EA0;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;';
+    } else {
+      if(x==='Partial') el.style.cssText='background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;';
+    }
+  });
+  renderSummary();
+}
+
 function renderSummary(){
   renderFloorCounts();
   renderWaveDetail();
@@ -1692,11 +1726,19 @@ function renderWaveDetail(){
       }
     });
     const act = FL.filter(f=>sts[f]!==null); if(!act.length) return;
-    const done = act.every(f=>sts[f]==='Completed');
-    const ov = done ? 'Completed' : 'Pending';
+    const done    = act.every(f=>sts[f]==='Completed');
+    const anyRun  = act.some(f=>sts[f]==='Running');
+    const ov = done ? 'Completed' : anyRun ? 'Running' : 'Pending';
     const ct = (done && maxMins!==null) ? maxMins+' min' : '—';
     let wkc='wk wkf';
-    FL.forEach(f=>{const row=fd[f].find(r=>r.wavekey===wk);if(row&&row.allocQty<row.orderQty)wkc='wk wkp';});
+    let isPartial = false;
+    FL.forEach(f=>{const row=fd[f].find(r=>r.wavekey===wk);if(row&&row.allocQty<row.orderQty){wkc='wk wkp';isPartial=true;}});
+
+    // Apply summary status filter
+    if(sumFlt !== 'all'){
+      if(sumFlt === 'Partial' && !isPartial) return;
+      if(sumFlt !== 'Partial' && ov !== sumFlt) return;
+    }
 
     // Search filter
     if(q){
@@ -1708,7 +1750,7 @@ function renderWaveDetail(){
     const fcols = FL.map(f=>sts[f]
       ? `<td><span class="fb fb-${sts[f].toLowerCase()}">${sts[f]}</span></td>`
       : `<td><span class="fb fb-na">N/A</span></td>`).join('');
-    html.push(`<tr><td style="background:#F0F7FB;border-left:4px solid #F5A623;padding-left:14px;"><span class="${wkc}">${wk}</span></td>${fcols}<td style="background:#F5F9FC;">${ct!=='—'?`<span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#00324F,#0073AB);color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;box-shadow:0 2px 5px rgba(0,50,79,.25);">&#x23F1; ${ct}</span>`:'<span style="color:#B0C8D8;font-size:13px;font-weight:700;">&#8212;</span>'}</td></tr>`);
+    html.push(`<tr><td style="background:#F0F7FB;border-left:4px solid #F5A623;padding-left:14px;"><span class="${wkc}">${wk}</span></td>${fcols}<td style="background:#F5F9FC;"><span class="fb fb-${ov.toLowerCase()}">${ov}</span></td><td style="background:#F5F9FC;">${ct!=='—'?`<span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#00324F,#0073AB);color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;box-shadow:0 2px 5px rgba(0,50,79,.25);">&#x23F1; ${ct}</span>`:'<span style="color:#B0C8D8;font-size:13px;font-weight:700;">&#8212;</span>'}</td></tr>`);
   });
 
   tbody.innerHTML = html.length ? html.join('') : `<tr><td colspan="7"><div class="empty"><div class="empi">🔍</div><p>No results</p></div></td></tr>`;
@@ -1859,20 +1901,20 @@ function chatDisplayName(){
 
 function sendChatMsg(){
   const inp = document.getElementById('chat-inp');
-  const txt = (inp.value||'').trim();
+  const txt = String(inp.value||'').trim();
   if(!txt) return;
   inp.value = '';
+  const clientTs = Date.now();
   const msg = {
-    ts: Date.now(),
+    ts: clientTs,
     sender: chatDisplayName(),
     role: role,
     floor: myFloor || '',
     text: txt
   };
-  // Push to Firebase — listener will render it for everyone
-  const newRef = db.ref(FB_CHAT).push();
-  newRef.set(msg).catch(e=>{ console.warn('chat send error:',e); toast('Failed to send message',true); });
-  chatLastRead = msg.ts;
+  // Single atomic push — Firebase generates key server-side ensuring correct order
+  db.ref(FB_CHAT).push(msg).catch(e=>{ console.warn('chat send error:',e); toast('Failed to send message',true); });
+  chatLastRead = clientTs;
 }
 
 function deleteChatMsg(fbKey){
@@ -1901,24 +1943,26 @@ function renderChatMsgs(msgs, scrollBottom){
     let dateSep = '';
     if(dateStr !== lastDate){
       lastDate = dateStr;
-      dateSep = `<div style="text-align:center;margin:6px 0 2px;"><span style="background:#DFF0FA;color:#4A7A9B;font-size:10px;font-weight:600;padding:2px 10px;border-radius:10px;">${dateStr}</span></div>`;
+      dateSep = `<div style="text-align:center;margin:8px 0 4px;"><span style="background:#DFF0FA;color:#4A7A9B;font-size:10px;font-weight:600;padding:3px 12px;border-radius:10px;">${dateStr}</span></div>`;
     }
 
-    // Color coding by sender type
-    const bubbleBg = isMine ? '#00243D' : (m.role==='supervisor' ? '#FEF3E7' : '#E5F6FF');
-    const bubbleColor = isMine ? '#fff' : (m.role==='supervisor' ? '#C05E00' : '#00243D');
-    const align = isMine ? 'flex-end' : 'flex-start';
-    const nameColor = m.role==='supervisor' ? '#C05E00' : '#0073AB';
+    const bubbleBg    = isMine ? '#00243D' : (m.role==='supervisor' ? '#FEF3E7' : '#E5F6FF');
+    const bubbleColor = isMine ? '#fff'    : (m.role==='supervisor' ? '#7A3800' : '#00243D');
+    const nameColor   = m.role==='supervisor' ? '#C05E00' : '#0073AB';
+    const radius      = isMine ? '16px 16px 4px 16px' : '16px 16px 16px 4px';
 
-    return `${dateSep}<div style="display:flex;flex-direction:column;align-items:${align};gap:1px;">
-      ${!isMine ? `<span style="font-size:10px;font-weight:700;color:${nameColor};margin-left:4px;">${m.sender}</span>` : ''}
-      <div style="display:flex;align-items:flex-end;gap:5px;flex-direction:${isMine?'row-reverse':'row'}">
-        <div style="max-width:78%;background:${bubbleBg};color:${bubbleColor};padding:8px 12px;border-radius:${isMine?'14px 14px 4px 14px':'14px 14px 14px 4px'};font-size:13px;line-height:1.45;word-break:break-word;box-shadow:0 1px 4px rgba(0,0,0,.08);">
-          ${escapeHtml(m.text)}
-        </div>
-        ${role==='supervisor' && m._fbKey ? `<button onclick="deleteChatMsg('${m._fbKey}')" title="Delete message" style="background:transparent;border:none;cursor:pointer;font-size:13px;opacity:0.5;padding:2px 4px;border-radius:4px;transition:.15s;line-height:1;flex-shrink:0;" onmouseover="this.style.opacity='1';this.style.background='#FDECEA'" onmouseout="this.style.opacity='0.5';this.style.background='transparent'">🗑</button>` : ''}
+    const deleteBtn = (role==='supervisor' && m._fbKey)
+      ? `<button onclick="deleteChatMsg('${m._fbKey}')" title="Delete" style="background:transparent;border:none;cursor:pointer;font-size:12px;opacity:0.4;padding:2px;line-height:1;flex-shrink:0;align-self:center;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.4'">🗑</button>`
+      : '';
+
+    return `${dateSep}
+    <div style="display:flex;flex-direction:column;align-items:${isMine?'flex-end':'flex-start'};margin-bottom:6px;">
+      ${!isMine ? `<span style="font-size:10px;font-weight:700;color:${nameColor};margin:0 0 2px 6px;">${escapeHtml(m.sender)}</span>` : ''}
+      <div style="display:flex;align-items:flex-end;gap:4px;flex-direction:${isMine?'row-reverse':'row'};">
+        <div style="width:fit-content;max-width:240px;background:${bubbleBg};color:${bubbleColor};padding:7px 11px;border-radius:${radius};font-size:13px;line-height:1.45;overflow-wrap:break-word;word-break:break-word;white-space:normal;text-align:left;box-shadow:0 1px 2px rgba(0,0,0,.08);">${escapeHtml(String(m.text||''))}</div>
+        ${deleteBtn}
       </div>
-      <span style="font-size:9.5px;color:#7AAEC8;margin:${isMine?'0 4px 0 0':'0 0 0 4px'}">${timeStr}</span>
+      <span style="font-size:9px;color:#9BB8CC;margin-top:2px;${isMine?'margin-right:4px;':'margin-left:6px;'}">${timeStr}</span>
     </div>`;
   }).join('');
 
@@ -1926,7 +1970,7 @@ function renderChatMsgs(msgs, scrollBottom){
 }
 
 function escapeHtml(s){
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function pollChat(){ /* replaced by Firebase real-time listener */ }
@@ -1936,8 +1980,12 @@ function toggleChat(){
   const panel = document.getElementById('chat-panel');
   const btn   = document.getElementById('chat-btn');
   if(!panel) return;
-  panel.style.display = chatOpen ? 'flex' : 'none';
-  panel.style.flexDirection = 'column';
+  if(chatOpen){
+    panel.style.display = 'flex';
+    panel.style.flexDirection = 'column';
+  } else {
+    panel.style.display = 'none';
+  }
   if(chatOpen){
     btn.style.background = '#0073AB';
     // Mark all current messages as read
@@ -1962,11 +2010,20 @@ function initChat(){
   }
 
   // Attach Firebase real-time listener for chat
-  chatFBListener = db.ref(FB_CHAT).orderByChild('ts').limitToLast(CHAT_MAX)
+  chatFBListener = db.ref(FB_CHAT).orderByKey().limitToLast(CHAT_MAX)
     .on('value', snap=>{
       const msgs = [];
-      snap.forEach(child=>{ msgs.push({...child.val(), _fbKey: child.key}); });
-      msgs.sort((a,b)=>a.ts-b.ts);
+      snap.forEach(child=>{
+        const val = child.val();
+        msgs.push({
+          ...val,
+          ts: Number(val.ts) || 0,
+          text: String(val.text || ''),
+          _fbKey: child.key
+        });
+      });
+      // Sort strictly by Firebase push key (server-generated, always chronological)
+      msgs.sort((a, b) => a._fbKey < b._fbKey ? -1 : a._fbKey > b._fbKey ? 1 : 0);
 
       if(chatOpen){
         // Panel open — render and mark read

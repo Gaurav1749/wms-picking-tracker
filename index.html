@@ -7,8 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-database-compat.min.js"></script>
 <style>
 :root{
   --mb:#00243D;--ml:#0073AB;--ma:#42B0D5;--mg:#F5A623;
@@ -652,6 +652,10 @@ tbody tr:hover td{background:#EAF4FC;}
               <div><div class="toggle-label">Reset All Waves</div><div class="toggle-sub">Can use Danger Zone — Reset All Waves</div></div>
               <label class="tog"><input type="checkbox" id="r-sup-resetall" onchange="saveRights()"><span class="tog-sl"></span></label>
             </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Change Wave Status</div><div class="toggle-sub">Can switch Pending / Running / Completed</div></div>
+              <label class="tog"><input type="checkbox" id="r-sup-changestatus" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
           </div>
           <!-- Floor TL Rights -->
           <div class="rights-card">
@@ -669,8 +673,12 @@ tbody tr:hover td{background:#EAF4FC;}
               <label class="tog"><input type="checkbox" id="r-tl-scan" onchange="saveRights()" checked disabled><span class="tog-sl"></span></label>
             </div>
             <div class="toggle-row">
-              <div><div class="toggle-label">Mark Wave Completed</div><div class="toggle-sub">Can mark Running wave as done</div></div>
+              <div><div class="toggle-label">Mark Wave Completed</div><div class="toggle-sub">Can mark Running → Completed (after 30s)</div></div>
               <label class="tog"><input type="checkbox" id="r-tl-complete" onchange="saveRights()" checked disabled><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Change Wave Status</div><div class="toggle-sub">Full Pending / Running / Completed control</div></div>
+              <label class="tog"><input type="checkbox" id="r-tl-changestatus" onchange="saveRights()"><span class="tog-sl"></span></label>
             </div>
             <div class="toggle-row">
               <div><div class="toggle-label">View Dashboard</div><div class="toggle-sub">Access to Dashboard tab</div></div>
@@ -689,12 +697,74 @@ tbody tr:hover td{background:#EAF4FC;}
 
         <!-- Chat Management -->
         <div class="sectitle">💬 Chat Management</div>
-        <div class="up-card" style="max-width:500px;border-color:#F5A8A4;background:#FFF8F8;">
+        <div class="up-card" style="max-width:500px;border-color:#F5A8A4;background:#FFF8F8;margin-bottom:24px;">
           <div class="up-card-hd" style="color:#C0392B;">⚠ Delete All Chat History</div>
           <p style="font-size:12px;color:var(--txm);margin-bottom:12px;">Permanently removes all messages from the Picking War Room chat. This cannot be undone.</p>
           <div class="up-row">
             <button class="upbtn" onclick="openDeleteChat()" style="background:#C0392B;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">🗑 Delete All Chat</button>
             <span style="font-size:11px;color:#C0392B;font-weight:500;" id="chat-msg-count">Loading…</span>
+          </div>
+        </div>
+
+        <!-- Password Management -->
+        <div class="sectitle">🔑 Password Management</div>
+        <p style="font-size:12px;color:var(--txm);margin-bottom:16px;">Reset passwords for all roles. Current admin password is required to make changes.</p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;">
+          <!-- Supervisor Password -->
+          <div class="up-card" style="min-width:260px;max-width:300px;">
+            <div class="up-card-hd">👤 Supervisor Password</div>
+            <div class="mf" style="margin-bottom:10px;">
+              <label>New Password</label>
+              <input type="password" id="pw-sup-new" placeholder="Enter new password" autocomplete="new-password"
+                style="width:100%;padding:8px 10px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:inherit;font-size:13px;color:var(--tx);background:var(--bg);outline:none;transition:.2s;"
+                onfocus="this.style.borderColor='var(--ml)'" onblur="this.style.borderColor='var(--brd)'">
+            </div>
+            <div class="mf" style="margin-bottom:10px;">
+              <label>Admin Password (confirm)</label>
+              <input type="password" id="pw-sup-admin" placeholder="Enter your admin password" autocomplete="new-password"
+                style="width:100%;padding:8px 10px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:inherit;font-size:13px;color:var(--tx);background:var(--bg);outline:none;transition:.2s;"
+                onfocus="this.style.borderColor='var(--ml)'" onblur="this.style.borderColor='var(--brd)'"
+                onkeydown="if(event.key==='Enter')changePassword('supervisor')">
+            </div>
+            <div id="pw-sup-msg" style="font-size:11px;margin-bottom:8px;display:none;font-weight:600;"></div>
+            <button class="upbtn" onclick="changePassword('supervisor')" style="font-size:12px;">🔑 Update Supervisor Password</button>
+          </div>
+          <!-- Floor TL Password (all floors share one password — Floor TL login has no password, uses floor selection) -->
+          <!-- Reset Password card -->
+          <div class="up-card" style="min-width:260px;max-width:300px;">
+            <div class="up-card-hd">🔒 Reset All Passwords</div>
+            <p style="font-size:11.5px;color:var(--txm);margin-bottom:10px;line-height:1.5;">Reset all role passwords back to their factory defaults:<br>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;">Supervisor: <b>CS@123</b></span><br>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;">Reset Pass: <b>GC@123</b></span>
+            </p>
+            <div class="mf" style="margin-bottom:10px;">
+              <label>Admin Password (confirm)</label>
+              <input type="password" id="pw-reset-admin" placeholder="Enter your admin password" autocomplete="new-password"
+                style="width:100%;padding:8px 10px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:inherit;font-size:13px;color:var(--tx);background:var(--bg);outline:none;transition:.2s;"
+                onfocus="this.style.borderColor='var(--ml)'" onblur="this.style.borderColor='var(--brd)'"
+                onkeydown="if(event.key==='Enter')resetAllPasswords()">
+            </div>
+            <div id="pw-reset-msg" style="font-size:11px;margin-bottom:8px;display:none;font-weight:600;"></div>
+            <button class="upbtn" onclick="resetAllPasswords()" style="background:#C0392B;font-size:12px;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">↺ Reset to Defaults</button>
+          </div>
+          <!-- Admin Password Change -->
+          <div class="up-card" style="min-width:260px;max-width:300px;">
+            <div class="up-card-hd">🔑 Change Admin Password</div>
+            <div class="mf" style="margin-bottom:10px;">
+              <label>Current Admin Password</label>
+              <input type="password" id="pw-admin-cur" placeholder="Current password" autocomplete="new-password"
+                style="width:100%;padding:8px 10px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:inherit;font-size:13px;color:var(--tx);background:var(--bg);outline:none;transition:.2s;"
+                onfocus="this.style.borderColor='var(--ml)'" onblur="this.style.borderColor='var(--brd)'">
+            </div>
+            <div class="mf" style="margin-bottom:10px;">
+              <label>New Admin Password</label>
+              <input type="password" id="pw-admin-new" placeholder="Enter new admin password" autocomplete="new-password"
+                style="width:100%;padding:8px 10px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:inherit;font-size:13px;color:var(--tx);background:var(--bg);outline:none;transition:.2s;"
+                onfocus="this.style.borderColor='var(--ml)'" onblur="this.style.borderColor='var(--brd)'"
+                onkeydown="if(event.key==='Enter')changePassword('admin')">
+            </div>
+            <div id="pw-admin-msg" style="font-size:11px;margin-bottom:8px;display:none;font-weight:600;"></div>
+            <button class="upbtn" onclick="changePassword('admin')" style="font-size:12px;">🔑 Update Admin Password</button>
           </div>
         </div>
       </div>
@@ -854,7 +924,7 @@ tbody tr:hover td{background:#EAF4FC;}
 <div id="toast"></div>
 
 <script>
-// ── Stars ──
+// ── Generate login screen stars ──
 (function(){
   const c=document.getElementById('ls-stars'); if(!c) return;
   for(let i=0;i<80;i++){
@@ -880,16 +950,41 @@ const firebaseConfig={
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 
-const FB_WAVES  = 'wms/waves';
-const FB_ROSTER = 'wms/roster';
-const FB_CHAT   = 'wms/chat';
-const FB_RIGHTS = 'wms/rights';
-const FB_SESSION= 'wms/sessions'; // not used for server storage, just key name
+// ═══════════════════════════════════════
+// CONSTANTS & FB PATHS
+// ═══════════════════════════════════════
+const FB_WAVES     = 'wms/waves';
+const FB_ROSTER    = 'wms/roster';
+const FB_CHAT      = 'wms/chat';
+const FB_RIGHTS    = 'wms/rights';
+const FB_PASSWORDS = 'wms/passwords';
+const FL = ['A','B','C','D'];
 
-const PIN       = 'CS@123';
-const ADMIN_PIN = 'GK@123';
-const RESET_PASS= 'GC@123';
-const FL=['A','B','C','D'];
+// ═══════════════════════════════════════
+// DYNAMIC PASSWORDS — MUST BE FIRST
+// Defined before doLogin so getPass() is available at login time
+// ═══════════════════════════════════════
+const DEFAULT_PASSWORDS = { supervisor:'CS@123', admin:'GK@123', reset:'GC@123' };
+let dynamicPasswords = { ...DEFAULT_PASSWORDS };
+let passwordsReady = false;
+
+function getPass(key){ return dynamicPasswords[key] || DEFAULT_PASSWORDS[key]; }
+
+// Load passwords from Firebase immediately
+db.ref(FB_PASSWORDS).once('value').then(snap=>{
+  const val = snap.val();
+  if(val) dynamicPasswords = Object.assign({}, DEFAULT_PASSWORDS, val);
+  passwordsReady = true;
+  // Keep listening for live updates (e.g. password changed by another admin session)
+  db.ref(FB_PASSWORDS).on('value', snap2=>{
+    const v = snap2.val();
+    dynamicPasswords = v ? Object.assign({}, DEFAULT_PASSWORDS, v) : { ...DEFAULT_PASSWORDS };
+    passwordsReady = true;
+  });
+}).catch(()=>{
+  // Firebase unreachable — use defaults
+  passwordsReady = true;
+});
 
 // ═══════════════════════════════════════
 // SESSION PERSISTENCE
@@ -1004,10 +1099,8 @@ function attachRightsListener(){
       if(val.sup) rights.sup=Object.assign({},rights.sup,val.sup);
       if(val.tl)  rights.tl =Object.assign({},rights.tl, val.tl);
     }
-    if(!rightsListenerReady){
-      rightsListenerReady=true;
-      checkStartupReady();
-    } else if(appReady){
+    rightsListenerReady=true; // always mark ready regardless of whether data exists
+    if(appReady){
       applyRightsUI();
       if(role==='admin') syncRightsToggles();
     }
@@ -1024,12 +1117,14 @@ function saveRights(){
       edit:document.getElementById('r-sup-edit')?.checked||false,
       export:document.getElementById('r-sup-export')?.checked||false,
       delete:document.getElementById('r-sup-delete')?.checked||false,
-      resetall:document.getElementById('r-sup-resetall')?.checked||false
+      resetall:document.getElementById('r-sup-resetall')?.checked||false,
+      changestatus:document.getElementById('r-sup-changestatus')?.checked||false
     },
     tl:{
       dashboard:document.getElementById('r-tl-dashboard')?.checked||false,
       export:document.getElementById('r-tl-export')?.checked||false,
-      delete:document.getElementById('r-tl-delete')?.checked||false
+      delete:document.getElementById('r-tl-delete')?.checked||false,
+      changestatus:document.getElementById('r-tl-changestatus')?.checked||false
     }
   };
   rights=newRights;
@@ -1048,9 +1143,11 @@ function syncRightsToggles(){
     'r-sup-export':    rights.sup.export,
     'r-sup-delete':    rights.sup.delete,
     'r-sup-resetall':  rights.sup.resetall,
+    'r-sup-changestatus': rights.sup.changestatus,
     'r-tl-dashboard':  rights.tl.dashboard,
     'r-tl-export':     rights.tl.export,
-    'r-tl-delete':     rights.tl.delete
+    'r-tl-delete':     rights.tl.delete,
+    'r-tl-changestatus': rights.tl.changestatus
   };
   Object.entries(map).forEach(([id,val])=>{
     const el=document.getElementById(id); if(el) el.checked=!!val;
@@ -1122,13 +1219,26 @@ function attachRosterListener(){
 }
 
 function checkStartupReady(){
-  if(wavesListenerReady&&rosterListenerReady&&rightsListenerReady){
+  // Only require waves + roster. Rights + passwords load independently and have their own fallbacks.
+  if(wavesListenerReady && rosterListenerReady){
     applyCrossover(); purgeD1();
     activeShift=curShift(); dashShift=curShift();
     appReady=true;
     if(role){ FL.forEach(f=>renderTable(f)); showTab(role==='supervisor'||role==='admin'?'A':myFloor); }
   }
 }
+
+// Safety timeout — if Firebase listeners don't fire within 6s, unblock the app anyway
+setTimeout(()=>{
+  if(!appReady){
+    wavesListenerReady=true; rosterListenerReady=true; rightsListenerReady=true; passwordsReady=true;
+    applyCrossover(); purgeD1();
+    activeShift=curShift(); dashShift=curShift();
+    appReady=true;
+    if(role){ FL.forEach(f=>renderTable(f)); showTab(role==='supervisor'||role==='admin'?'A':myFloor); }
+    toast('⚠ Slow connection — some data may be delayed',true);
+  }
+},6000);
 
 attachWavesListener();
 attachRosterListener();
@@ -1169,8 +1279,11 @@ function onRoleChg(){
 function doLogin(){
   const r=document.getElementById('l-role').value;
   if(!r){alert('Select a role.');return;}
-  if(r==='supervisor'&&document.getElementById('l-pin').value!==PIN){document.getElementById('l-err').style.display='block';return;}
-  if(r==='admin'&&document.getElementById('l-pin').value!==ADMIN_PIN){document.getElementById('l-err').style.display='block';return;}
+  // If passwords haven't loaded from Firebase yet, fall back to defaults silently
+  const supPass = passwordsReady ? getPass('supervisor') : DEFAULT_PASSWORDS.supervisor;
+  const adminPass = passwordsReady ? getPass('admin') : DEFAULT_PASSWORDS.admin;
+  if(r==='supervisor' && document.getElementById('l-pin').value !== supPass){document.getElementById('l-err').style.display='block';return;}
+  if(r==='admin'      && document.getElementById('l-pin').value !== adminPass){document.getElementById('l-err').style.display='block';return;}
   role=r;
   myFloor=r==='floor'?document.getElementById('l-floor').value:null;
   saveSession();
@@ -1217,11 +1330,14 @@ function doLogout(){
   const sess=loadSession();
   if(sess&&sess.role){
     role=sess.role; myFloor=sess.floor||null;
-    // Wait for DOM to be ready (it is since we're in <script> at end of body)
     if(appReady){ enterApp(); }
     else{
-      const iv=setInterval(()=>{ if(wavesListenerReady&&rosterListenerReady&&rightsListenerReady){ clearInterval(iv); appReady=true; enterApp(); } },100);
-      setTimeout(()=>{ clearInterval(iv); if(!appReady){appReady=true;enterApp();} },10000);
+      // Wait only for appReady (waves+roster), not rights/passwords
+      const iv=setInterval(()=>{
+        if(appReady){ clearInterval(iv); enterApp(); }
+      },100);
+      // Hard timeout — enter app regardless after 7s
+      setTimeout(()=>{ clearInterval(iv); if(!appReady){appReady=true;} enterApp(); },7000);
     }
   }
 })();
@@ -1448,6 +1564,14 @@ function renderTable(f){
       const pdis=isPend?'dis':'',rdis=isRun?'dis':'',cdis=isDone?'dis':'';
       const pact=isPend?'act':'',ract=isRun?'act':'',cact=isDone?'act':'';
       statusCell=`<div class="schips"><button class="schip sp ${pact} ${pdis}" onclick="setSt('${f}',${ri},'Pending')">Pending</button><button class="schip sr ${ract} ${rdis}" onclick="setSt('${f}',${ri},'Running')">Running</button><button class="schip sc ${cact} ${cdis}" onclick="setSt('${f}',${ri},'Completed')">Completed</button></div>`;
+    } else if(sup&&rights.sup.changestatus){
+      const pdis=isPend?'dis':'',rdis=isRun?'dis':'',cdis=isDone?'dis':'';
+      const pact=isPend?'act':'',ract=isRun?'act':'',cact=isDone?'act':'';
+      statusCell=`<div class="schips"><button class="schip sp ${pact} ${pdis}" onclick="setSt('${f}',${ri},'Pending')">Pending</button><button class="schip sr ${ract} ${rdis}" onclick="setSt('${f}',${ri},'Running')">Running</button><button class="schip sc ${cact} ${cdis}" onclick="setSt('${f}',${ri},'Completed')">Completed</button></div>`;
+    } else if(tl&&myFloor===f&&rights.tl.changestatus){
+      const pdis=isPend?'dis':'',rdis=isRun?'dis':'',cdis=isDone?'dis':'';
+      const pact=isPend?'act':'',ract=isRun?'act':'',cact=isDone?'act':'';
+      statusCell=`<div class="schips"><button class="schip sp ${pact} ${pdis}" onclick="setSt('${f}',${ri},'Pending')">Pending</button><button class="schip sr ${ract} ${rdis}" onclick="setSt('${f}',${ri},'Running')">Running</button><button class="schip sc ${cact} ${cdis}" onclick="setSt('${f}',${ri},'Completed')">Completed</button></div>`;
     } else if(tl&&myFloor===f&&isRun){
       const startedAt=runningStartTimes[f+'-'+r.wavekey]||(r.startDate?new Date(r.startDate).getTime():null);
       const elapsed=startedAt?(Date.now()-startedAt):99999999;
@@ -1478,14 +1602,19 @@ const runningStartTimes={};
 function setSt(f,i,st){
   const r=fd[f][i]; if(!r)return;
   const now=new Date();
-  const isAdmin=role==='admin', isTL=role==='floor'&&myFloor===f;
-  if(isAdmin){
+  const isAdmin=role==='admin';
+  const isSup=role==='supervisor';
+  const isTL=role==='floor'&&myFloor===f;
+  const hasFullControl=isAdmin||(isSup&&rights.sup.changestatus)||(isTL&&rights.tl.changestatus);
+
+  if(hasFullControl){
     if(st===r.status)return;
     if(st==='Running'&&!r.startTime){r.startTime=fmtTime(now);r.startDate=now;runningStartTimes[f+'-'+r.wavekey]=Date.now();}
     if(st==='Completed'){if(!r.startTime){r.startTime=fmtTime(now);r.startDate=now;}r.endTime=fmtTime(now);r.completionMin=r.startDate?Math.round((now-new Date(r.startDate))/60000):0;}
     if(st==='Pending'){r.startTime='';r.startDate=null;r.endTime='';r.completionMin='';r.userId='';r.userName='';delete runningStartTimes[f+'-'+r.wavekey];}
     r.status=st;saveWaves();renderTable(f);return;
   }
+  // Default TL: only Completed allowed on Running waves after 30s
   if(isTL&&st==='Completed'&&r.status==='Running'){
     const sa=runningStartTimes[f+'-'+r.wavekey]||(r.startDate?new Date(r.startDate).getTime():null);
     if(sa&&(Date.now()-sa)<30000){toast(`⏳ Wait ${Math.ceil((30000-(Date.now()-sa))/1000)}s`,true);return;}
@@ -1709,7 +1838,7 @@ function openDeleteChat(){
 function closeDeleteChat(){ document.getElementById('delchat-ov').style.display='none'; }
 function confirmDeleteChat(){
   const pw=document.getElementById('delchat-pw').value;
-  if(pw!==ADMIN_PIN){ document.getElementById('delchat-err').style.display='block'; document.getElementById('delchat-pw').value=''; document.getElementById('delchat-pw').focus(); return; }
+  if(pw!==getPass('admin')){ document.getElementById('delchat-err').style.display='block'; document.getElementById('delchat-pw').value=''; document.getElementById('delchat-pw').focus(); return; }
   db.ref(FB_CHAT).remove().then(()=>{ toast('✅ All chat messages deleted'); updateChatCount(); closeDeleteChat(); }).catch(e=>{ console.warn('delete chat:',e); toast('⚠ Failed to delete chat',true); });
 }
 document.getElementById('delchat-ov')?.addEventListener('click',function(e){ if(e.target===this)closeDeleteChat(); });
@@ -1777,7 +1906,7 @@ function openDeleteAllWaves(){
 function closeDeleteAllWaves(){ document.getElementById('delallwaves-ov').style.display='none'; }
 function confirmDeleteAllWaves(){
   const pw=document.getElementById('delallwaves-pw').value;
-  if(pw!==ADMIN_PIN){ document.getElementById('delallwaves-err').style.display='block'; document.getElementById('delallwaves-pw').value=''; document.getElementById('delallwaves-pw').focus(); return; }
+  if(pw!==getPass('admin')){ document.getElementById('delallwaves-err').style.display='block'; document.getElementById('delallwaves-pw').value=''; document.getElementById('delallwaves-pw').focus(); return; }
   FL.forEach(f=>{fd[f]=[];});
   const ep={}; FL.forEach(f=>{ep[f]=[];});
   db.ref(FB_WAVES).set(ep).then(()=>toast('✅ All waves deleted successfully')).catch(()=>toast('⚠ Delete failed — check connection',true));
@@ -1796,7 +1925,7 @@ function closeReset(){ document.getElementById('reset-ov').style.display='none';
 function confirmReset(){
   if(role==='supervisor'&&!rights.sup.resetall){toast('⚠ You do not have Reset All Waves permission',true);closeReset();return;}
   const pw=document.getElementById('reset-pw').value;
-  if(pw!==RESET_PASS){document.getElementById('reset-err').style.display='block';document.getElementById('reset-pw').value='';document.getElementById('reset-pw').focus();return;}
+  if(pw!==getPass('reset')){document.getElementById('reset-err').style.display='block';document.getElementById('reset-pw').value='';document.getElementById('reset-pw').focus();return;}
   FL.forEach(f=>{fd[f]=[];});
   const ep={}; FL.forEach(f=>{ep[f]=[];});
   db.ref(FB_WAVES).set(ep).then(()=>toast('✅ All waves deleted')).catch(()=>toast('⚠ Reset failed',true));

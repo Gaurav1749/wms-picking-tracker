@@ -3,23 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WMS Picking Tracker — Maersk</title>
+<title>WMS Picking Tracker â€” Maersk</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <style>
 :root{
-  /* Maersk Brand Palette */
-  --mb:#00243D;        /* Maersk dark navy */
-  --ml:#0073AB;        /* Maersk sky blue */
-  --ma:#42B0D5;        /* Maersk light blue accent */
-  --mg:#F5A623;        /* Maersk gold accent */
-  --bg:#EFF5FA;        /* page background */
-  --surf:#FFFFFF;
-  --surf2:#E8F3FA;
+  --mb:#00243D;--ml:#0073AB;--ma:#42B0D5;--mg:#F5A623;
+  --bg:#EFF5FA;--surf:#FFFFFF;--surf2:#E8F3FA;
   --brd:#C2D9EE;--brdl:#DCEEF9;
   --tx:#00243D;--txm:#4A6D87;
   --pend:#B85C00;--pend-bg:#FFF3E5;--pend-brd:#FFCC8A;
@@ -28,8 +21,7 @@
   --red:#C0392B;--red-bg:#FDECEA;--red-brd:#F5A8A4;
   --night:#3B1FA5;--night-bg:#EEEAF8;--night-brd:#B4ADE0;
   --day-col:#B85C00;--day-bg:#FFF3E5;--day-brd:#FFCC8A;
-  --shad:0 2px 12px rgba(0,36,61,.08);
-  --shad2:0 4px 24px rgba(0,36,61,.12);
+  --shad:0 2px 12px rgba(0,36,61,.08);--shad2:0 4px 24px rgba(0,36,61,.12);
   --r:12px;--rs:8px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -37,38 +29,21 @@ body{background:var(--bg);color:var(--tx);font-family:'IBM Plex Sans',sans-serif
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-thumb{background:var(--ml);border-radius:3px;}
 
-/* ─── LOGIN ─── */
-#ls{display:flex;align-items:center;justify-content:center;min-height:100vh;
-    background:#001528;
-    position:relative;overflow:hidden;}
-
-/* Animated ocean wave */
-#ls::before{content:'';position:absolute;bottom:0;left:-50%;width:200%;height:160px;
-    background:linear-gradient(180deg,transparent 0%,rgba(0,115,171,.15) 40%,rgba(0,115,171,.35) 100%);
-    border-radius:40% 60% 60% 40%/0 0 40% 60%;
-    animation:wave 8s ease-in-out infinite;pointer-events:none;z-index:0;}
-#ls::after{content:'';position:absolute;bottom:0;left:-50%;width:200%;height:120px;
-    background:linear-gradient(180deg,transparent 0%,rgba(0,36,61,.5) 100%);
-    border-radius:60% 40% 40% 60%/0 0 30% 50%;
-    animation:wave 12s ease-in-out infinite reverse;pointer-events:none;z-index:0;}
+/* LOGIN */
+#ls{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#001528;position:relative;overflow:hidden;}
+#ls::before{content:'';position:absolute;bottom:0;left:-50%;width:200%;height:160px;background:linear-gradient(180deg,transparent 0%,rgba(0,115,171,.15) 40%,rgba(0,115,171,.35) 100%);border-radius:40% 60% 60% 40%/0 0 40% 60%;animation:wave 8s ease-in-out infinite;pointer-events:none;z-index:0;}
+#ls::after{content:'';position:absolute;bottom:0;left:-50%;width:200%;height:120px;background:linear-gradient(180deg,transparent 0%,rgba(0,36,61,.5) 100%);border-radius:60% 40% 40% 60%/0 0 30% 50%;animation:wave 12s ease-in-out infinite reverse;pointer-events:none;z-index:0;}
 @keyframes wave{0%,100%{transform:translateX(0) scaleY(1);}50%{transform:translateX(-8%) scaleY(1.05);}}
-
-/* Stars */
 .ls-stars{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
 .ls-star{position:absolute;background:#fff;border-radius:50%;animation:twinkle 3s ease-in-out infinite;}
 @keyframes twinkle{0%,100%{opacity:.2;}50%{opacity:.9;}}
-
-/* Maersk facility scene at bottom */
 .ls-scene{position:absolute;bottom:0;left:0;right:0;height:220px;pointer-events:none;z-index:1;}
-
 .lcard{position:relative;z-index:10;background:#fff;border-radius:20px;padding:0;width:420px;box-shadow:0 32px 80px rgba(0,0,0,.5);overflow:hidden;}
 .lcard-top{background:linear-gradient(135deg,#001B2E 0%,#00324F 60%,#004A6E 100%);padding:32px 36px 28px;position:relative;overflow:hidden;}
-.lcard-top::after{content:'';position:absolute;bottom:-30px;right:-30px;width:150px;height:150px;
-    background:radial-gradient(circle,rgba(0,115,171,.25) 0%,transparent 70%);}
+.lcard-top::after{content:'';position:absolute;bottom:-30px;right:-30px;width:150px;height:150px;background:radial-gradient(circle,rgba(0,115,171,.25) 0%,transparent 70%);}
 .lcard-body{padding:28px 36px 32px;}
 .llogo{display:flex;align-items:center;gap:14px;margin-bottom:6px;}
-.lico{width:48px;height:48px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);
-    border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.lico{width:48px;height:48px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;}
 .llogo h1{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.2px;}
 .llogo p{font-size:9.5px;color:rgba(255,255,255,.55);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
 .lsubtitle{color:rgba(255,255,255,.45);font-size:11px;margin-top:4px;letter-spacing:.3px;}
@@ -79,66 +54,62 @@ body{background:var(--bg);color:var(--tx);font-family:'IBM Plex Sans',sans-serif
 .lbtn:hover{background:linear-gradient(135deg,#005580 0%,var(--ml) 100%);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,36,61,.3);}
 .lerr{color:var(--red);font-size:12px;margin-top:-8px;margin-bottom:12px;display:none;font-weight:600;}
 
-/* ─── APP ─── */
+/* APP */
 #app{display:none;flex-direction:column;min-height:100vh;}
-.hdr{background:linear-gradient(90deg,#001B2E 0%,#00243D 60%,#003355 100%);
-    color:#fff;height:60px;padding:0 24px;display:flex;align-items:center;
-    justify-content:space-between;position:sticky;top:0;z-index:300;
-    box-shadow:0 2px 16px rgba(0,0,0,.28);border-bottom:2px solid rgba(0,115,171,.4);}
+.hdr{background:linear-gradient(90deg,#001B2E 0%,#00243D 60%,#003355 100%);color:#fff;height:60px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:0 2px 16px rgba(0,0,0,.28);border-bottom:2px solid rgba(0,115,171,.4);}
 .hdrl{display:flex;align-items:center;gap:16px;}
 .hlogo{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
-.hlogo-icon{width:30px;height:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
-    border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.hlogo-icon{width:30px;height:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}
 .hlogo-text{color:#fff;font-weight:700;font-size:15px;letter-spacing:-.1px;}
 .hlogo-text span{color:#42B0D5;}
 .hdv{width:1px;height:20px;background:rgba(255,255,255,.15);}
 .hrole{font-size:11px;color:rgba(255,255,255,.55);font-weight:500;letter-spacing:.2px;}
 .hdrr{display:flex;align-items:center;gap:10px;}
-.ubadge{background:rgba(0,115,171,.25);border:1px solid rgba(0,115,171,.4);padding:5px 14px;
-    border-radius:20px;font-size:12px;font-weight:600;color:#A8D8F0;}
-.logoutbtn{background:transparent;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.65);
-    padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;}
+/* Live clock in header */
+.hdr-clock{display:flex;flex-direction:column;align-items:flex-end;padding:4px 12px;background:rgba(0,115,171,.18);border:1px solid rgba(66,176,213,.25);border-radius:8px;}
+.hdr-clock-time{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:#fff;line-height:1.1;}
+.hdr-clock-date{font-size:9.5px;color:rgba(255,255,255,.55);font-weight:500;letter-spacing:.3px;margin-top:1px;}
+/* Refresh button */
+.refreshbtn{background:rgba(66,176,213,.15);border:1px solid rgba(66,176,213,.3);color:#A8D8F0;padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;display:flex;align-items:center;gap:5px;}
+.refreshbtn:hover{background:rgba(66,176,213,.28);color:#fff;border-color:rgba(66,176,213,.6);}
+.refreshbtn.spin svg{animation:spin .6s linear;}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.ubadge{background:rgba(0,115,171,.25);border:1px solid rgba(0,115,171,.4);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;color:#A8D8F0;}
+.logoutbtn{background:transparent;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.65);padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;}
 .logoutbtn:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.35);}
 
-/* ─── TABS ─── */
-.tabs{background:#fff;border-bottom:2px solid var(--brd);padding:0 24px;display:flex;overflow-x:auto;
-    position:sticky;top:60px;z-index:200;box-shadow:0 2px 8px rgba(0,36,61,.06);}
-.tbtn{background:transparent;border:none;color:var(--txm);padding:14px 20px;font-family:inherit;
-    font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;
-    margin-bottom:-2px;transition:.2s;letter-spacing:.1px;}
+/* TABS */
+.tabs{background:#fff;border-bottom:2px solid var(--brd);padding:0 24px;display:flex;overflow-x:auto;position:sticky;top:60px;z-index:200;box-shadow:0 2px 8px rgba(0,36,61,.06);}
+.tbtn{background:transparent;border:none;color:var(--txm);padding:14px 20px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:.2s;letter-spacing:.1px;}
 .tbtn:hover:not(.locked){color:var(--ml);}
 .tbtn.active{color:var(--mb);border-bottom-color:var(--ml);}
 .tbtn.locked{opacity:.25;cursor:not-allowed;pointer-events:none;}
 
-/* ─── CONTENT ─── */
+/* CONTENT */
 .content{padding:22px 26px;flex:1;max-width:1860px;width:100%;margin:0 auto;}
 .tpanel{display:none;}
 .tpanel.active{display:block;animation:fi .2s ease;}
 @keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 
-/* ─── TOOLBAR ─── */
-.fbar{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:11px 16px;
-    margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:var(--shad);}
+/* TOOLBAR */
+.fbar{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:11px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:var(--shad);}
 .sw{position:relative;flex:1;min-width:170px;}
-.sw input{width:100%;padding:8px 10px 8px 32px;border:1.5px solid var(--brd);border-radius:var(--rs);
-    font-family:inherit;font-size:12.5px;color:var(--tx);outline:none;transition:.2s;background:var(--bg);}
+.sw input{width:100%;padding:8px 10px 8px 32px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:inherit;font-size:12.5px;color:var(--tx);outline:none;transition:.2s;background:var(--bg);}
 .sw input:focus{border-color:var(--ml);box-shadow:0 0 0 2px rgba(0,115,171,.08);}
 .si{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--txm);pointer-events:none;}
-.sby{padding:8px 11px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:inherit;
-    font-size:12px;color:var(--tx);outline:none;background:var(--bg);cursor:pointer;transition:.2s;}
+.sby{padding:8px 11px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:inherit;font-size:12px;color:var(--tx);outline:none;background:var(--bg);cursor:pointer;transition:.2s;}
 .sby:focus{border-color:var(--ml);}
 .bsep{width:1px;height:26px;background:var(--brd);flex-shrink:0;}
 .flbl{font-size:10px;font-weight:700;color:var(--txm);letter-spacing:.5px;white-space:nowrap;text-transform:uppercase;}
 .chips{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
-.chip{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;
-    border:1.5px solid var(--brd);background:#fff;color:var(--txm);transition:.15s;font-family:inherit;white-space:nowrap;}
+.chip{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--brd);background:#fff;color:var(--txm);transition:.15s;font-family:inherit;white-space:nowrap;}
 .chip:hover{border-color:var(--ml);color:var(--ml);background:var(--surf2);}
 .call{background:var(--mb)!important;color:#fff!important;border-color:var(--mb)!important;}
 .cp{background:var(--pend-bg)!important;color:var(--pend)!important;border-color:var(--pend-brd)!important;}
 .cr{background:var(--run-bg)!important;color:var(--run)!important;border-color:var(--run-brd)!important;}
 .cc{background:var(--comp-bg)!important;color:var(--comp)!important;border-color:var(--comp-brd)!important;}
 
-/* ─── STICKY TABLE HEADERS (floor panels) ─── */
+/* TABLE */
 .tcard .twrap{overflow-x:auto;max-height:calc(100vh - 200px);overflow-y:auto;}
 .tcard .twrap thead tr{position:sticky;top:0;z-index:10;}
 .tcard .twrap thead th{position:sticky;top:0;z-index:10;}
@@ -146,38 +117,21 @@ body{background:var(--bg);color:var(--tx);font-family:'IBM Plex Sans',sans-serif
 .twrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:12.5px;}
 thead tr{background:linear-gradient(90deg,#001B2E 0%,#00324F 100%);}
-th{padding:11px 13px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.8px;
-    text-transform:uppercase;color:rgba(255,255,255,.78);white-space:nowrap;}
+th{padding:11px 13px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.78);white-space:nowrap;}
 td{padding:10px 13px;border-bottom:1px solid var(--brdl);vertical-align:middle;}
 tbody tr:last-child td{border-bottom:none;}
 tbody tr:hover td{background:#EAF4FC;}
-/* Summary wave detail alternating rows */
 #sum-body tr:nth-child(even) td{background:#F5FAFD;}
 #sum-body tr:nth-child(even) td:first-child{background:#EAF3FA;}
 
-/* ── WAVE KEY BADGE ── */
-.wk{
-  font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:11.5px;
-  padding:5px 11px;border-radius:8px;display:inline-flex;align-items:center;
-  gap:6px;cursor:pointer;transition:.18s;border:2px solid;letter-spacing:.3px;
-  box-shadow:0 2px 6px rgba(0,0,0,.10);
-}
+.wk{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:11.5px;padding:5px 11px;border-radius:8px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:.18s;border:2px solid;letter-spacing:.3px;box-shadow:0 2px 6px rgba(0,0,0,.10);}
 .wk:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15);}
-/* full-allocation wave — deep teal/green */
-.wkf{
-  background:linear-gradient(135deg,#0F5132 0%,#1A7A40 100%);
-  color:#fff;border-color:#0A3D22;
-}
-/* partial-allocation wave — deep navy blue */
-.wkp{
-  background:linear-gradient(135deg,#0D2B6B 0%,#154EA0 100%);
-  color:#fff;border-color:#091D52;
-}
+.wkf{background:linear-gradient(135deg,#0F5132 0%,#1A7A40 100%);color:#fff;border-color:#0A3D22;}
+.wkp{background:linear-gradient(135deg,#0D2B6B 0%,#154EA0 100%);color:#fff;border-color:#091D52;}
 @keyframes pulser{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.4);}55%{box-shadow:0 0 0 8px rgba(192,57,43,0);}}
 .wkov{animation:pulser 1.6s ease-in-out infinite;}
 .ovtag{display:inline-block;background:#C0392B;color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700;margin-left:4px;vertical-align:middle;letter-spacing:.3px;}
 
-/* ── FLOOR-TABLE STATUS CHIPS (action buttons) ── */
 .schips{display:flex;gap:3px;}
 .schip{padding:4px 10px;border-radius:20px;font-size:10.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--brd);background:#fff;color:var(--txm);transition:.13s;font-family:inherit;white-space:nowrap;}
 .schip.dis{opacity:.25;pointer-events:none;}
@@ -186,42 +140,30 @@ tbody tr:hover td{background:#EAF4FC;}
 .sc.act{background:var(--comp-bg);color:var(--comp);border-color:var(--comp-brd);}
 .schip:not(.act):not(.dis):hover{border-color:var(--ml);color:var(--ml);}
 
-/* uid */
 .uid-inp{padding:4px 8px;border:1.5px solid var(--brd);border-radius:var(--rs);font-family:'IBM Plex Mono',monospace;font-size:11px;width:88px;outline:none;transition:.2s;background:var(--bg);color:var(--tx);}
 .uid-inp:focus{border-color:var(--ml);}
 .uid-inp.dis{opacity:.3;cursor:not-allowed;background:var(--brdl);pointer-events:none;}
 .uname{font-size:11px;color:var(--ml);font-weight:600;white-space:nowrap;}
 .tc{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txm);white-space:nowrap;}
 
-/* action btns */
 .abtn{padding:3px 8px;border-radius:var(--rs);font-size:10.5px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;transition:.13s;white-space:nowrap;}
 .ebtn{background:#fff;color:var(--ml);border-color:var(--run-brd);}
 .ebtn:hover{background:var(--run-bg);}
 .dbtn{background:#fff;color:var(--red);border-color:var(--red-brd);}
 .dbtn:hover{background:var(--red-bg);}
 
-/* ── SUMMARY STATUS BADGE PILLS ── */
-.fb{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;
-  letter-spacing:.5px;text-transform:uppercase;border:none;
-  box-shadow:0 1px 4px rgba(0,0,0,.12);
-}
+.fb{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border:none;box-shadow:0 1px 4px rgba(0,0,0,.12);}
 .fb::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-/* PENDING — amber */
 .fb-pending{background:linear-gradient(135deg,#FEF3E7,#FDDBB4);color:#7A3800;}
 .fb-pending::before{background:#C05E00;}
-/* RUNNING — sky blue */
 .fb-running{background:linear-gradient(135deg,#E0F3FF,#B3E0FF);color:#004E7A;}
 .fb-running::before{background:#0073AB;}
-/* COMPLETED — rich emerald */
 .fb-completed{background:linear-gradient(135deg,#D4F5E2,#B8EDCC);color:#0A5C2A;box-shadow:0 1px 4px rgba(10,92,42,.15);}
 .fb-completed::before{background:#1A7A40;}
-/* N/A */
 .fb-na{background:#EEF2F5;color:#6B8FA8;box-shadow:none;}
 .fb-na::before{background:#B0C8D8;}
 
-/* ─── UPLOAD CARDS ─── */
+/* UPLOAD */
 .up-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
 .up-card{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:16px 18px;flex:1;min-width:280px;box-shadow:var(--shad);}
 .up-card-hd{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--txm);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
@@ -233,14 +175,14 @@ tbody tr:hover td{background:#EAF4FC;}
 .upst{font-size:11px;color:var(--txm);font-family:'IBM Plex Mono',monospace;}
 .upst.ok{color:var(--comp);}
 
-/* ─── SHIFT TABS ─── */
+/* SHIFT TABS */
 .shift-tabs{display:flex;background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);overflow:hidden;box-shadow:var(--shad);width:fit-content;}
 .stab{padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;font-family:inherit;color:var(--txm);transition:.2s;display:flex;align-items:center;gap:7px;}
 .stab.day.act{background:var(--day-bg);color:var(--day-col);}
 .stab.night.act{background:var(--night-bg);color:var(--night);}
 .stab:not(:last-child){border-right:1px solid var(--brd);}
 
-/* ─── FLOOR SUMMARY TABLE ─── */
+/* FLOOR SUMMARY */
 .fst{width:100%;border-collapse:collapse;}
 .fst th{padding:10px 14px;background:var(--mb);color:rgba(255,255,255,.82);font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;text-align:left;white-space:nowrap;}
 .fst td{padding:10px 14px;border-bottom:1px solid var(--brdl);vertical-align:middle;}
@@ -248,13 +190,11 @@ tbody tr:hover td{background:#EAF4FC;}
 .cnt{font-size:16px;font-weight:700;color:var(--mb);}
 .cnt.g{color:var(--comp);}.cnt.r{color:var(--run);}.cnt.o{color:var(--pend);}
 
-/* ─── DASHBOARD ─── */
-.sectitle{font-size:14px;font-weight:700;color:var(--mb);margin-bottom:14px;padding-bottom:9px;
-    border-bottom:2px solid var(--brd);display:flex;align-items:center;gap:8px;letter-spacing:.1px;}
+/* DASHBOARD */
+.sectitle{font-size:14px;font-weight:700;color:var(--mb);margin-bottom:14px;padding-bottom:9px;border-bottom:2px solid var(--brd);display:flex;align-items:center;gap:8px;letter-spacing:.1px;}
 .sectitle::before{content:'';width:4px;height:18px;background:var(--ml);border-radius:2px;flex-shrink:0;}
 .kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;}
-.kpi{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:20px 22px;
-    box-shadow:var(--shad);position:relative;overflow:hidden;}
+.kpi{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:20px 22px;box-shadow:var(--shad);position:relative;overflow:hidden;}
 .kpi::after{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--ml);border-radius:4px 0 0 4px;}
 .kpi-lbl{font-size:9px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--txm);margin-bottom:8px;}
 .kpi-val{font-size:32px;font-weight:700;line-height:1;color:var(--mb);}
@@ -273,13 +213,13 @@ tbody tr:hover td{background:#EAF4FC;}
 .ppo-v{font-size:26px;font-weight:700;color:var(--mb);}
 .ppo-s{font-size:10.5px;color:var(--txm);margin-top:3px;}
 
-/* ─── ROSTER ─── */
+/* ROSTER */
 .rt{width:100%;border-collapse:collapse;}
 .rt th{padding:8px 12px;background:var(--mb);color:rgba(255,255,255,.82);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;text-align:left;}
 .rt td{padding:7px 12px;border-bottom:1px solid var(--brdl);}
 .rt tbody tr:last-child td{border-bottom:none;}
 
-/* ─── QR MODAL ─── */
+/* QR MODAL */
 .qrov{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,36,61,.55);backdrop-filter:blur(5px);align-items:center;justify-content:center;}
 .qrov.open{display:flex;}
 .qrbox{background:#fff;border-radius:16px;padding:32px 36px;width:340px;text-align:center;position:relative;box-shadow:0 24px 60px rgba(0,36,61,.25);animation:pop .2s ease;}
@@ -294,7 +234,7 @@ tbody tr:hover td{background:#EAF4FC;}
 .qrri .qrrl{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--txm);}
 .qrri .qrrv{font-size:15px;font-weight:700;color:var(--mb);margin-top:2px;}
 
-/* ─── EDIT MODAL ─── */
+/* EDIT MODAL */
 .mov{display:none;position:fixed;inset:0;z-index:900;background:rgba(0,36,61,.45);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
 .mov.open{display:flex;}
 .mbox{background:#fff;border-radius:14px;padding:28px 30px;width:480px;position:relative;box-shadow:0 20px 50px rgba(0,36,61,.2);animation:pop .2s ease;}
@@ -311,28 +251,34 @@ tbody tr:hover td{background:#EAF4FC;}
 .mbtn.pri{background:var(--mb);color:#fff;}.mbtn.pri:hover{background:var(--ml);}
 .mbtn.sec{background:#fff;color:var(--txm);border:1.5px solid var(--brd);}.mbtn.sec:hover{border-color:var(--ml);color:var(--ml);}
 
-/* ─── TOAST ─── */
+/* RIGHTS MANAGER */
+.rights-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.rights-card{background:#fff;border:1.5px solid var(--brd);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shad);}
+.rights-card-hd{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--txm);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--brdl);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-label{font-size:12.5px;font-weight:500;color:var(--tx);}
+.toggle-sub{font-size:10px;color:var(--txm);margin-top:1px;}
+/* Toggle switch */
+.tog{position:relative;width:40px;height:22px;flex-shrink:0;}
+.tog input{opacity:0;width:0;height:0;position:absolute;}
+.tog-sl{position:absolute;cursor:pointer;inset:0;background:#C2D9EE;border-radius:22px;transition:.25s;}
+.tog-sl:before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.25s;}
+.tog input:checked + .tog-sl{background:var(--ml);}
+.tog input:checked + .tog-sl:before{transform:translateX(18px);}
+.tog input:disabled + .tog-sl{opacity:.4;cursor:not-allowed;}
+
+/* TOAST */
 #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--mb);color:#fff;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.2);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 #toast.warn{background:var(--red);}
 
-/* empty */
 .empty{text-align:center;padding:46px;color:var(--txm);}
 .empi{font-size:36px;margin-bottom:10px;}
 .lockover{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:12px;color:var(--txm);}
 
-/* ─── IP SIGNATURE BADGE (login screen) ─── */
-.ip-badge{
-  position:fixed;top:20px;right:24px;z-index:200;
-  display:flex;align-items:center;gap:8px;
-  background:rgba(0,20,40,.55);
-  border:1px solid rgba(66,176,213,.22);
-  backdrop-filter:blur(10px);
-  border-radius:10px;
-  padding:7px 14px;
-  box-shadow:0 3px 16px rgba(0,0,0,.25);
-  animation:badge-in .7s ease both;
-}
+/* IP BADGE */
+.ip-badge{position:fixed;top:20px;right:24px;z-index:200;display:flex;align-items:center;gap:8px;background:rgba(0,20,40,.55);border:1px solid rgba(66,176,213,.22);backdrop-filter:blur(10px);border-radius:10px;padding:7px 14px;box-shadow:0 3px 16px rgba(0,0,0,.25);animation:badge-in .7s ease both;}
 @keyframes badge-in{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
 .ip-dot{width:5px;height:5px;border-radius:50%;background:rgba(66,176,213,.5);flex-shrink:0;}
 .ip-text{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.2px;white-space:nowrap;font-family:'IBM Plex Sans',sans-serif;}
@@ -341,7 +287,6 @@ tbody tr:hover td{background:#EAF4FC;}
 </head>
 <body>
 
-<!-- IP SIGNATURE BADGE -->
 <div class="ip-badge">
   <div class="ip-dot"></div>
   <span class="ip-text">Created by <strong>Gaurav</strong> &amp; <strong>Chetan</strong></span>
@@ -349,38 +294,18 @@ tbody tr:hover td{background:#EAF4FC;}
 
 <!-- LOGIN -->
 <div id="ls">
-  <!-- Stars -->
   <div class="ls-stars" id="ls-stars"></div>
-
-  <!-- Maersk scene SVG -->
   <div class="ls-scene">
     <svg width="100%" height="220" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
-      <!-- Ocean water -->
       <rect x="0" y="140" width="1440" height="80" fill="#003A5C" opacity=".85"/>
       <rect x="0" y="155" width="1440" height="65" fill="#00243D" opacity=".9"/>
-      <!-- Wave lines -->
       <path d="M0 155 Q180 148 360 155 Q540 162 720 155 Q900 148 1080 155 Q1260 162 1440 155" stroke="#0073AB" stroke-width="2" fill="none" opacity=".5"/>
       <path d="M0 165 Q200 158 400 165 Q600 172 800 165 Q1000 158 1200 165 Q1320 172 1440 165" stroke="#42B0D5" stroke-width="1.5" fill="none" opacity=".35"/>
-
-      <!-- CONTAINER SHIP (center) -->
       <g transform="translate(580,92)">
-        <!-- Hull -->
         <path d="M0 38 Q10 50 20 52 L240 52 Q250 50 260 38 L250 35 L10 35 Z" fill="#00243D" stroke="#0073AB" stroke-width="1.5"/>
-        <!-- Deck superstructure -->
         <rect x="170" y="12" width="50" height="28" fill="#004A7A" rx="2"/>
         <rect x="180" y="6" width="30" height="12" fill="#005580" rx="2"/>
-        <!-- Bridge windows -->
-        <rect x="175" y="16" width="8" height="6" fill="#42B0D5" rx="1" opacity=".9"/>
-        <rect x="187" y="16" width="8" height="6" fill="#42B0D5" rx="1" opacity=".9"/>
-        <rect x="199" y="16" width="8" height="6" fill="#42B0D5" rx="1" opacity=".9"/>
-        <!-- Funnel / chimney -->
-        <rect x="190" y="0" width="12" height="10" fill="#00243D" rx="2"/>
-        <rect x="188" y="-2" width="16" height="5" fill="#F5A623" rx="1"/>
-        <!-- Maersk star on hull -->
-        <text x="110" y="48" font-size="10" fill="#F5A623" opacity=".8" text-anchor="middle">★ MAERSK</text>
-        <!-- Containers on deck -->
         <rect x="20" y="22" width="30" height="15" fill="#C0392B" rx="1"/>
-        <rect x="20" y="22" width="30" height="15" fill="none" stroke="rgba(255,255,255,.2)" stroke-width=".5"/>
         <rect x="54" y="22" width="30" height="15" fill="#0073AB" rx="1"/>
         <rect x="88" y="22" width="30" height="15" fill="#E67E22" rx="1"/>
         <rect x="122" y="22" width="30" height="15" fill="#27AE60" rx="1"/>
@@ -388,60 +313,27 @@ tbody tr:hover td{background:#EAF4FC;}
         <rect x="54" y="8" width="30" height="15" fill="#C0392B" rx="1"/>
         <rect x="88" y="8" width="30" height="15" fill="#F5A623" rx="1"/>
         <rect x="122" y="8" width="30" height="15" fill="#27AE60" rx="1"/>
+        <text x="110" y="48" font-size="10" fill="#F5A623" opacity=".8" text-anchor="middle">â˜… MAERSK</text>
       </g>
-
-      <!-- WAREHOUSE (left) -->
       <g transform="translate(60, 70)">
-        <!-- Building -->
         <rect x="0" y="40" width="200" height="90" fill="#002B45" stroke="#004A7A" stroke-width="1.5"/>
-        <!-- Roof -->
         <path d="M-5 40 L100 10 L205 40 Z" fill="#003A5C" stroke="#0073AB" stroke-width="1.5"/>
-        <!-- Dock doors -->
         <rect x="15" y="70" width="35" height="60" fill="#001B2E" rx="2"/>
         <rect x="60" y="70" width="35" height="60" fill="#001B2E" rx="2"/>
         <rect x="105" y="70" width="35" height="60" fill="#001B2E" rx="2"/>
         <rect x="150" y="70" width="35" height="60" fill="#001B2E" rx="2"/>
-        <!-- Door frames -->
-        <rect x="15" y="70" width="35" height="60" fill="none" stroke="#0073AB" stroke-width="1" opacity=".6"/>
-        <rect x="60" y="70" width="35" height="60" fill="none" stroke="#0073AB" stroke-width="1" opacity=".6"/>
-        <rect x="105" y="70" width="35" height="60" fill="none" stroke="#0073AB" stroke-width="1" opacity=".6"/>
-        <rect x="150" y="70" width="35" height="60" fill="none" stroke="#0073AB" stroke-width="1" opacity=".6"/>
-        <!-- Windows -->
-        <rect x="20" y="55" width="12" height="10" fill="#42B0D5" rx="1" opacity=".7"/>
-        <rect x="78" y="55" width="12" height="10" fill="#42B0D5" rx="1" opacity=".7"/>
-        <rect x="120" y="55" width="12" height="10" fill="#42B0D5" rx="1" opacity=".7"/>
-        <rect x="165" y="55" width="12" height="10" fill="#42B0D5" rx="1" opacity=".7"/>
-        <!-- Maersk logo on building -->
         <text x="100" y="32" font-size="9" fill="#F5A623" opacity=".8" text-anchor="middle" font-weight="bold">MAERSK LOGISTICS</text>
-        <!-- Forklift indicator lights -->
-        <circle cx="100" cy="8" r="4" fill="#F5A623" opacity=".6"/>
       </g>
-
-      <!-- CRANE (right of warehouse) -->
       <g transform="translate(260,40)">
         <rect x="18" y="0" width="6" height="110" fill="#004A7A"/>
         <rect x="0" y="0" width="80" height="6" fill="#005580"/>
-        <line x1="21" y1="0" x2="21" y2="110" stroke="#42B0D5" stroke-width="1" opacity=".5"/>
-        <!-- Crane hook -->
         <line x1="55" y1="6" x2="55" y2="85" stroke="#42B0D5" stroke-width="1.5" stroke-dasharray="3,2"/>
         <rect x="44" y="82" width="22" height="12" fill="#C0392B" rx="1"/>
       </g>
-
-      <!-- TRUCK (right side) -->
       <g transform="translate(1080,108)">
-        <!-- Trailer -->
         <rect x="0" y="0" width="200" height="50" fill="#00243D" stroke="#0073AB" stroke-width="1.5" rx="2"/>
-        <!-- Maersk branding on trailer -->
         <text x="100" y="30" font-size="11" fill="#F5A623" text-anchor="middle" font-weight="bold">MAERSK</text>
-        <!-- Cab -->
         <rect x="200" y="10" width="75" height="40" fill="#002B45" stroke="#0073AB" stroke-width="1.5" rx="3"/>
-        <rect x="205" y="14" width="25" height="20" fill="#001528" rx="2"/>
-        <rect x="232" y="14" width="20" height="20" fill="#42B0D5" rx="2" opacity=".8"/>
-        <!-- Windshield reflection -->
-        <line x1="233" y1="15" x2="248" y2="33" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
-        <!-- Headlights -->
-        <circle cx="272" cy="35" r="5" fill="#F5A623" opacity=".8"/>
-        <!-- Wheels -->
         <circle cx="40" cy="55" r="14" fill="#111" stroke="#333" stroke-width="3"/>
         <circle cx="40" cy="55" r="6" fill="#444"/>
         <circle cx="120" cy="55" r="14" fill="#111" stroke="#333" stroke-width="3"/>
@@ -451,20 +343,9 @@ tbody tr:hover td{background:#EAF4FC;}
         <circle cx="255" cy="55" r="14" fill="#111" stroke="#333" stroke-width="3"/>
         <circle cx="255" cy="55" r="6" fill="#444"/>
       </g>
-
-      <!-- Port lights / bollards -->
-      <g opacity=".6">
-        <circle cx="350" cy="142" r="3" fill="#F5A623"/>
-        <circle cx="500" cy="142" r="3" fill="#F5A623"/>
-        <circle cx="900" cy="142" r="3" fill="#F5A623"/>
-        <circle cx="1060" cy="142" r="3" fill="#F5A623"/>
-      </g>
-
-      <!-- Ground line -->
       <line x1="0" y1="140" x2="1440" y2="140" stroke="#004A7A" stroke-width="2" opacity=".7"/>
     </svg>
   </div>
-
   <div class="lcard">
     <div class="lcard-top">
       <div class="llogo">
@@ -477,26 +358,27 @@ tbody tr:hover td{background:#EAF4FC;}
       <div class="lsubtitle">Real-time wave management &amp; floor tracking</div>
     </div>
     <div class="lcard-body">
-    <label class="flabel">Role</label>
-    <select class="fc" id="l-role" onchange="onRoleChg()">
-      <option value="">— Select Role —</option>
-      <option value="supervisor">Supervisor</option>
-      <option value="floor">Floor TL</option>
-    </select>
-    <div id="l-fw" style="display:none">
-      <label class="flabel">Your Floor</label>
-      <select class="fc" id="l-floor">
-        <option value="A">Floor A</option><option value="B">Floor B</option>
-        <option value="C">Floor C</option><option value="D">Floor D</option>
+      <label class="flabel">Role</label>
+      <select class="fc" id="l-role" onchange="onRoleChg()">
+        <option value="">â€” Select Role â€”</option>
+        <option value="supervisor">Supervisor</option>
+        <option value="floor">Floor TL</option>
+        <option value="admin">Admin</option>
       </select>
+      <div id="l-fw" style="display:none">
+        <label class="flabel">Your Floor</label>
+        <select class="fc" id="l-floor">
+          <option value="A">Floor A</option><option value="B">Floor B</option>
+          <option value="C">Floor C</option><option value="D">Floor D</option>
+        </select>
+      </div>
+      <div id="l-pw" style="display:none">
+        <label class="flabel" id="l-pw-label">Password</label>
+        <input class="fc" type="password" id="l-pin" placeholder="Enter Password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="lerr" id="l-err">Incorrect Password.</div>
+      <button class="lbtn" onclick="doLogin()">Sign In &#x2192;</button>
     </div>
-    <div id="l-pw" style="display:none">
-      <label class="flabel">Supervisor Password</label>
-      <input class="fc" type="password" id="l-pin" placeholder="Enter Supervisor Password" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <div class="lerr" id="l-err">Incorrect Password.</div>
-    <button class="lbtn" onclick="doLogin()">Sign In &#x2192;</button>
-    </div><!-- /lcard-body -->
   </div>
 </div>
 
@@ -509,21 +391,32 @@ tbody tr:hover td{background:#EAF4FC;}
         <div class="hlogo-text">WMS <span>Picking</span> Tracker</div>
       </div>
       <div class="hdv"></div>
-      <div class="hrole" id="h-role">—</div>
+      <div class="hrole" id="h-role">â€”</div>
     </div>
     <div class="hdrr">
-      <div class="ubadge" id="h-badge">—</div>
+      <!-- Live Clock -->
+      <div class="hdr-clock">
+        <div class="hdr-clock-time" id="hdr-time">00:00:00</div>
+        <div class="hdr-clock-date" id="hdr-date">â€”</div>
+      </div>
+      <!-- Refresh Button -->
+      <button class="refreshbtn" id="refresh-btn" onclick="doRefresh()" title="Refresh Data">
+        <svg id="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Refresh
+      </button>
+      <div class="ubadge" id="h-badge">â€”</div>
       <button class="logoutbtn" onclick="doLogout()">Sign Out</button>
     </div>
   </div>
 
   <div class="tabs">
-    <button class="tbtn" id="tb-A" onclick="showTab('A')">🏭 Floor A</button>
-    <button class="tbtn" id="tb-B" onclick="showTab('B')">🏭 Floor B</button>
-    <button class="tbtn" id="tb-C" onclick="showTab('C')">🏭 Floor C</button>
-    <button class="tbtn" id="tb-D" onclick="showTab('D')">🏭 Floor D</button>
-    <button class="tbtn" id="tb-summary" onclick="showTab('summary')">📊 Summary</button>
-    <button class="tbtn locked" id="tb-dashboard" onclick="showTab('dashboard')">📈 Dashboard</button>
+    <button class="tbtn" id="tb-A" onclick="showTab('A')">ðŸ­ Floor A</button>
+    <button class="tbtn" id="tb-B" onclick="showTab('B')">ðŸ­ Floor B</button>
+    <button class="tbtn" id="tb-C" onclick="showTab('C')">ðŸ­ Floor C</button>
+    <button class="tbtn" id="tb-D" onclick="showTab('D')">ðŸ­ Floor D</button>
+    <button class="tbtn" id="tb-summary" onclick="showTab('summary')">ðŸ“Š Summary</button>
+    <button class="tbtn locked" id="tb-dashboard" onclick="showTab('dashboard')">ðŸ“ˆ Dashboard</button>
+    <button class="tbtn locked" id="tb-rights" onclick="showTab('rights')">ðŸ” Rights</button>
   </div>
 
   <div class="content">
@@ -531,7 +424,7 @@ tbody tr:hover td{background:#EAF4FC;}
     <!-- FLOOR PANELS -->
     <div class="tpanel" id="panel-A">
       <div class="fbar">
-        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-A" oninput="renderTable('A')"></div>
+        <div class="sw"><span class="si">ðŸ”</span><input type="text" placeholder="Search wavesâ€¦" id="srch-A" oninput="renderTable('A')"></div>
         <select class="sby" id="sby-A" onchange="renderTable('A')">
           <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
           <option value="userId">User ID</option><option value="type">Type</option>
@@ -546,15 +439,16 @@ tbody tr:hover td{background:#EAF4FC;}
           <span class="chip" id="cf-A-Partial" onclick="setFlt('A','Partial')" style="background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;">Partial</span>
         </div>
       </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="upbtn alt" onclick="exportFloor('A')" style="font-size:11px;padding:6px 14px;">&#x2B07; Export Floor A XLSX</button></div>
       <div class="tcard"><div class="twrap"><table>
-        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>User ID</th><th>User Name</th><th>Done (min)</th><th id="th-A"></th></tr></thead>
+        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>User ID</th><th>User Name</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>Done (min)</th><th id="th-A"></th></tr></thead>
         <tbody id="tbody-A"></tbody>
       </table></div></div>
     </div>
 
     <div class="tpanel" id="panel-B">
       <div class="fbar">
-        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-B" oninput="renderTable('B')"></div>
+        <div class="sw"><span class="si">ðŸ”</span><input type="text" placeholder="Search wavesâ€¦" id="srch-B" oninput="renderTable('B')"></div>
         <select class="sby" id="sby-B" onchange="renderTable('B')">
           <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
           <option value="userId">User ID</option><option value="type">Type</option>
@@ -569,15 +463,16 @@ tbody tr:hover td{background:#EAF4FC;}
           <span class="chip" id="cf-B-Partial" onclick="setFlt('B','Partial')" style="background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;">Partial</span>
         </div>
       </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="upbtn alt" onclick="exportFloor('B')" style="font-size:11px;padding:6px 14px;">&#x2B07; Export Floor B XLSX</button></div>
       <div class="tcard"><div class="twrap"><table>
-        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>User ID</th><th>User Name</th><th>Done (min)</th><th id="th-B"></th></tr></thead>
+        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>User ID</th><th>User Name</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>Done (min)</th><th id="th-B"></th></tr></thead>
         <tbody id="tbody-B"></tbody>
       </table></div></div>
     </div>
 
     <div class="tpanel" id="panel-C">
       <div class="fbar">
-        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-C" oninput="renderTable('C')"></div>
+        <div class="sw"><span class="si">ðŸ”</span><input type="text" placeholder="Search wavesâ€¦" id="srch-C" oninput="renderTable('C')"></div>
         <select class="sby" id="sby-C" onchange="renderTable('C')">
           <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
           <option value="userId">User ID</option><option value="type">Type</option>
@@ -592,15 +487,16 @@ tbody tr:hover td{background:#EAF4FC;}
           <span class="chip" id="cf-C-Partial" onclick="setFlt('C','Partial')" style="background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;">Partial</span>
         </div>
       </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="upbtn alt" onclick="exportFloor('C')" style="font-size:11px;padding:6px 14px;">&#x2B07; Export Floor C XLSX</button></div>
       <div class="tcard"><div class="twrap"><table>
-        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>User ID</th><th>User Name</th><th>Done (min)</th><th id="th-C"></th></tr></thead>
+        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>User ID</th><th>User Name</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>Done (min)</th><th id="th-C"></th></tr></thead>
         <tbody id="tbody-C"></tbody>
       </table></div></div>
     </div>
 
     <div class="tpanel" id="panel-D">
       <div class="fbar">
-        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-D" oninput="renderTable('D')"></div>
+        <div class="sw"><span class="si">ðŸ”</span><input type="text" placeholder="Search wavesâ€¦" id="srch-D" oninput="renderTable('D')"></div>
         <select class="sby" id="sby-D" onchange="renderTable('D')">
           <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
           <option value="userId">User ID</option><option value="type">Type</option>
@@ -615,66 +511,68 @@ tbody tr:hover td{background:#EAF4FC;}
           <span class="chip" id="cf-D-Partial" onclick="setFlt('D','Partial')" style="background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;">Partial</span>
         </div>
       </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="upbtn alt" onclick="exportFloor('D')" style="font-size:11px;padding:6px 14px;">&#x2B07; Export Floor D XLSX</button></div>
       <div class="tcard"><div class="twrap"><table>
-        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>User ID</th><th>User Name</th><th>Done (min)</th><th id="th-D"></th></tr></thead>
+        <thead><tr><th>Wave Key</th><th>Orders</th><th>Order Qty</th><th>Alloc Qty</th><th>Type</th><th>Status</th><th>User ID</th><th>User Name</th><th>Upload Time</th><th>Start Time</th><th>End Time</th><th>Done (min)</th><th id="th-D"></th></tr></thead>
         <tbody id="tbody-D"></tbody>
       </table></div></div>
     </div>
 
     <!-- SUMMARY -->
     <div class="tpanel" id="panel-summary">
-
-      <!-- Upload area — supervisor only, injected by JS -->
       <div id="sum-uploads"></div>
-
-      <!-- Shift selector + search -->
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
         <div class="shift-tabs">
-          <button class="stab day act" id="stab-day" onclick="setShift('day')">☀️ Day Shift <span style="font-size:10px;opacity:.65;margin-left:2px">07:00 – 19:00</span></button>
-          <button class="stab night" id="stab-night" onclick="setShift('night')">🌙 Night Shift <span style="font-size:10px;opacity:.65;margin-left:2px">19:00 – 07:00</span></button>
+          <button class="stab day act" id="stab-day" onclick="setShift('day')">â˜€ï¸ Day Shift <span style="font-size:10px;opacity:.65;margin-left:2px">07:00 â€“ 19:00</span></button>
+          <button class="stab night" id="stab-night" onclick="setShift('night')">ðŸŒ™ Night Shift <span style="font-size:10px;opacity:.65;margin-left:2px">19:00 â€“ 07:00</span></button>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <div class="sw" style="min-width:200px;"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="sum-q" oninput="renderSummary()"></div>
+          <div class="sw" style="min-width:200px;"><span class="si">ðŸ”</span><input type="text" placeholder="Search wavesâ€¦" id="sum-q" oninput="renderSummary()"></div>
           <select class="sby" id="sum-by" onchange="renderSummary()">
             <option value="all">All Fields</option><option value="wavekey">Wave Key</option><option value="status">Overall Status</option>
           </select>
         </div>
       </div>
-
-      <!-- Status filter chips for Summary -->
       <div class="fbar" style="margin-bottom:14px;">
         <span class="flbl">Filter:</span>
         <div class="chips">
-          <span class="chip call" id="sf-all"       onclick="setSumFlt('all')">All</span>
-          <span class="chip"      id="sf-Pending"   onclick="setSumFlt('Pending')">Pending</span>
-          <span class="chip"      id="sf-Running"   onclick="setSumFlt('Running')">Running</span>
-          <span class="chip"      id="sf-Completed" onclick="setSumFlt('Completed')">Completed</span>
-          <span class="chip"      id="sf-Partial"   onclick="setSumFlt('Partial')" style="background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;">Partial</span>
+          <span class="chip call" id="sf-all" onclick="setSumFlt('all')">All</span>
+          <span class="chip" id="sf-Pending" onclick="setSumFlt('Pending')">Pending</span>
+          <span class="chip" id="sf-Running" onclick="setSumFlt('Running')">Running</span>
+          <span class="chip" id="sf-Completed" onclick="setSumFlt('Completed')">Completed</span>
+          <span class="chip" id="sf-Partial" onclick="setSumFlt('Partial')" style="background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;">Partial</span>
         </div>
       </div>
-
-      <!-- Floor counts -->
       <div class="tcard" style="margin-bottom:16px;">
         <div style="padding:11px 14px;background:var(--surf2);border-bottom:1.5px solid var(--brd);display:flex;align-items:center;gap:10px;">
-          <span style="font-size:13px;font-weight:700;color:var(--mb)">📊 Floor-wise Counts</span>
-          <span id="shift-lbl" style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--day-bg);color:var(--day-col);border:1px solid var(--day-brd)">☀️ Day Shift</span>
+          <span style="font-size:13px;font-weight:700;color:var(--mb)">ðŸ“Š Floor-wise Counts</span>
+          <span id="shift-lbl" style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--day-bg);color:var(--day-col);border:1px solid var(--day-brd)">â˜€ï¸ Day Shift</span>
         </div>
         <div class="twrap"><table class="fst">
           <thead><tr><th>Floor</th><th>Total Waves</th><th>In Progress</th><th>Completed</th><th>Pending</th><th>Total Pickers</th></tr></thead>
           <tbody id="fsum-body"></tbody>
         </table></div>
       </div>
-
-      <!-- Wave detail table -->
-      <div style="font-size:15px;font-weight:700;color:var(--mb);margin-bottom:10px;">Wave Detail</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:15px;font-weight:700;color:var(--mb);">Wave Detail</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="upbtn alt" onclick="exportSummary()" style="font-size:11px;padding:6px 14px;">&#x2B07; Export Summary XLSX</button>
+          <button id="sum-delete-all-btn" class="upbtn" onclick="openDeleteAllWaves()" style="font-size:11px;padding:6px 14px;background:#C0392B;display:none;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">ðŸ—‘ Delete All Waves</button>
+        </div>
+      </div>
       <div class="tcard"><div class="twrap"><table>
-        <thead><tr><th style="background:#00324F;border-right:3px solid #F5A623;padding-left:16px;font-size:11px;letter-spacing:.8px;color:#FFD580;">&#9670; WAVE KEY</th><th style="background:#004060;">Floor A</th><th style="background:#004060;">Floor B</th><th style="background:#004060;">Floor C</th><th style="background:#004060;">Floor D</th><th style="background:#003050;border-left:2px solid rgba(255,255,255,.15);">Overall</th><th style="background:#003050;">Completion</th></tr></thead>
+        <thead><tr>
+          <th style="background:#00324F;border-right:3px solid #F5A623;padding-left:16px;font-size:11px;letter-spacing:.8px;color:#FFD580;">&#9670; WAVE KEY</th>
+          <th style="background:#002B45;border-right:1px solid rgba(255,255,255,.1);">Type</th>
+          <th style="background:#004060;">Floor A</th><th style="background:#004060;">Floor B</th>
+          <th style="background:#004060;">Floor C</th><th style="background:#004060;">Floor D</th>
+          <th style="background:#003050;border-left:2px solid rgba(255,255,255,.15);">Overall</th>
+          <th style="background:#003050;">Completion</th>
+        </tr></thead>
         <tbody id="sum-body"></tbody>
       </table></div></div>
-
-      <!-- Roster hidden from UI -->
       <div id="roster-wrap" style="display:none!important;visibility:hidden;">
-        <div style="font-size:15px;font-weight:700;color:var(--mb);margin-bottom:10px;">👥 Roster</div>
+        <div style="font-size:15px;font-weight:700;color:var(--mb);margin-bottom:10px;">ðŸ‘¥ Roster</div>
         <div class="tcard"><div class="twrap"><table class="rt">
           <thead><tr><th>User ID</th><th>Name</th><th>Floor</th><th>Shift</th></tr></thead>
           <tbody id="roster-body"></tbody>
@@ -685,29 +583,126 @@ tbody tr:hover td{background:#EAF4FC;}
     <!-- DASHBOARD -->
     <div class="tpanel" id="panel-dashboard">
       <div id="dash-lock" class="lockover" style="display:none">
-        <div style="font-size:44px">🔒</div><div style="font-size:16px;font-weight:700;">Supervisor Access Only</div>
+        <div style="font-size:44px">ðŸ”’</div><div style="font-size:16px;font-weight:700;">Supervisor / Admin Access Only</div>
       </div>
       <div id="dash-content">
         <div class="sectitle">Operations Dashboard</div>
         <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-          <button class="chip call" id="dstab-day" onclick="setDashShift('day')">☀️ Day Shift</button>
-          <button class="chip" id="dstab-night" onclick="setDashShift('night')">🌙 Night Shift</button>
+          <button class="chip call" id="dstab-day" onclick="setDashShift('day')">â˜€ï¸ Day Shift</button>
+          <button class="chip" id="dstab-night" onclick="setDashShift('night')">ðŸŒ™ Night Shift</button>
         </div>
         <div class="kgrid">
-          <div class="kpi"><div class="kpi-lbl">Total Picked Qty</div><div class="kpi-val grn" id="d-picked">0</div><div class="kpi-sub">Alloc Qty · Completed waves</div></div>
-          <div class="kpi"><div class="kpi-lbl">Total Wave Short Pick</div><div class="kpi-val red" id="d-short">0</div><div class="kpi-sub">Order − Alloc · Completed only</div></div>
-          <div class="kpi"><div class="kpi-lbl">Avg Wave Completion</div><div class="kpi-val blu" id="d-avg">—</div><div class="kpi-sub">Average minutes per wave</div></div>
+          <div class="kpi"><div class="kpi-lbl">Total Picked Qty</div><div class="kpi-val grn" id="d-picked">0</div><div class="kpi-sub">Alloc Qty Â· Completed waves</div></div>
+          <div class="kpi"><div class="kpi-lbl">Total Wave Short Pick</div><div class="kpi-val red" id="d-short">0</div><div class="kpi-sub">Order âˆ’ Alloc Â· Completed only</div></div>
+          <div class="kpi"><div class="kpi-lbl">Avg Wave Completion</div><div class="kpi-val blu" id="d-avg">â€”</div><div class="kpi-sub">Average minutes per wave</div></div>
+          <div class="kpi"><div class="kpi-lbl">Total PPO</div><div class="kpi-val blu" id="d-total-ppo">â€”</div><div class="kpi-sub">Pieces Per Order Â· All Types</div></div>
         </div>
         <div class="sectitle">Floor-wise Pickers</div>
         <div class="fprow" id="d-fp"></div>
-        <div class="sectitle">Order Type — PPO (Pieces Per Order)</div>
+        <div class="sectitle">Order Type â€” PPO (Pieces Per Order)</div>
         <div class="ppogrid" id="d-ppo"></div>
+      </div>
+    </div>
+
+    <!-- RIGHTS MANAGER (Admin only) -->
+    <div class="tpanel" id="panel-rights">
+      <div id="rights-lock" class="lockover" style="display:none">
+        <div style="font-size:44px">ðŸ”’</div><div style="font-size:16px;font-weight:700;">Admin Access Only</div>
+      </div>
+      <div id="rights-content">
+        <div class="sectitle">ðŸ” Access Rights Manager</div>
+        <p style="font-size:12px;color:var(--txm);margin-bottom:18px;">Control what each role can see and do. Changes take effect immediately for all active sessions.</p>
+        <div class="rights-grid">
+          <!-- Supervisor Rights -->
+          <div class="rights-card">
+            <div class="rights-card-hd">ðŸ‘¤ Supervisor Rights</div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">View All Floors</div><div class="toggle-sub">Can see Floor A, B, C, D tabs</div></div>
+              <label class="tog"><input type="checkbox" id="r-sup-allfloors" onchange="saveRights()" checked disabled><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">View Summary</div><div class="toggle-sub">Access to Summary tab</div></div>
+              <label class="tog"><input type="checkbox" id="r-sup-summary" onchange="saveRights()" checked disabled><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">View Dashboard</div><div class="toggle-sub">Access to Dashboard tab</div></div>
+              <label class="tog"><input type="checkbox" id="r-sup-dashboard" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Upload Waves</div><div class="toggle-sub">Can upload wave Excel/CSV</div></div>
+              <label class="tog"><input type="checkbox" id="r-sup-upload" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Upload Roster</div><div class="toggle-sub">Can upload roster file</div></div>
+              <label class="tog"><input type="checkbox" id="r-sup-roster" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Edit Wave Data</div><div class="toggle-sub">Can edit wave key details</div></div>
+              <label class="tog"><input type="checkbox" id="r-sup-edit" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Export XLSX</div><div class="toggle-sub">Can download floor/summary exports</div></div>
+              <label class="tog"><input type="checkbox" id="r-sup-export" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Delete Wave Data</div><div class="toggle-sub">Can delete individual wave keys</div></div>
+              <label class="tog"><input type="checkbox" id="r-sup-delete" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Reset All Waves</div><div class="toggle-sub">Can use Danger Zone â€” Reset All Waves</div></div>
+              <label class="tog"><input type="checkbox" id="r-sup-resetall" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
+          </div>
+          <!-- Floor TL Rights -->
+          <div class="rights-card">
+            <div class="rights-card-hd">ðŸ­ Floor TL Rights</div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">View Own Floor Only</div><div class="toggle-sub">Locked â€” TLs always see own floor</div></div>
+              <label class="tog"><input type="checkbox" id="r-tl-ownfloor" checked disabled><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">View Summary</div><div class="toggle-sub">Access to Summary tab</div></div>
+              <label class="tog"><input type="checkbox" id="r-tl-summary" onchange="saveRights()" checked disabled><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Scan / Assign Picker</div><div class="toggle-sub">Can scan UID to assign pickers</div></div>
+              <label class="tog"><input type="checkbox" id="r-tl-scan" onchange="saveRights()" checked disabled><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Mark Wave Completed</div><div class="toggle-sub">Can mark Running wave as done</div></div>
+              <label class="tog"><input type="checkbox" id="r-tl-complete" onchange="saveRights()" checked disabled><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">View Dashboard</div><div class="toggle-sub">Access to Dashboard tab</div></div>
+              <label class="tog"><input type="checkbox" id="r-tl-dashboard" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Export XLSX</div><div class="toggle-sub">Can download floor exports</div></div>
+              <label class="tog"><input type="checkbox" id="r-tl-export" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Delete Wave Data</div><div class="toggle-sub">Can delete individual wave keys</div></div>
+              <label class="tog"><input type="checkbox" id="r-tl-delete" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Management -->
+        <div class="sectitle">ðŸ’¬ Chat Management</div>
+        <div class="up-card" style="max-width:500px;border-color:#F5A8A4;background:#FFF8F8;">
+          <div class="up-card-hd" style="color:#C0392B;">âš  Delete All Chat History</div>
+          <p style="font-size:12px;color:var(--txm);margin-bottom:12px;">Permanently removes all messages from the Picking War Room chat. This cannot be undone.</p>
+          <div class="up-row">
+            <button class="upbtn" onclick="openDeleteChat()" style="background:#C0392B;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">ðŸ—‘ Delete All Chat</button>
+            <span style="font-size:11px;color:#C0392B;font-weight:500;" id="chat-msg-count">Loadingâ€¦</span>
+          </div>
+        </div>
       </div>
     </div>
 
   </div><!-- /content -->
 
-  <!-- ═══ CHAT BUBBLE ═══ -->
+  <!-- CHAT BUBBLE -->
   <div id="chat-bubble" style="display:none;position:fixed;bottom:28px;right:28px;z-index:800;">
     <button id="chat-btn" onclick="toggleChat()" style="width:56px;height:56px;border-radius:50%;background:var(--mb);border:none;cursor:pointer;box-shadow:0 4px 18px rgba(0,36,61,.35);display:flex;align-items:center;justify-content:center;font-size:22px;transition:.2s;position:relative;">
       &#x1F4AC;
@@ -719,7 +714,7 @@ tbody tr:hover td{background:#EAF4FC;}
           <div style="font-size:20px;">&#x1F3ED;</div>
           <div>
             <div style="color:#fff;font-weight:700;font-size:14px;">Picking War Room</div>
-            <div style="color:rgba(255,255,255,.6);font-size:10px;font-weight:500;" id="chat-online">Common Chat Room</div>
+            <div style="color:rgba(255,255,255,.6);font-size:10px;font-weight:500;">Common Chat Room</div>
           </div>
         </div>
         <button onclick="toggleChat()" style="background:transparent;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;line-height:1;">&#x2715;</button>
@@ -731,13 +726,12 @@ tbody tr:hover td{background:#EAF4FC;}
           onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMsg();}"
           onfocus="this.style.borderColor='#0073AB'"
           onblur="this.style.borderColor='#C5DFF0'">
-        <button onclick="sendChatMsg()" title="Send" style="background:#00243D;color:#fff;border:none;width:36px;height:36px;min-width:36px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;" onmouseover="this.style.background='#0073AB'" onmouseout="this.style.background='#00243D'">&#x27A4;</button>
+        <button onclick="sendChatMsg()" style="background:#00243D;color:#fff;border:none;width:36px;height:36px;min-width:36px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;" onmouseover="this.style.background='#0073AB'" onmouseout="this.style.background='#00243D'">&#x27A4;</button>
       </div>
     </div>
   </div>
 
-
-  <!-- ═══ RESET PASSWORD MODAL ═══ -->
+  <!-- RESET WAVES MODAL -->
   <div id="reset-ov" style="display:none;position:fixed;inset:0;z-index:1100;background:rgba(0,20,40,.60);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
     <div style="background:#fff;border-radius:16px;padding:32px 34px;width:420px;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:pop .2s ease;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
@@ -750,16 +744,67 @@ tbody tr:hover td{background:#EAF4FC;}
       <div style="background:#FFF8F0;border:1px solid #F5BC84;border-radius:8px;padding:10px 14px;margin:14px 0;font-size:12px;color:#7A3800;line-height:1.5;">
         All wave keys across <strong>all 4 floors</strong> will be permanently deleted. Chat history and roster will be preserved.
       </div>
-      <label style="font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#4A7A9B;display:block;margin-bottom:5px;">Supervisor Password</label>
+      <label style="font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#4A7A9B;display:block;margin-bottom:5px;">Admin Password</label>
       <input type="password" id="reset-pw" placeholder="Enter password to confirm" maxlength="30"
         style="width:100%;padding:10px 13px;border:1.5px solid #C5DFF0;border-radius:6px;font-family:inherit;font-size:14px;color:#00243D;background:#fff;outline:none;margin-bottom:6px;"
-        onfocus="this.style.borderColor='#C0392B'"
-        onblur="this.style.borderColor='#C5DFF0'"
+        onfocus="this.style.borderColor='#C0392B'" onblur="this.style.borderColor='#C5DFF0'"
         onkeydown="if(event.key==='Enter')confirmReset()">
-      <div id="reset-err" style="color:#C0392B;font-size:11px;margin-bottom:12px;display:none;font-weight:600;">&#x2715; Incorrect password. Try again.</div>
+      <div id="reset-err" style="color:#C0392B;font-size:11px;margin-bottom:12px;display:none;font-weight:600;">&#x2715; Incorrect password.</div>
       <div style="display:flex;gap:10px;justify-content:flex-end;">
-        <button onclick="closeReset()" style="padding:9px 20px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:#4A7A9B;border:1.5px solid #C5DFF0;transition:.2s;" onmouseover="this.style.borderColor='#0073AB'" onmouseout="this.style.borderColor='#C5DFF0'">Cancel</button>
-        <button onclick="confirmReset()" style="padding:9px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#C0392B;color:#fff;border:none;transition:.2s;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">&#x1F5D1; Delete All Waves</button>
+        <button onclick="closeReset()" style="padding:9px 20px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:#4A7A9B;border:1.5px solid #C5DFF0;">Cancel</button>
+        <button onclick="confirmReset()" style="padding:9px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#C0392B;color:#fff;border:none;">&#x1F5D1; Delete All Waves</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE ALL WAVES FROM SUMMARY MODAL -->
+  <div id="delallwaves-ov" style="display:none;position:fixed;inset:0;z-index:1100;background:rgba(0,20,40,.60);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;padding:32px 34px;width:420px;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:pop .2s ease;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+        <div style="width:40px;height:40px;background:#FDECEA;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">&#x26A0;&#xFE0F;</div>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#C0392B;">Delete All Wave Data</div>
+          <div style="font-size:11px;color:#7A3800;margin-top:1px;">This action cannot be undone</div>
+        </div>
+      </div>
+      <div style="background:#FFF8F0;border:1px solid #F5BC84;border-radius:8px;padding:10px 14px;margin:14px 0;font-size:12px;color:#7A3800;line-height:1.5;">
+        All wave keys across <strong>all 4 floors</strong> will be permanently deleted. Chat history and roster will be preserved.
+      </div>
+      <label style="font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#4A7A9B;display:block;margin-bottom:5px;">Admin Password</label>
+      <input type="password" id="delallwaves-pw" placeholder="Enter admin password to confirm" maxlength="30"
+        style="width:100%;padding:10px 13px;border:1.5px solid #C5DFF0;border-radius:6px;font-family:inherit;font-size:14px;color:#00243D;background:#fff;outline:none;margin-bottom:6px;"
+        onfocus="this.style.borderColor='#C0392B'" onblur="this.style.borderColor='#C5DFF0'"
+        onkeydown="if(event.key==='Enter')confirmDeleteAllWaves()">
+      <div id="delallwaves-err" style="color:#C0392B;font-size:11px;margin-bottom:12px;display:none;font-weight:600;">&#x2715; Incorrect password.</div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button onclick="closeDeleteAllWaves()" style="padding:9px 20px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:#4A7A9B;border:1.5px solid #C5DFF0;">Cancel</button>
+        <button onclick="confirmDeleteAllWaves()" style="padding:9px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#C0392B;color:#fff;border:none;">ðŸ—‘ Delete All Waves</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="delchat-ov" style="display:none;position:fixed;inset:0;z-index:1100;background:rgba(0,20,40,.60);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;padding:32px 34px;width:420px;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:pop .2s ease;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+        <div style="width:40px;height:40px;background:#FDECEA;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">ðŸ’¬</div>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#C0392B;">Delete All Chat History</div>
+          <div style="font-size:11px;color:#7A3800;margin-top:1px;">This action cannot be undone</div>
+        </div>
+      </div>
+      <div style="background:#FFF8F0;border:1px solid #F5BC84;border-radius:8px;padding:10px 14px;margin:14px 0;font-size:12px;color:#7A3800;line-height:1.5;">
+        All chat messages in the <strong>Picking War Room</strong> will be permanently deleted for everyone.
+      </div>
+      <label style="font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#4A7A9B;display:block;margin-bottom:5px;">Admin Password</label>
+      <input type="password" id="delchat-pw" placeholder="Enter admin password to confirm" maxlength="30"
+        style="width:100%;padding:10px 13px;border:1.5px solid #C5DFF0;border-radius:6px;font-family:inherit;font-size:14px;color:#00243D;background:#fff;outline:none;margin-bottom:6px;"
+        onfocus="this.style.borderColor='#C0392B'" onblur="this.style.borderColor='#C5DFF0'"
+        onkeydown="if(event.key==='Enter')confirmDeleteChat()">
+      <div id="delchat-err" style="color:#C0392B;font-size:11px;margin-bottom:12px;display:none;font-weight:600;">&#x2715; Incorrect password.</div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button onclick="closeDeleteChat()" style="padding:9px 20px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:#4A7A9B;border:1.5px solid #C5DFF0;">Cancel</button>
+        <button onclick="confirmDeleteChat()" style="padding:9px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#C0392B;color:#fff;border:none;">ðŸ—‘ Delete All Messages</button>
       </div>
     </div>
   </div>
@@ -769,15 +814,15 @@ tbody tr:hover td{background:#EAF4FC;}
 <!-- QR MODAL -->
 <div class="qrov" id="qrov" onclick="closeQR(event)">
   <div class="qrbox">
-    <button class="qrcls" onclick="closeQR(null,true)">✕</button>
+    <button class="qrcls" onclick="closeQR(null,true)">âœ•</button>
     <div class="qrlbl">Wave Key QR Code</div>
-    <div class="qrwave" id="qrwave">—</div>
-    <div class="qrmeta" id="qrmeta">—</div>
+    <div class="qrwave" id="qrwave">â€”</div>
+    <div class="qrmeta" id="qrmeta">â€”</div>
     <div class="qrwrap"><div id="qrcont"></div></div>
     <div class="qrrow">
-      <div class="qrri"><div class="qrrl">Order Qty</div><div class="qrrv" id="qroq" style="color:var(--ml)">—</div></div>
-      <div class="qrri"><div class="qrrl">Alloc Qty</div><div class="qrrv" id="qraq" style="color:var(--comp)">—</div></div>
-      <div class="qrri"><div class="qrrl">Status</div><div class="qrrv" id="qrst">—</div></div>
+      <div class="qrri"><div class="qrrl">Order Qty</div><div class="qrrv" id="qroq" style="color:var(--ml)">â€”</div></div>
+      <div class="qrri"><div class="qrrl">Alloc Qty</div><div class="qrrv" id="qraq" style="color:var(--comp)">â€”</div></div>
+      <div class="qrri"><div class="qrrl">Status</div><div class="qrrv" id="qrst">â€”</div></div>
     </div>
   </div>
 </div>
@@ -785,8 +830,8 @@ tbody tr:hover td{background:#EAF4FC;}
 <!-- EDIT MODAL -->
 <div class="mov" id="edit-mov" onclick="closeEdit(event)">
   <div class="mbox">
-    <button class="mcls" onclick="closeEdit(null,true)">✕</button>
-    <h2>✏️ Edit Wave Key</h2>
+    <button class="mcls" onclick="closeEdit(null,true)">âœ•</button>
+    <h2>âœï¸ Edit Wave Key</h2>
     <input type="hidden" id="edit-orig">
     <div class="mgrid">
       <div class="mf"><label>Wave Key</label><input type="text" id="edit-wk"></div>
@@ -809,1319 +854,972 @@ tbody tr:hover td{background:#EAF4FC;}
 <div id="toast"></div>
 
 <script>
-// ── Generate login screen stars ──
+// â”€â”€ Stars â”€â”€
 (function(){
-  const c = document.getElementById('ls-stars');
-  if(!c) return;
+  const c=document.getElementById('ls-stars'); if(!c) return;
   for(let i=0;i<80;i++){
-    const s = document.createElement('div');
-    s.className = 'ls-star';
-    const size = Math.random()*2.5+0.5;
-    s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*70}%;left:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*3}s;`;
+    const s=document.createElement('div'); s.className='ls-star';
+    const sz=Math.random()*2.5+0.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*70}%;left:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*3}s;`;
     c.appendChild(s);
   }
 })();
 
-// ═══════════════════════════════════════════════════
-// FIREBASE INIT
-// ═══════════════════════════════════════════════════
-const firebaseConfig = {
-  apiKey: "AIzaSyCgDyu1fG9xykc1bnOqtdb-xH0DcxS5oUY",
-  authDomain: "wms-picking-tracker.firebaseapp.com",
-  databaseURL: "https://wms-picking-tracker-default-rtdb.firebaseio.com",
-  projectId: "wms-picking-tracker",
-  storageBucket: "wms-picking-tracker.firebasestorage.app",
-  messagingSenderId: "995311790603",
-  appId: "1:995311790603:web:03078f806ab4aa4e12750e"
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// FIREBASE
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+const firebaseConfig={
+  apiKey:"AIzaSyCgDyu1fG9xykc1bnOqtdb-xH0DcxS5oUY",
+  authDomain:"wms-picking-tracker.firebaseapp.com",
+  databaseURL:"https://wms-picking-tracker-default-rtdb.firebaseio.com",
+  projectId:"wms-picking-tracker",
+  storageBucket:"wms-picking-tracker.firebasestorage.app",
+  messagingSenderId:"995311790603",
+  appId:"1:995311790603:web:03078f806ab4aa4e12750e"
 };
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const db=firebase.database();
 
-// Firebase paths
 const FB_WAVES  = 'wms/waves';
 const FB_ROSTER = 'wms/roster';
 const FB_CHAT   = 'wms/chat';
+const FB_RIGHTS = 'wms/rights';
+const FB_SESSION= 'wms/sessions'; // not used for server storage, just key name
 
-// ═══════════════════════════════════════════════════
-// CONSTANTS
-// ═══════════════════════════════════════════════════
-const PIN = 'CS@123';
-const FL  = ['A','B','C','D'];
+const PIN       = 'CS@123';
+const ADMIN_PIN = 'GK@123';
+const RESET_PASS= 'GC@123';
+const FL=['A','B','C','D'];
 
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// SESSION PERSISTENCE
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Save login state to sessionStorage so page refresh doesn't log out.
+// sessionStorage is cleared when the browser tab is closed (natural logout).
+function saveSession(){
+  try{
+    sessionStorage.setItem('wms_role', role||'');
+    sessionStorage.setItem('wms_floor', myFloor||'');
+  }catch(e){}
+}
+function loadSession(){
+  try{
+    const r=sessionStorage.getItem('wms_role');
+    const f=sessionStorage.getItem('wms_floor');
+    if(r){ return {role:r, floor:f||null}; }
+  }catch(e){}
+  return null;
+}
+function clearSession(){
+  try{ sessionStorage.removeItem('wms_role'); sessionStorage.removeItem('wms_floor'); }catch(e){}
+}
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // STATE
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 let role=null, myFloor=null;
-let activeShift = 'day';
-let dashShift   = 'day';
-let appReady    = false;   // true after Firebase data first loaded
+let activeShift='day', dashShift='day';
+let appReady=false;
+let fd={A:[],B:[],C:[],D:[]};
+let rosterDB={};
 
-// fd[floor] = array of wave records — synced with Firebase
-let fd = {A:[],B:[],C:[],D:[]};
-
-// rosterDB[UID] = {name, floor, shift} — synced with Firebase
-let rosterDB = {};
-
-// Default roster
-const DEFAULT_ROSTER = {
-  'U001':{name:'Raj Kumar',    floor:'A', shift:'Day'},
-  'U002':{name:'Priya Singh',  floor:'A', shift:'Day'},
-  'U003':{name:'Amit Verma',   floor:'B', shift:'Day'},
-  'U004':{name:'Sunita Sharma',floor:'B', shift:'Day'},
-  'U005':{name:'Vikram Das',   floor:'C', shift:'Day'},
-  'U006':{name:'Neha Gupta',   floor:'C', shift:'Night'},
-  'U007':{name:'Rohit Yadav',  floor:'D', shift:'Night'},
-  'U008':{name:'Anjali Mehta', floor:'D', shift:'Night'},
-  'U009':{name:'Suresh Patel', floor:'A', shift:'Night'},
-  'U010':{name:'Kavita Nair',  floor:'B', shift:'Night'},
+// Rights state â€” defaults (what was original behaviour)
+let rights = {
+  sup: {
+    dashboard: true,
+    upload: true,
+    roster: true,
+    edit: true,
+    export: true
+  },
+  tl: {
+    dashboard: false,
+    export: false
+  }
 };
 
-// ui filter state
-let flt = {A:'all',B:'all',C:'all',D:'all'};
-let sumFlt = 'all'; // summary tab filter
+const DEFAULT_ROSTER={
+  'U001':{name:'Raj Kumar',floor:'A',shift:'Day'},
+  'U002':{name:'Priya Singh',floor:'A',shift:'Day'},
+  'U003':{name:'Amit Verma',floor:'B',shift:'Day'},
+  'U004':{name:'Sunita Sharma',floor:'B',shift:'Day'},
+  'U005':{name:'Vikram Das',floor:'C',shift:'Day'},
+  'U006':{name:'Neha Gupta',floor:'C',shift:'Night'},
+  'U007':{name:'Rohit Yadav',floor:'D',shift:'Night'},
+  'U008':{name:'Anjali Mehta',floor:'D',shift:'Night'},
+  'U009':{name:'Suresh Patel',floor:'A',shift:'Night'},
+  'U010':{name:'Kavita Nair',floor:'B',shift:'Night'}
+};
 
-// ═══════════════════════════════════════════════════
-// SHIFT HELPERS
-//   Day   shift: 07:00 ≤ h < 19:00
-//   Night shift: h ≥ 19 or h < 7
-//
-// CROSSOVER RULE (req #1):
-//   At 19:00 → all Pending/Running waves move to Night shift
-//   At 07:00 → all Pending/Running waves move to Day shift
-//   Completed waves stay on the shift they were completed in
-//
-// Each wave stores r.assignedShift which is updated at crossover.
-// ═══════════════════════════════════════════════════
-function curShift(){
-  const h = new Date().getHours();
-  return (h >= 7 && h < 19) ? 'day' : 'night';
-}
-function shiftOfDate(d){
-  const h = new Date(d).getHours();
-  return (h >= 7 && h < 19) ? 'day' : 'night';
-}
-function waveShift(r){
-  // Completed → shift determined by when it was completed (endTime)
-  if(r.status === 'Completed' && r.endTime){
-    try { return shiftOfDate(parseTime(r.endTime)); } catch(e){}
-  }
-  // Pending / Running → use stored assignedShift (updated at crossover)
-  // Fall back to curShift() if not set
-  return r.assignedShift || curShift();
-}
+let flt={A:'all',B:'all',C:'all',D:'all'};
+let sumFlt='all';
 
-// Called every 5 min by timer — re-assigns Pending/Running waves to current shift
-function applyCrossover(){
-  const cs = curShift();
-  let changed = false;
-  FL.forEach(f=>{
-    fd[f].forEach(r=>{
-      if(r.status !== 'Completed' && r.assignedShift !== cs){
-        r.assignedShift = cs;
-        changed = true;
-      }
-    });
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// LIVE CLOCK
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function updateClock(){
+  const now=new Date();
+  const timeStr=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  const dateStr=now.toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  const tEl=document.getElementById('hdr-time');
+  const dEl=document.getElementById('hdr-date');
+  if(tEl) tEl.textContent=timeStr;
+  if(dEl) dEl.textContent=dateStr;
+}
+updateClock();
+setInterval(updateClock,1000);
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// REFRESH BUTTON
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function doRefresh(){
+  const btn=document.getElementById('refresh-btn');
+  btn.classList.add('spin');
+  // Re-read from Firebase
+  db.ref(FB_WAVES).once('value').then(snap=>{
+    const val=snap.val();
+    if(val) FL.forEach(f=>{ if(Array.isArray(val[f])) fd[f]=val[f].map(waveFromFB); else fd[f]=[]; });
+    applyCrossover(); purgeD1();
+    FL.forEach(f=>renderTable(f));
+    const sp=document.getElementById('panel-summary');
+    if(sp&&sp.classList.contains('active')) renderSummary();
+    const dp=document.getElementById('panel-dashboard');
+    if(dp&&dp.classList.contains('active')) renderDashboard();
+    toast('âœ… Data refreshed');
+  }).catch(()=>{
+    toast('âš  Refresh failed â€” check connection',true);
+  }).finally(()=>{
+    setTimeout(()=>btn.classList.remove('spin'),600);
   });
+}
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// RIGHTS â€” Firebase sync
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+let rightsListenerReady=false;
+function attachRightsListener(){
+  db.ref(FB_RIGHTS).on('value',snap=>{
+    const val=snap.val();
+    if(val){
+      if(val.sup) rights.sup=Object.assign({},rights.sup,val.sup);
+      if(val.tl)  rights.tl =Object.assign({},rights.tl, val.tl);
+    }
+    if(!rightsListenerReady){
+      rightsListenerReady=true;
+      checkStartupReady();
+    } else if(appReady){
+      applyRightsUI();
+      if(role==='admin') syncRightsToggles();
+    }
+  });
+}
+
+function saveRights(){
+  // Read toggles from UI
+  const newRights={
+    sup:{
+      dashboard:document.getElementById('r-sup-dashboard')?.checked||false,
+      upload:document.getElementById('r-sup-upload')?.checked||false,
+      roster:document.getElementById('r-sup-roster')?.checked||false,
+      edit:document.getElementById('r-sup-edit')?.checked||false,
+      export:document.getElementById('r-sup-export')?.checked||false,
+      delete:document.getElementById('r-sup-delete')?.checked||false,
+      resetall:document.getElementById('r-sup-resetall')?.checked||false
+    },
+    tl:{
+      dashboard:document.getElementById('r-tl-dashboard')?.checked||false,
+      export:document.getElementById('r-tl-export')?.checked||false,
+      delete:document.getElementById('r-tl-delete')?.checked||false
+    }
+  };
+  rights=newRights;
+  db.ref(FB_RIGHTS).set(newRights).catch(e=>console.warn('rights save error:',e));
+  applyRightsUI();
+  toast('âœ… Rights updated');
+}
+
+function syncRightsToggles(){
+  // Set toggle states from rights object
+  const map={
+    'r-sup-dashboard': rights.sup.dashboard,
+    'r-sup-upload':    rights.sup.upload,
+    'r-sup-roster':    rights.sup.roster,
+    'r-sup-edit':      rights.sup.edit,
+    'r-sup-export':    rights.sup.export,
+    'r-sup-delete':    rights.sup.delete,
+    'r-sup-resetall':  rights.sup.resetall,
+    'r-tl-dashboard':  rights.tl.dashboard,
+    'r-tl-export':     rights.tl.export,
+    'r-tl-delete':     rights.tl.delete
+  };
+  Object.entries(map).forEach(([id,val])=>{
+    const el=document.getElementById(id); if(el) el.checked=!!val;
+  });
+}
+
+function applyRightsUI(){
+  if(!role) return;
+  if(role==='supervisor'){
+    // Dashboard tab
+    const dbTab=document.getElementById('tb-dashboard');
+    if(dbTab){ dbTab.classList.toggle('locked',!rights.sup.dashboard); }
+    // Upload/roster in sum-uploads
+    setupAccess();
+  } else if(role==='floor'){
+    const dbTab=document.getElementById('tb-dashboard');
+    if(dbTab){ dbTab.classList.toggle('locked',!rights.tl.dashboard); }
+    setupAccess();
+  }
+}
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// SHIFT HELPERS
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function curShift(){ const h=new Date().getHours(); return(h>=7&&h<19)?'day':'night'; }
+function shiftOfDate(d){ const h=new Date(d).getHours(); return(h>=7&&h<19)?'day':'night'; }
+function waveShift(r){
+  if(r.status==='Completed'&&r.endTime){ try{return shiftOfDate(parseTime(r.endTime));}catch(e){} }
+  return r.assignedShift||curShift();
+}
+function applyCrossover(){
+  const cs=curShift(); let changed=false;
+  FL.forEach(f=>{ fd[f].forEach(r=>{
+    if(r.status!=='Completed'&&r.assignedShift!==cs){
+      r.assignedShift=cs;
+      if(r.status==='Pending'){r.userId='';r.userName='';}
+      changed=true;
+    }
+  });});
   if(changed) saveWaves();
 }
 
-// ═══════════════════════════════════════════════════
-// PERSISTENCE — Firebase Realtime Database
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// PERSISTENCE
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function waveToFB(r){ return{...r,uploadDate:r.uploadDate?r.uploadDate.toISOString():null,startDate:r.startDate?r.startDate.toISOString():null}; }
+function waveFromFB(r){ return{...r,uploadDate:r.uploadDate?new Date(r.uploadDate):null,startDate:r.startDate?new Date(r.startDate):null}; }
+function saveWaves(){ const p={}; FL.forEach(f=>{p[f]=fd[f].map(waveToFB);}); db.ref(FB_WAVES).set(p).catch(e=>console.warn('saveWaves:',e)); }
+function saveRoster(){ db.ref(FB_ROSTER).set(rosterDB).catch(e=>console.warn('saveRoster:',e)); }
 
-// Helper: convert wave object dates to strings for Firebase storage
-function waveToFB(r){
-  return {
-    ...r,
-    uploadDate: r.uploadDate ? r.uploadDate.toISOString() : null,
-    startDate:  r.startDate  ? r.startDate.toISOString()  : null,
-  };
-}
-// Helper: restore date strings back to Date objects after reading from Firebase
-function waveFromFB(r){
-  return {
-    ...r,
-    uploadDate: r.uploadDate ? new Date(r.uploadDate) : null,
-    startDate:  r.startDate  ? new Date(r.startDate)  : null,
-  };
-}
-
-// Save all 4 floors to Firebase
-function saveWaves(){
-  const payload = {};
-  FL.forEach(f=>{ payload[f] = fd[f].map(waveToFB); });
-  db.ref(FB_WAVES).set(payload).catch(e=>console.warn('saveWaves error:',e));
-}
-
-// Save roster to Firebase
-function saveRoster(){
-  db.ref(FB_ROSTER).set(rosterDB).catch(e=>console.warn('saveRoster error:',e));
-}
-
-// ── Real-time listeners — set up once, keep in sync forever ──
-let wavesListenerReady = false;
-let rosterListenerReady = false;
+let wavesListenerReady=false, rosterListenerReady=false;
 
 function attachWavesListener(){
-  db.ref(FB_WAVES).on('value', snap=>{
-    const val = snap.val();
-    if(val){
-      FL.forEach(f=>{
-        if(Array.isArray(val[f])){
-          fd[f] = val[f].map(waveFromFB);
-        } else {
-          fd[f] = [];
-        }
-      });
-    } else {
-      FL.forEach(f=>{ fd[f]=[]; });
-    }
-    if(!wavesListenerReady){
-      wavesListenerReady = true;
-      checkStartupReady();
-    } else if(appReady){
-      // Live update while app is running
-      applyCrossover();
-      purgeD1();
-      FL.forEach(f=>renderTable(f));
-      const sumPanel = document.getElementById('panel-summary');
-      if(sumPanel && sumPanel.classList.contains('active')) renderSummary();
-    }
+  db.ref(FB_WAVES).on('value',snap=>{
+    const val=snap.val();
+    if(val){ FL.forEach(f=>{ fd[f]=Array.isArray(val[f])?val[f].map(waveFromFB):[]; }); }
+    else{ FL.forEach(f=>{fd[f]=[];}); }
+    if(!wavesListenerReady){ wavesListenerReady=true; checkStartupReady(); }
+    else if(appReady){ applyCrossover(); purgeD1(); FL.forEach(f=>renderTable(f)); const sp=document.getElementById('panel-summary'); if(sp&&sp.classList.contains('active'))renderSummary(); }
   });
 }
-
 function attachRosterListener(){
-  db.ref(FB_ROSTER).on('value', snap=>{
-    const val = snap.val();
-    if(val){
-      rosterDB = Object.assign({}, DEFAULT_ROSTER, val);
-    } else {
-      rosterDB = Object.assign({}, DEFAULT_ROSTER);
-    }
-    if(!rosterListenerReady){
-      rosterListenerReady = true;
-      checkStartupReady();
-    } else if(appReady){
-      // Re-resolve names for any displayed waves
-      FL.forEach(f=>{ fd[f].forEach(r=>{ if(r.userId) r.userName=getName(r.userId); }); });
-      FL.forEach(f=>renderTable(f));
-    }
+  db.ref(FB_ROSTER).on('value',snap=>{
+    const val=snap.val();
+    rosterDB=Object.assign({},DEFAULT_ROSTER,val||{});
+    if(!rosterListenerReady){ rosterListenerReady=true; checkStartupReady(); }
+    else if(appReady){ FL.forEach(f=>{fd[f].forEach(r=>{if(r.userId)r.userName=getName(r.userId);});}); FL.forEach(f=>renderTable(f)); }
   });
 }
 
 function checkStartupReady(){
-  if(wavesListenerReady && rosterListenerReady){
-    applyCrossover();
-    purgeD1();
-    activeShift = curShift();
-    dashShift   = curShift();
-    appReady = true;
-    // If user already logged in (rare race), re-render
-    if(role){
-      FL.forEach(f=>renderTable(f));
-      showTab(role==='supervisor' ? 'A' : myFloor);
-    }
+  if(wavesListenerReady&&rosterListenerReady&&rightsListenerReady){
+    applyCrossover(); purgeD1();
+    activeShift=curShift(); dashShift=curShift();
+    appReady=true;
+    if(role){ FL.forEach(f=>renderTable(f)); showTab(role==='supervisor'||role==='admin'?'A':myFloor); }
   }
 }
 
-// ── Startup — attach listeners immediately ──
 attachWavesListener();
 attachRosterListener();
-activeShift = curShift();
-dashShift   = curShift();
+attachRightsListener();
+activeShift=curShift(); dashShift=curShift();
 
-// ═══════════════════════════════════════════════════
-// PURGE: delete D-1 completed waves
-// "D-1 completed" = wave completed on a previous calendar day (before today 00:00:00)
-// Pending/Running waves are NEVER auto-deleted.
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// PURGE D-1
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function purgeD1(){
-  const todayMidnight = new Date();
-  todayMidnight.setHours(0,0,0,0);
-  let changed = false;
-  FL.forEach(f=>{
-    const before = fd[f].length;
-    fd[f] = fd[f].filter(r=>{
-      if(r.status !== 'Completed') return true;   // keep Pending/Running always
-      if(!r.endTime) return true;
-      try {
-        const et = parseTime(r.endTime);
-        return et >= todayMidnight;               // keep if completed today
-      } catch(e){ return true; }
-    });
-    if(fd[f].length !== before) changed = true;
-  });
-  if(changed){ saveWaves(); }
+  const tm=new Date(); tm.setHours(0,0,0,0); let changed=false;
+  FL.forEach(f=>{ const b=fd[f].length; fd[f]=fd[f].filter(r=>{ if(r.status!=='Completed')return true; if(!r.endTime)return true; try{return parseTime(r.endTime)>=tm;}catch(e){return true;} }); if(fd[f].length!==b)changed=true; });
+  if(changed)saveWaves();
 }
 
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // TOAST
-// ═══════════════════════════════════════════════════
-let _tt = null;
-function toast(msg, warn=false){
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'show' + (warn ? ' warn' : '');
-  if(_tt) clearTimeout(_tt);
-  _tt = setTimeout(()=> el.className='', 3600);
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+let _tt=null;
+function toast(msg,warn=false){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='show'+(warn?' warn':'');
+  if(_tt)clearTimeout(_tt); _tt=setTimeout(()=>el.className='',3600);
 }
 
-// ═══════════════════════════════════════════════════
-// LOGIN / LOGOUT
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// LOGIN / LOGOUT â€” with session persistence
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function onRoleChg(){
-  const v = document.getElementById('l-role').value;
-  document.getElementById('l-fw').style.display = v==='floor' ? 'block':'none';
-  document.getElementById('l-pw').style.display = v==='supervisor' ? 'block':'none';
-  document.getElementById('l-err').style.display = 'none';
+  const v=document.getElementById('l-role').value;
+  document.getElementById('l-fw').style.display=v==='floor'?'block':'none';
+  document.getElementById('l-pw').style.display=(v==='supervisor'||v==='admin')?'block':'none';
+  const lbl=document.getElementById('l-pw-label');
+  if(lbl)lbl.textContent=v==='admin'?'Admin Password':'Supervisor Password';
+  document.getElementById('l-err').style.display='none';
 }
+
 function doLogin(){
-  const r = document.getElementById('l-role').value;
-  if(!r){ alert('Select a role.'); return; }
-  if(r==='supervisor' && document.getElementById('l-pin').value !== PIN){
-    document.getElementById('l-err').style.display='block'; return;
-  }
-  role = r;
-  myFloor = r==='floor' ? document.getElementById('l-floor').value : null;
-  // Show loading screen while Firebase data loads
-  document.getElementById('ls').style.display  = 'none';
-  document.getElementById('app').style.display = 'flex';
-  document.getElementById('h-badge').textContent = role==='supervisor' ? '👤 Supervisor' : `👤 Floor ${myFloor} TL`;
-  document.getElementById('h-role').textContent  = role==='supervisor' ? 'Supervisor View' : `Floor ${myFloor} — Team Lead`;
-  activeShift = curShift();
-  dashShift   = curShift();
+  const r=document.getElementById('l-role').value;
+  if(!r){alert('Select a role.');return;}
+  if(r==='supervisor'&&document.getElementById('l-pin').value!==PIN){document.getElementById('l-err').style.display='block';return;}
+  if(r==='admin'&&document.getElementById('l-pin').value!==ADMIN_PIN){document.getElementById('l-err').style.display='block';return;}
+  role=r;
+  myFloor=r==='floor'?document.getElementById('l-floor').value:null;
+  saveSession();
+  enterApp();
+}
+
+function enterApp(){
+  document.getElementById('ls').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('h-badge').textContent=role==='supervisor'?'ðŸ‘¤ Supervisor':role==='admin'?'ðŸ”‘ Admin':`ðŸ‘¤ Floor ${myFloor} TL`;
+  document.getElementById('h-role').textContent=role==='supervisor'?'Supervisor View':role==='admin'?'Admin View':`Floor ${myFloor} â€” Team Lead`;
+  activeShift=curShift(); dashShift=curShift();
   setupAccess();
 
-  function enterApp(){
+  function go(){
     FL.forEach(f=>renderTable(f));
     initChat();
-    showTab(role==='supervisor' ? 'A' : myFloor);
+    if(role==='admin') syncRightsToggles();
+    showTab((role==='supervisor'||role==='admin')?'A':myFloor);
   }
 
-  if(appReady){
-    enterApp();
-  } else {
-    // Show connecting indicator and wait
-    toast('🔄 Connecting to database…');
-    const waitInterval = setInterval(()=>{
-      if(appReady){
-        clearInterval(waitInterval);
-        enterApp();
-        toast('✅ Connected!');
-      }
-    }, 200);
-    // Timeout after 8 seconds — fallback with empty data
-    setTimeout(()=>{
-      if(!appReady){
-        clearInterval(waitInterval);
-        appReady = true;
-        enterApp();
-        toast('⚠ Offline mode — check connection', true);
-      }
-    }, 8000);
+  if(appReady){ go(); }
+  else{
+    toast('ðŸ”„ Connectingâ€¦');
+    const iv=setInterval(()=>{ if(appReady){clearInterval(iv);go();toast('âœ… Connected!');} },200);
+    setTimeout(()=>{ if(!appReady){clearInterval(iv);appReady=true;go();toast('âš  Offline mode',true);} },8000);
   }
 }
+
 function doLogout(){
-  // Data stays in localStorage — only reset session vars
+  clearSession();
   role=null; myFloor=null;
   document.getElementById('l-role').value='';
   document.getElementById('l-pin').value='';
   ['l-fw','l-pw'].forEach(id=>document.getElementById(id).style.display='none');
   document.getElementById('l-err').style.display='none';
-  document.getElementById('ls').style.display  = 'flex';
-  document.getElementById('app').style.display = 'none';
+  document.getElementById('ls').style.display='flex';
+  document.getElementById('app').style.display='none';
   destroyChat();
 }
 
-// ═══════════════════════════════════════════════════
-// ACCESS SETUP
-// ═══════════════════════════════════════════════════
-function setupAccess(){
-  const sup = role === 'supervisor';
-
-  // Floor tabs: supervisor sees all 4; Floor TL sees ONLY their floor tab
-  FL.forEach(f=>{
-    const btn = document.getElementById('tb-'+f);
-    if(!btn) return;
-    if(sup){
-      // Supervisor: all floor tabs visible and clickable
-      btn.style.display = '';
-      btn.classList.remove('locked');
-    } else {
-      // Floor TL: show only their own floor, completely hide others
-      if(f === myFloor){
-        btn.style.display = '';
-        btn.classList.remove('locked');
-      } else {
-        btn.style.display = 'none';   // completely hidden — not even visible
-      }
+// â”€â”€ Auto-restore session on page load â”€â”€
+(function restoreSession(){
+  const sess=loadSession();
+  if(sess&&sess.role){
+    role=sess.role; myFloor=sess.floor||null;
+    // Wait for DOM to be ready (it is since we're in <script> at end of body)
+    if(appReady){ enterApp(); }
+    else{
+      const iv=setInterval(()=>{ if(wavesListenerReady&&rosterListenerReady&&rightsListenerReady){ clearInterval(iv); appReady=true; enterApp(); } },100);
+      setTimeout(()=>{ clearInterval(iv); if(!appReady){appReady=true;enterApp();} },10000);
     }
-  });
+  }
+})();
 
-  // Summary tab — open to all; Dashboard — supervisor only
-  document.getElementById('tb-summary').classList.remove('locked');
-  document.getElementById('tb-dashboard').classList.toggle('locked', !sup);
-  document.getElementById('dash-lock').style.display    = sup ? 'none' : 'flex';
-  document.getElementById('dash-content').style.display = sup ? 'block' : 'none';
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ACCESS SETUP
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function setupAccess(){
+  const sup=role==='supervisor', admin=role==='admin', tl=role==='floor';
+  const supOrAdmin=sup||admin;
 
-  // Action column headers in floor tables
   FL.forEach(f=>{
-    const th = document.getElementById('th-'+f);
-    if(th) th.textContent = sup ? 'Actions' : '';
+    const btn=document.getElementById('tb-'+f); if(!btn)return;
+    if(supOrAdmin){ btn.style.display=''; btn.classList.remove('locked'); }
+    else{ if(f===myFloor){btn.style.display='';btn.classList.remove('locked');}else{btn.style.display='none';} }
   });
 
-  // Upload area in Summary — supervisor only
-  const ua = document.getElementById('sum-uploads');
-  if(sup){
-    ua.innerHTML = `
-      <div class="up-grid">
-        <div class="up-card">
-          <div class="up-card-hd">📥 Wave Dump Upload</div>
-          <div class="up-row">
-            <input type="file" id="fi-wave" accept=".csv,.xlsx,.xls" style="display:none" onchange="importWaves(event)">
-            <button class="upbtn" onclick="document.getElementById('fi-wave').click()">📂 Upload Wave Excel / CSV</button>
-            <span class="upst ok" id="us-wave">${countWaves()} waves in system</span>
-          </div>
-          <div style="margin-top:7px;font-size:10.5px;color:var(--txm)">Required columns: <b>Wavekey, OrderQty, AllocatedQty</b></div>
+  document.getElementById('tb-summary').classList.remove('locked');
+
+  // Dashboard access based on rights
+  const dbTab=document.getElementById('tb-dashboard');
+  if(admin){ dbTab.classList.remove('locked'); }
+  else if(sup){ dbTab.classList.toggle('locked',!rights.sup.dashboard); }
+  else if(tl){ dbTab.classList.toggle('locked',!rights.tl.dashboard); }
+  else{ dbTab.classList.add('locked'); }
+
+  document.getElementById('dash-lock').style.display   =(supOrAdmin||rights.tl.dashboard&&tl)?'none':'flex';
+  document.getElementById('dash-content').style.display=(supOrAdmin||rights.tl.dashboard&&tl)?'block':'none';
+
+  // Rights tab â€” admin only
+  const rTab=document.getElementById('tb-rights');
+  if(admin){ rTab.classList.remove('locked'); }
+  else{ rTab.classList.add('locked'); }
+  document.getElementById('rights-lock').style.display   =admin?'none':'flex';
+  document.getElementById('rights-content').style.display=admin?'block':'none';
+
+  // Actions columns
+  FL.forEach(f=>{
+    const th=document.getElementById('th-'+f); if(!th)return;
+    if(admin) th.textContent='Actions';
+    else if(sup&&(rights.sup.edit||rights.sup.delete)) th.textContent='Actions';
+    else if(tl&&rights.tl.delete) th.textContent='Actions';
+    else th.textContent='';
+  });
+
+  // Upload zone
+  const ua=document.getElementById('sum-uploads');
+  if(admin||((sup)&&(rights.sup.upload||rights.sup.roster))){
+    const showUpload=admin||rights.sup.upload;
+    const showRoster=admin||rights.sup.roster;
+    ua.innerHTML=`<div class="up-grid">
+      ${showUpload?`<div class="up-card">
+        <div class="up-card-hd">ðŸ“¥ Wave Dump Upload</div>
+        <div class="up-row">
+          <input type="file" id="fi-wave" accept=".csv,.xlsx,.xls" style="display:none" onchange="importWaves(event)">
+          <button class="upbtn" onclick="document.getElementById('fi-wave').click()">ðŸ“‚ Upload Wave Excel / CSV</button>
+          <span class="upst ok" id="us-wave">${countWaves()} waves in system</span>
         </div>
-        <div class="up-card">
-          <div class="up-card-hd">👥 Roster Upload</div>
-          <div class="up-row">
-            <input type="file" id="fi-roster" accept=".csv,.xlsx,.xls" style="display:none" onchange="importRoster(event)">
-            <button class="upbtn alt" onclick="document.getElementById('fi-roster').click()">📂 Upload Roster Excel / CSV</button>
-            <span class="upst ok" id="us-roster">${Object.keys(rosterDB).length} users in roster (includes default)</span>
-          </div>
-          <div style="margin-top:7px;font-size:10.5px;color:var(--txm)">Required columns: <b>UserID, Name</b> — Optional: <b>Floor, Shift</b></div>
+        <div style="margin-top:7px;font-size:10.5px;color:var(--txm)">Required: <b>Wavekey, OrderQty, AllocatedQty</b></div>
+      </div>`:''}
+      ${showRoster?`<div class="up-card">
+        <div class="up-card-hd">ðŸ‘¥ Roster Upload</div>
+        <div class="up-row">
+          <input type="file" id="fi-roster" accept=".csv,.xlsx,.xls" style="display:none" onchange="importRoster(event)">
+          <button class="upbtn alt" onclick="document.getElementById('fi-roster').click()">ðŸ“‚ Upload Roster Excel / CSV</button>
+          <span class="upst ok" id="us-roster">${Object.keys(rosterDB).length} users in roster</span>
         </div>
-        <div class="up-card" style="border-color:#F5A8A4;background:#FFF8F8;max-width:280px;">
-          <div class="up-card-hd" style="color:#C0392B;">&#x26A0; Danger Zone</div>
-          <div class="up-row">
-            <button class="upbtn" onclick="openReset()" style="background:#C0392B;border:none;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">&#x1F5D1; Reset All Waves</button>
-            <span style="font-size:11px;color:#C0392B;font-weight:500;">Deletes all wave data</span>
-          </div>
+        <div style="margin-top:7px;font-size:10.5px;color:var(--txm)">Required: <b>UserID, Name</b> Â· Optional: <b>Floor, Shift</b></div>
+      </div>`:''}
+      ${admin?`<div class="up-card" style="border-color:#F5A8A4;background:#FFF8F8;max-width:280px;">
+        <div class="up-card-hd" style="color:#C0392B;">&#x26A0; Danger Zone</div>
+        <div class="up-row">
+          <button class="upbtn" onclick="openReset()" style="background:#C0392B;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">&#x1F5D1; Reset All Waves</button>
         </div>
-      </div>`;
+      </div>`:sup&&rights.sup.resetall?`<div class="up-card" style="border-color:#F5A8A4;background:#FFF8F8;max-width:280px;">
+        <div class="up-card-hd" style="color:#C0392B;">&#x26A0; Danger Zone</div>
+        <div class="up-row">
+          <button class="upbtn" onclick="openReset()" style="background:#C0392B;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">&#x1F5D1; Reset All Waves</button>
+        </div>
+      </div>`:''}
+    </div>`;
   } else {
-    ua.innerHTML = '';
+    ua.innerHTML='';
   }
 
+  // Delete All Waves button in Summary â€” admin only
+  const sumDelBtn=document.getElementById('sum-delete-all-btn');
+  if(sumDelBtn) sumDelBtn.style.display=admin?'':'none';
+
+  // Export buttons visibility
+  FL.forEach(f=>{
+    const eb=document.querySelector(`#panel-${f} .upbtn.alt`);
+    if(eb) eb.style.display=(admin||(sup&&rights.sup.export)||(tl&&rights.tl.export))?'':'none';
+  });
+
   renderRoster();
+
+  // Update chat count display if on rights panel
+  updateChatCount();
 }
 
-function countWaves(){ return fd['A'] ? fd['A'].length : 0; }
+function countWaves(){ return fd['A']?fd['A'].length:0; }
 
-// ═══════════════════════════════════════════════════
-// WAVE IMPORT → dedup, push to all 4 floors
-// ═══════════════════════════════════════════════════
-function importWaves(evt){
-  const file = evt.target.files[0]; if(!file) return;
-  readFile(file, rows => pushWaves(rows, file.name));
-}
-function readFile(file, cb){
-  const csv = file.name.toLowerCase().endsWith('.csv');
-  const reader = new FileReader();
-  reader.onload = e=>{
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// IMPORT WAVES
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function importWaves(evt){ const f=evt.target.files[0]; if(!f)return; readFile(f,rows=>pushWaves(rows,f.name)); }
+function readFile(file,cb){
+  const csv=file.name.toLowerCase().endsWith('.csv');
+  const r=new FileReader();
+  r.onload=e=>{
     let rows=[];
-    if(csv){
-      const lines = e.target.result.split('\n').filter(l=>l.trim());
-      const h = lines[0].split(',').map(v=>v.trim().replace(/"/g,''));
-      for(let i=1;i<lines.length;i++){
-        const vals = lines[i].split(',').map(v=>v.trim().replace(/"/g,''));
-        const o={}; h.forEach((k,j)=>o[k]=vals[j]||''); rows.push(o);
-      }
-    } else {
-      const wb = XLSX.read(e.target.result,{type:'binary'});
-      rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
-    }
+    if(csv){ const lines=e.target.result.split('\n').filter(l=>l.trim()); const h=lines[0].split(',').map(v=>v.trim().replace(/"/g,'')); for(let i=1;i<lines.length;i++){const vals=lines[i].split(',').map(v=>v.trim().replace(/"/g,'')); const o={}; h.forEach((k,j)=>o[k]=vals[j]||''); rows.push(o);} }
+    else{ const wb=XLSX.read(e.target.result,{type:'binary'}); rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}); }
     cb(rows);
   };
-  if(csv) reader.readAsText(file); else reader.readAsBinaryString(file);
+  if(csv)r.readAsText(file); else r.readAsBinaryString(file);
 }
-function col(sample, alts){
-  for(const a of alts)
-    for(const k of Object.keys(sample))
-      if(k.toLowerCase().replace(/[\s_]/g,'') === a.toLowerCase().replace(/[\s_]/g,'')) return k;
-  return null;
-}
-function pushWaves(rows, fname){
-  if(!rows.length){ alert('No data found.'); return; }
-  const s   = rows[0];
-  const wkC = col(s,['Wavekey','WaveKey','Wave Key','WAVEKEY']);
-  const noC = col(s,['NoOfOrders','NoofOrders','No of Orders','NOOFORDERS','NumOrders']);
-  const oqC = col(s,['OrderQty','Order Qty','ORDERQTY','OrderQuantity']);
-  const aqC = col(s,['AllocatedQty','Allocated Qty','AllocQty','ALLOCATEDQTY']);
-  const bkC = col(s,['BuildParmKey','Build Parm Key','BUILDPARMKEY','Type']);
-  if(!wkC){ alert('Cannot find "Wavekey" column. Check headers.'); return; }
-
-  const now    = new Date();
-  const nowStr = fmtTime(now);
-
-  // Dedup incoming rows by wave key first
-  const seenIn = new Set();
-  const deduped = rows.filter(row=>{
-    const wk = String(row[wkC]||'').trim();
-    if(!wk || seenIn.has(wk)) return false;
-    seenIn.add(wk); return true;
-  });
-
-  let added=0, skipped=0;
-  deduped.forEach(row=>{
-    const wk = String(row[wkC]||'').trim(); if(!wk) return;
-    if(fd['A'].find(r=>r.wavekey===wk)){ skipped++; return; }  // already in system
-    FL.forEach(f=>{
-      fd[f].push({
-        wavekey: wk,
-        noOfOrders: row[noC] || 0,
-        orderQty:   Number(row[oqC])||0,
-        allocQty:   Number(row[aqC])||0,
-        type: row[bkC]||'',
-        status: 'Pending',
-        assignedShift: curShift(),   // stamp current shift at upload time
-        uploadTime: nowStr, uploadDate: now,
-        startTime:'', startDate:null,
-        endTime:'',   userId:'', userName:'', completionMin:''
-      });
-    });
-    added++;
-  });
-
-  // Sort each floor: ascending by wave key number
-  FL.forEach(f=>{
-    fd[f].sort((a,b)=>{
-      const na=parseFloat(a.wavekey.replace(/[^0-9.]/g,'')), nb=parseFloat(b.wavekey.replace(/[^0-9.]/g,''));
-      if(!isNaN(na)&&!isNaN(nb)) return na-nb;
-      return String(a.wavekey).localeCompare(String(b.wavekey));
-    });
-  });
+function col(sample,alts){ for(const a of alts) for(const k of Object.keys(sample)) if(k.toLowerCase().replace(/[\s_]/g,'')===a.toLowerCase().replace(/[\s_]/g,''))return k; return null; }
+function pushWaves(rows,fname){
+  if(!rows.length){alert('No data found.');return;}
+  const s=rows[0];
+  const wkC=col(s,['Wavekey','WaveKey','Wave Key','WAVEKEY']);
+  const noC=col(s,['NoOfOrders','NoofOrders','No of Orders','NOOFORDERS','NumOrders']);
+  const oqC=col(s,['OrderQty','Order Qty','ORDERQTY','OrderQuantity']);
+  const aqC=col(s,['AllocatedQty','Allocated Qty','AllocQty','ALLOCATEDQTY']);
+  const bkC=col(s,['BuildParmKey','Build Parm Key','BUILDPARMKEY','Type']);
+  if(!wkC){alert('Cannot find "Wavekey" column.');return;}
+  const now=new Date(); const nowStr=fmtTime(now);
+  const seen=new Set();
+  const deduped=rows.filter(row=>{ const wk=String(row[wkC]||'').trim(); if(!wk||seen.has(wk))return false; seen.add(wk);return true; });
+  let added=0,skipped=0;
+  deduped.forEach(row=>{ const wk=String(row[wkC]||'').trim(); if(!wk)return; if(fd['A'].find(r=>r.wavekey===wk)){skipped++;return;} FL.forEach(f=>{fd[f].push({wavekey:wk,noOfOrders:row[noC]||0,orderQty:Number(row[oqC])||0,allocQty:Number(row[aqC])||0,type:row[bkC]||'',status:'Pending',assignedShift:curShift(),uploadTime:nowStr,uploadDate:now,startTime:'',startDate:null,endTime:'',userId:'',userName:'',completionMin:''});}); added++; });
+  FL.forEach(f=>{ fd[f].sort((a,b)=>{ const na=parseFloat(a.wavekey.replace(/[^0-9.]/g,'')),nb=parseFloat(b.wavekey.replace(/[^0-9.]/g,'')); if(!isNaN(na)&&!isNaN(nb))return na-nb; return String(a.wavekey).localeCompare(String(b.wavekey)); }); });
   saveWaves();
-  const el = document.getElementById('us-wave');
-  if(el) el.innerHTML = `\u2705 ${added} added \u00b7 ${skipped} dup skipped \u00b7 ${nowStr}`;
+  const el=document.getElementById('us-wave'); if(el)el.innerHTML=`âœ… ${added} added Â· ${skipped} dup skipped Â· ${nowStr}`;
   FL.forEach(f=>renderTable(f));
-  toast(`\u2705 ${added} waves added to all floors${skipped?` \u00b7 ${skipped} duplicates skipped`:''}`);
+  toast(`âœ… ${added} waves added${skipped?` Â· ${skipped} duplicates skipped`:''}`);
 }
 
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // ROSTER IMPORT
-// ═══════════════════════════════════════════════════
-function importRoster(evt){
-  const file = evt.target.files[0]; if(!file) return;
-  readFile(file, rows => buildRoster(rows, file.name));
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function importRoster(evt){ const f=evt.target.files[0]; if(!f)return; readFile(f,rows=>buildRoster(rows,f.name)); }
+function buildRoster(rows,fname){
+  if(!rows.length){alert('No rows.');return;}
+  const s=rows[0];
+  const uidC=col(s,['UserID','User ID','userid','UserId','EmpID','EmployeeID','ID']);
+  const nmC=col(s,['Name','FullName','Full Name','EmployeeName','Employee Name']);
+  const flC=col(s,['Floor','floor']); const shC=col(s,['Shift','shift']);
+  if(!uidC||!nmC){alert('Roster needs "UserID" and "Name" columns.');return;}
+  const nr=Object.assign({},DEFAULT_ROSTER);
+  rows.forEach(row=>{ const uid=String(row[uidC]||'').trim().toUpperCase(); const name=String(row[nmC]||'').trim(); if(!uid||!name)return; nr[uid]={name,floor:flC?String(row[flC]||'').trim():'',shift:shC?String(row[shC]||'').trim():''}; });
+  rosterDB=nr; saveRoster();
+  const el=document.getElementById('us-roster'); if(el)el.innerHTML=`âœ… ${Object.keys(rosterDB).length} users Â· ${fname}`;
+  FL.forEach(f=>{fd[f].forEach(r=>{if(r.userId)r.userName=getName(r.userId);});}); saveWaves(); FL.forEach(f=>renderTable(f));
+  toast(`âœ… Roster updated â€” ${Object.keys(rosterDB).length} users`);
 }
-function buildRoster(rows, fname){
-  if(!rows.length){ alert('No rows found.'); return; }
-  const s    = rows[0];
-  const uidC = col(s,['UserID','User ID','userid','UserId','EmpID','EmployeeID','ID']);
-  const nmC  = col(s,['Name','FullName','Full Name','EmployeeName','Employee Name']);
-  const flC  = col(s,['Floor','floor']);
-  const shC  = col(s,['Shift','shift']);
-  if(!uidC||!nmC){ alert('Roster needs "UserID" and "Name" columns.'); return; }
+function getName(uid){ if(!uid)return''; const u=rosterDB[uid]; return u?u.name:'Unknown'; }
+function renderRoster(){}
 
-  // Start fresh from defaults, then overlay uploaded data
-  const newRoster = Object.assign({}, DEFAULT_ROSTER);
-  rows.forEach(row=>{
-    const uid  = String(row[uidC]||'').trim().toUpperCase();
-    const name = String(row[nmC ]||'').trim();
-    if(!uid||!name) return;
-    newRoster[uid] = { name, floor: flC?String(row[flC]||'').trim():'', shift: shC?String(row[shC]||'').trim():'' };
-  });
-  rosterDB = newRoster;
-  saveRoster();
-
-  const el = document.getElementById('us-roster');
-  if(el) el.innerHTML = `✅ ${Object.keys(rosterDB).length} users · ${fname}`;
-  renderRoster();
-  // Re-resolve names for existing waves
-  FL.forEach(f=>{ fd[f].forEach(r=>{ if(r.userId) r.userName=getName(r.userId); }); });
-  saveWaves();
-  FL.forEach(f=>renderTable(f));
-  toast(`✅ Roster updated — ${Object.keys(rosterDB).length} users`);
-}
-function getName(uid){ if(!uid) return ''; const u=rosterDB[uid]; return u ? u.name : 'Unknown'; }
-
-function renderRoster(){ /* roster hidden from UI — data still used internally for name lookup */ }
-
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // FILTER STATE
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function setFlt(f,v){
   flt[f]=v;
   ['all','Pending','Running','Completed','Partial'].forEach(x=>{
-    const el=document.getElementById(`cf-${f}-${x}`); if(!el) return;
+    const el=document.getElementById(`cf-${f}-${x}`); if(!el)return;
     el.className='chip';
-    if(x===v){
-      if(x==='all')       el.classList.add('call');
-      else if(x==='Pending')   el.classList.add('cp');
-      else if(x==='Running')   el.classList.add('cr');
-      else if(x==='Completed') el.classList.add('cc');
-      else if(x==='Partial')   el.style.cssText='background:#154EA0;color:#fff;border-color:#154EA0;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;';
-    } else {
-      // Reset Partial chip to default blue style when not active
-      if(x==='Partial') el.style.cssText='background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;';
-    }
+    if(x===v){ if(x==='all')el.classList.add('call'); else if(x==='Pending')el.classList.add('cp'); else if(x==='Running')el.classList.add('cr'); else if(x==='Completed')el.classList.add('cc'); else if(x==='Partial')el.style.cssText='background:#154EA0;color:#fff;border-color:#154EA0;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;'; }
+    else{ if(x==='Partial')el.style.cssText='background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;'; }
   });
   renderTable(f);
 }
 function filteredRows(f){
-  const q   = (document.getElementById('srch-'+f)?.value||'').toLowerCase().trim();
-  const by  = document.getElementById('sby-'+f)?.value||'all';
+  const q=(document.getElementById('srch-'+f)?.value||'').toLowerCase().trim();
+  const by=document.getElementById('sby-'+f)?.value||'all';
   return fd[f].filter(r=>{
-    // Status/Partial filter
-    if(flt[f]==='Partial'){
-      if(r.allocQty >= r.orderQty) return false;  // only show partial (blue) waves
-    } else if(flt[f]!=='all'){
-      if(r.status!==flt[f]) return false;
-    }
-    if(!q) return true;
-    const vals = by==='all'
-      ? [r.wavekey,r.userId,r.type,r.status,r.userName,String(r.orderQty),String(r.allocQty)]
-      : [String(r[by]||'')];
+    if(flt[f]==='Partial'){ if(r.allocQty>=r.orderQty)return false; }
+    else if(flt[f]!=='all'){ if(r.status!==flt[f])return false; }
+    if(!q)return true;
+    const vals=by==='all'?[r.wavekey,r.userId,r.type,r.status,r.userName,String(r.orderQty),String(r.allocQty)]:[String(r[by]||'')];
     return vals.some(v=>(v||'').toLowerCase().includes(q));
   });
 }
 
-// ═══════════════════════════════════════════════════
-// RENDER FLOOR TABLE
-// ═══════════════════════════════════════════════════
-function renderTable(f){
-  const tbody = document.getElementById('tbody-'+f); if(!tbody) return;
-  const canEdit = role==='supervisor' || myFloor===f;
-  const isSup   = role==='supervisor';
-  const rows = filteredRows(f);
-  const now  = new Date();
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// UID COMMIT
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function uidCommit(f,i,inp){
+  const r=fd[f][i]; if(!r)return;
+  const newVal=inp.value.replace(/[\r\n\t]/g,'').trim().toUpperCase();
+  inp.value=newVal;
+  const oldVal=(r.userId||'').toUpperCase();
+  if(newVal===oldVal)return;
+  onUID(f,i,inp);
+}
 
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// RENDER TABLE
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function renderTable(f){
+  const tbody=document.getElementById('tbody-'+f); if(!tbody)return;
+  const activeEl=document.activeElement;
+  if(activeEl&&activeEl.classList.contains('uid-inp')&&tbody.contains(activeEl))return;
+  const rows=filteredRows(f);
+  const now=new Date();
   if(!rows.length){
-    const msg = fd[f].length ? 'No results for current filter' : 'Awaiting supervisor wave upload';
-    const ico = fd[f].length ? '🔍' : '📦';
+    const msg=fd[f].length?'No results for current filter':'Awaiting supervisor wave upload';
+    const ico=fd[f].length?'ðŸ”':'ðŸ“¦';
     tbody.innerHTML=`<tr><td colspan="13"><div class="empty"><div class="empi">${ico}</div><p>${msg}</p></div></td></tr>`;
     return;
   }
-
-  tbody.innerHTML = rows.map(r=>{
-    const ri = fd[f].indexOf(r);
-    const partial = r.allocQty < r.orderQty;
-    const overdue = r.status==='Pending' && r.uploadDate && (now - new Date(r.uploadDate))/60000 >= 120;
-    const wkCls   = 'wk '+(partial?'wkp':'wkf')+(overdue?' wkov':'');
-    const ovTag   = overdue ? `<span class="ovtag">⚠ OVERDUE</span>` : '';
-
-    const isPend=r.status==='Pending', isRun=r.status==='Running', isDone=r.status==='Completed';
-    // Supervisor can freely move to any status; TL follows normal flow
-    let pdis, rdis, cdis;
-    if(isSup){
-      pdis = isDone ? '' : '';   // supervisor: Pending always clickable unless already Pending
-      pdis = isPend ? 'dis' : (canEdit ? '' : 'dis');
-      rdis = isRun  ? 'dis' : (canEdit ? '' : 'dis');
-      cdis = isDone ? 'dis' : (canEdit ? '' : 'dis');
+  const admin=role==='admin', sup=role==='supervisor', tl=role==='floor';
+  tbody.innerHTML=rows.map(r=>{
+    const ri=fd[f].indexOf(r);
+    const partial=r.allocQty<r.orderQty;
+    const overdue=r.status==='Pending'&&r.uploadDate&&(now-new Date(r.uploadDate))/60000>=120;
+    const wkCls='wk '+(partial?'wkp':'wkf')+(overdue?' wkov':'');
+    const ovTag=overdue?`<span class="ovtag">âš  OVERDUE</span>`:'';
+    const isPend=r.status==='Pending',isRun=r.status==='Running',isDone=r.status==='Completed';
+    let statusCell;
+    if(admin){
+      const pdis=isPend?'dis':'',rdis=isRun?'dis':'',cdis=isDone?'dis':'';
+      const pact=isPend?'act':'',ract=isRun?'act':'',cact=isDone?'act':'';
+      statusCell=`<div class="schips"><button class="schip sp ${pact} ${pdis}" onclick="setSt('${f}',${ri},'Pending')">Pending</button><button class="schip sr ${ract} ${rdis}" onclick="setSt('${f}',${ri},'Running')">Running</button><button class="schip sc ${cact} ${cdis}" onclick="setSt('${f}',${ri},'Completed')">Completed</button></div>`;
+    } else if(tl&&myFloor===f&&isRun){
+      const startedAt=runningStartTimes[f+'-'+r.wavekey]||(r.startDate?new Date(r.startDate).getTime():null);
+      const elapsed=startedAt?(Date.now()-startedAt):99999999;
+      const locked=elapsed<30000; const secsLeft=locked?Math.ceil((30000-elapsed)/1000):0;
+      statusCell=`<div class="schips"><span class="fb fb-running" style="margin-right:4px;">Running</span><button class="schip sc ${locked?'dis':''}" onclick="setSt('${f}',${ri},'Completed')">${locked?`â³ ${secsLeft}s`:'âœ” Complete'}</button></div>`;
     } else {
-      pdis = (!canEdit||isRun||isDone)?'dis':'';
-      rdis = (!canEdit||!isPend)?'dis':'';
-      cdis = (!canEdit||!isRun)?'dis':'';
-      // 1-min lockout for TL Completed button
-      if(!cdis && isRun){
-        const lockKey = f+'-'+r.wavekey;
-        const startedAt = runningStartTimes[lockKey];
-        if(startedAt && (Date.now() - startedAt) < 60000){
-          cdis = 'dis';
-        }
-      }
+      const cls=isPend?'fb-pending':isRun?'fb-running':'fb-completed';
+      statusCell=`<span class="fb ${cls}">${r.status}</span>`;
     }
-    const pact=isPend?'act':'', ract=isRun?'act':'', cact=isDone?'act':'';
-    // UID enabled on Pending or Running (scan on Pending auto-starts)
-    const uidDis = (!canEdit||isDone)?'dis':'';
-
-    const actCell = isSup
-      ? `<td style="white-space:nowrap">
-           <button class="abtn ebtn" onclick="openEdit('${r.wavekey}')">✏️</button>
-           <button class="abtn dbtn" style="margin-left:3px" onclick="delWave('${r.wavekey}')">🗑</button>
-         </td>`
-      : '<td></td>';
-
-    return `<tr>
-      <td><span class="${wkCls}" onclick="openQR('${r.wavekey}','${f}')">${r.wavekey}</span>${ovTag}</td>
-      <td>${r.noOfOrders}</td><td>${r.orderQty}</td><td>${r.allocQty}</td><td>${r.type}</td>
-      <td><div class="schips">
-        <button class="schip sp ${pact} ${pdis}" onclick="setSt('${f}',${ri},'Pending')">Pending</button>
-        <button class="schip sr ${ract} ${rdis}" onclick="setSt('${f}',${ri},'Running')">Running</button>
-        <button class="schip sc ${cact} ${cdis}" onclick="setSt('${f}',${ri},'Completed')">Completed</button>
-      </div></td>
-      <td class="tc">${r.uploadTime}</td>
-      <td class="tc">${r.startTime||'—'}</td>
-      <td class="tc">${r.endTime||'—'}</td>
-      <td><input class="uid-inp ${uidDis}" type="text" value="${r.userId}" placeholder="${isPend?'Scan to start':'Scan ID'}"
-        ${uidDis?'disabled':''}
-        onkeydown="if(event.key==='Enter'||event.key==='Tab'){event.preventDefault();onUID('${f}',${ri},this);}"
-        onchange="onUID('${f}',${ri},this)"></td>
-      <td class="uname">${r.userName||'—'}</td>
-      <td class="tc">${r.completionMin!==''?r.completionMin+' min':'—'}</td>
-      ${actCell}
-    </tr>`;
+    const uidDis=(sup||isDone||(tl&&myFloor!==f))?'dis':'';
+    let actCell='<td></td>';
+    if(admin){ actCell=`<td style="white-space:nowrap"><button class="abtn ebtn" onclick="openEdit('${r.wavekey}')">âœï¸</button><button class="abtn dbtn" style="margin-left:3px" onclick="delWave('${r.wavekey}')">ðŸ—‘</button></td>`; }
+    else if(sup&&(rights.sup.edit||rights.sup.delete)){
+      const editBtn=rights.sup.edit?`<button class="abtn ebtn" onclick="openEdit('${r.wavekey}')">âœï¸</button>`:'';
+      const delBtn=rights.sup.delete?`<button class="abtn dbtn" style="margin-left:3px" onclick="delWave('${r.wavekey}')">ðŸ—‘</button>`:'';
+      actCell=`<td style="white-space:nowrap">${editBtn}${delBtn}</td>`;
+    }
+    else if(tl&&myFloor===f&&rights.tl.delete){ actCell=`<td style="white-space:nowrap"><button class="abtn dbtn" onclick="delWave('${r.wavekey}')">ðŸ—‘</button></td>`; }
+    return `<tr><td><span class="${wkCls}" onclick="openQR('${r.wavekey}','${f}')">${r.wavekey}</span>${ovTag}</td><td>${r.noOfOrders}</td><td>${r.orderQty}</td><td>${r.allocQty}</td><td>${r.type}</td><td>${statusCell}</td><td><input class="uid-inp ${uidDis}" type="text" value="${r.userId}" placeholder="${isPend?'Scan to start':'Scan ID'}" ${uidDis?'disabled':''} onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();}" onblur="uidCommit('${f}',${ri},this)"></td><td class="uname">${r.userName||'â€”'}</td><td class="tc">${r.uploadTime}</td><td class="tc">${r.startTime||'â€”'}</td><td class="tc">${r.endTime||'â€”'}</td><td class="tc">${r.completionMin!==''?r.completionMin+' min':'â€”'}</td>${actCell}</tr>`;
   }).join('');
 }
 
-// Track when waves transitioned to Running (for 1-min Completed lock)
-const runningStartTimes = {}; // key: "floor-wavekey" -> timestamp
+const runningStartTimes={};
 
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // STATUS TRANSITIONS
-// ═══════════════════════════════════════════════════
-function setSt(f, i, st){
-  const r = fd[f][i]; if(!r) return;
-  const now = new Date();
-  const isSup = role === 'supervisor';
-
-  if(isSup){
-    // Supervisor: allow any transition
-    if(st === r.status) return; // already in that state
-    if(st === 'Running' && !r.startTime){
-      r.startTime = fmtTime(now); r.startDate = now;
-      runningStartTimes[f+'-'+r.wavekey] = Date.now();
-    }
-    if(st === 'Completed'){
-      if(!r.startTime){ r.startTime = fmtTime(now); r.startDate = now; }
-      r.endTime = fmtTime(now);
-      r.completionMin = r.startDate ? Math.round((now - r.startDate)/60000) : 0;
-    }
-    if(st === 'Pending'){
-      // Reset times when rolling back to Pending
-      r.startTime = ''; r.startDate = null;
-      r.endTime = ''; r.completionMin = '';
-      delete runningStartTimes[f+'-'+r.wavekey];
-    }
-  } else {
-    // TL: normal flow only
-    if(st==='Running' && r.status==='Pending'){
-      r.startTime=fmtTime(now); r.startDate=now;
-      runningStartTimes[f+'-'+r.wavekey] = Date.now();
-    } else if(st==='Completed' && r.status==='Running'){
-      // Check 1-minute lockout
-      const lockKey = f+'-'+r.wavekey;
-      const startedAt = runningStartTimes[lockKey];
-      if(startedAt && (Date.now() - startedAt) < 60000){
-        const secsLeft = Math.ceil((60000 - (Date.now() - startedAt)) / 1000);
-        toast(`⏳ Cannot complete yet — wait ${secsLeft}s after starting Running`, true);
-        return;
-      }
-      r.endTime=fmtTime(now);
-      r.completionMin = r.startDate ? Math.round((now-r.startDate)/60000) : 0;
-    } else return; // invalid transition for TL
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function setSt(f,i,st){
+  const r=fd[f][i]; if(!r)return;
+  const now=new Date();
+  const isAdmin=role==='admin', isTL=role==='floor'&&myFloor===f;
+  if(isAdmin){
+    if(st===r.status)return;
+    if(st==='Running'&&!r.startTime){r.startTime=fmtTime(now);r.startDate=now;runningStartTimes[f+'-'+r.wavekey]=Date.now();}
+    if(st==='Completed'){if(!r.startTime){r.startTime=fmtTime(now);r.startDate=now;}r.endTime=fmtTime(now);r.completionMin=r.startDate?Math.round((now-new Date(r.startDate))/60000):0;}
+    if(st==='Pending'){r.startTime='';r.startDate=null;r.endTime='';r.completionMin='';r.userId='';r.userName='';delete runningStartTimes[f+'-'+r.wavekey];}
+    r.status=st;saveWaves();renderTable(f);return;
   }
-
-  r.status=st;
-  saveWaves();
-  renderTable(f);
+  if(isTL&&st==='Completed'&&r.status==='Running'){
+    const sa=runningStartTimes[f+'-'+r.wavekey]||(r.startDate?new Date(r.startDate).getTime():null);
+    if(sa&&(Date.now()-sa)<30000){toast(`â³ Wait ${Math.ceil((30000-(Date.now()-sa))/1000)}s`,true);return;}
+    r.endTime=fmtTime(now);r.completionMin=r.startDate?Math.round((now-new Date(r.startDate))/60000):0;r.status='Completed';saveWaves();renderTable(f);return;
+  }
 }
 
-// ═══════════════════════════════════════════════════
-// UID SCAN — auto-start Pending + conflict check
-// ═══════════════════════════════════════════════════
-function onUID(f, i, inp){
-  const r = fd[f][i]; if(!r) return;
-  const uid = inp.value.trim().toUpperCase();
-  if(!uid){ r.userId=''; r.userName=''; saveWaves(); renderTable(f); return; }
-
-  // Conflict: uid already Running on another wave across ALL floors
-  for(const fl of FL){
-    for(const row of fd[fl]){
-      if(row===r) continue;
-      if(row.userId===uid && row.status==='Running'){
-        toast(`⚠ ${uid} is already running wave ${row.wavekey} on Floor ${fl}. Complete it first.`, true);
-        inp.value=''; return;
-      }
-    }
-  }
-
-  const canEdit = role==='supervisor' || myFloor===f;
-  if(!canEdit){ toast('⚠ You can only edit your own floor.',true); inp.value=''; return; }
-
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// UID SCAN
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function onUID(f,i,inp){
+  const r=fd[f][i]; if(!r)return;
+  const uid=inp.value.trim().toUpperCase();
+  if(!uid){r.userId='';r.userName='';saveWaves();renderTable(f);return;}
+  for(const fl of FL){ for(const row of fd[fl]){ if(row===r)continue; if(row.userId===uid&&row.status==='Running'){toast(`âš  ${uid} already running wave ${row.wavekey} on Floor ${fl}`,true);inp.value='';return;} } }
+  const canEdit=role==='admin'||(role==='floor'&&myFloor===f);
+  if(!canEdit){toast('âš  You can only edit your own floor.',true);inp.value='';return;}
   if(r.status==='Pending'){
-    const now=new Date();
-    r.startTime=fmtTime(now); r.startDate=now; r.status='Running';
-    runningStartTimes[f+'-'+r.wavekey] = Date.now();
-    r.userId=uid; r.userName=getName(uid);
-    toast(`▶ Wave ${r.wavekey} started — ${r.userName||uid}`);
-  } else if(r.status==='Running'){
-    r.userId=uid; r.userName=getName(uid);
-    toast(`✅ ${r.userName||uid} assigned to ${r.wavekey}`);
-  } else { inp.value=r.userId; return; }
-
-  saveWaves();
-  renderTable(f);
+    const now=new Date(); r.startTime=fmtTime(now);r.startDate=now;r.status='Running';runningStartTimes[f+'-'+r.wavekey]=Date.now();r.userId=uid;r.userName=getName(uid);toast(`â–¶ Wave ${r.wavekey} started â€” ${r.userName||uid}`);
+  } else if(r.status==='Running'){ r.userId=uid;r.userName=getName(uid);toast(`âœ… ${r.userName||uid} reassigned to ${r.wavekey}`); }
+  else{inp.value=r.userId;return;}
+  saveWaves();renderTable(f);
 }
 
-// ═══════════════════════════════════════════════════
-// EDIT WAVE (supervisor only — propagates to all floors)
-// ═══════════════════════════════════════════════════
-function openEdit(wk){
-  const r = fd['A'].find(x=>x.wavekey===wk); if(!r) return;
-  document.getElementById('edit-orig').value = wk;
-  document.getElementById('edit-wk').value   = r.wavekey;
-  document.getElementById('edit-no').value   = r.noOfOrders;
-  document.getElementById('edit-oq').value   = r.orderQty;
-  document.getElementById('edit-aq').value   = r.allocQty;
-  document.getElementById('edit-tp').value   = r.type;
-  document.getElementById('edit-mov').classList.add('open');
-}
-function closeEdit(e, force){
-  if(force||(e&&e.target===document.getElementById('edit-mov')))
-    document.getElementById('edit-mov').classList.remove('open');
-}
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// EDIT / DELETE WAVE
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function openEdit(wk){ const r=fd['A'].find(x=>x.wavekey===wk);if(!r)return; document.getElementById('edit-orig').value=wk; document.getElementById('edit-wk').value=r.wavekey; document.getElementById('edit-no').value=r.noOfOrders; document.getElementById('edit-oq').value=r.orderQty; document.getElementById('edit-aq').value=r.allocQty; document.getElementById('edit-tp').value=r.type; document.getElementById('edit-mov').classList.add('open'); }
+function closeEdit(e,force){ if(force||(e&&e.target===document.getElementById('edit-mov')))document.getElementById('edit-mov').classList.remove('open'); }
 function saveEdit(){
-  const orig = document.getElementById('edit-orig').value;
-  const newWk = document.getElementById('edit-wk').value.trim();
-  if(!newWk){ toast('Wave key cannot be empty.',true); return; }
-  if(newWk!==orig && fd['A'].find(r=>r.wavekey===newWk)){
-    toast(`Wave key "${newWk}" already exists.`,true); return;
-  }
-  FL.forEach(f=>{
-    const r = fd[f].find(x=>x.wavekey===orig); if(!r) return;
-    r.wavekey       = newWk;
-    r.noOfOrders    = document.getElementById('edit-no').value || r.noOfOrders;
-    r.orderQty      = Number(document.getElementById('edit-oq').value) || r.orderQty;
-    r.allocQty      = Number(document.getElementById('edit-aq').value) || r.allocQty;
-    r.type          = document.getElementById('edit-tp').value.trim() || r.type;
-  });
-  saveWaves();
-  closeEdit(null,true);
-  FL.forEach(f=>renderTable(f));
-  toast(`✅ Wave "${newWk}" updated on all floors`);
+  const orig=document.getElementById('edit-orig').value;
+  const newWk=document.getElementById('edit-wk').value.trim();
+  if(!newWk){toast('Wave key empty.',true);return;}
+  if(newWk!==orig&&fd['A'].find(r=>r.wavekey===newWk)){toast(`Wave key "${newWk}" exists.`,true);return;}
+  FL.forEach(f=>{const r=fd[f].find(x=>x.wavekey===orig);if(!r)return;r.wavekey=newWk;r.noOfOrders=document.getElementById('edit-no').value||r.noOfOrders;r.orderQty=Number(document.getElementById('edit-oq').value)||r.orderQty;r.allocQty=Number(document.getElementById('edit-aq').value)||r.allocQty;r.type=document.getElementById('edit-tp').value.trim()||r.type;});
+  saveWaves();closeEdit(null,true);FL.forEach(f=>renderTable(f));toast(`âœ… Wave "${newWk}" updated`);
 }
-
-// ═══════════════════════════════════════════════════
-// DELETE WAVE (supervisor only — all floors)
-// ═══════════════════════════════════════════════════
 function delWave(wk){
-  if(!confirm(`Delete wave "${wk}" from ALL floors? Cannot be undone.`)) return;
-  FL.forEach(f=>{ fd[f]=fd[f].filter(r=>r.wavekey!==wk); });
-  saveWaves();
-  FL.forEach(f=>renderTable(f));
-  if(document.getElementById('panel-summary').classList.contains('active')) renderSummary();
-  toast(`🗑 Wave "${wk}" deleted from all floors`);
-}
+  // Permission check
+  if(role==='supervisor'&&!rights.sup.delete){toast('âš  You do not have delete permission',true);return;}
+  if(role==='floor'&&!rights.tl.delete){toast('âš  You do not have delete permission',true);return;}
+  if(!confirm(`Delete wave "${wk}" from ALL floors?`))return;
+  FL.forEach(f=>{fd[f]=fd[f].filter(r=>r.wavekey!==wk);}); saveWaves();FL.forEach(f=>renderTable(f)); const sp=document.getElementById('panel-summary');if(sp&&sp.classList.contains('active'))renderSummary(); toast(`ðŸ—‘ Wave "${wk}" deleted`); }
 
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // TABS
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function showTab(id){
-  if(id==='dashboard' && role!=='supervisor') return;
-  // Floor TL can only access their own floor panel, summary
-  if(role==='floor' && FL.includes(id) && id!==myFloor) return;
+  if(id==='dashboard'&&role!=='supervisor'&&role!=='admin'&&!rights.tl.dashboard)return;
+  if(id==='rights'&&role!=='admin')return;
+  if(role==='floor'&&FL.includes(id)&&id!==myFloor)return;
   document.querySelectorAll('.tpanel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
-  const tbBtn = document.getElementById('tb-'+id);
-  if(tbBtn) tbBtn.classList.add('active');
-  if(id==='summary')   renderSummary();
-  if(id==='dashboard') renderDashboard();
+  const tbBtn=document.getElementById('tb-'+id); if(tbBtn)tbBtn.classList.add('active');
+  if(id==='summary')renderSummary();
+  if(id==='dashboard')renderDashboard();
+  if(id==='rights'){syncRightsToggles();updateChatCount();}
 }
 
-// ═══════════════════════════════════════════════════
-// SUMMARY — shift tabs
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// SUMMARY
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function setShift(s){
-  activeShift = s;
-  document.getElementById('stab-day').classList.toggle('act', s==='day');
-  document.getElementById('stab-night').classList.toggle('act', s==='night');
-  const lbl = document.getElementById('shift-lbl');
-  if(s==='day'){
-    lbl.textContent='☀️ Day Shift';
-    lbl.style.cssText='font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--day-bg);color:var(--day-col);border:1px solid var(--day-brd)';
-  } else {
-    lbl.textContent='🌙 Night Shift';
-    lbl.style.cssText='font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--night-bg);color:var(--night);border:1px solid var(--night-brd)';
-  }
+  activeShift=s;
+  document.getElementById('stab-day').classList.toggle('act',s==='day');
+  document.getElementById('stab-night').classList.toggle('act',s==='night');
+  const lbl=document.getElementById('shift-lbl');
+  if(s==='day'){lbl.textContent='â˜€ï¸ Day Shift';lbl.style.cssText='font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--day-bg);color:var(--day-col);border:1px solid var(--day-brd)';}
+  else{lbl.textContent='ðŸŒ™ Night Shift';lbl.style.cssText='font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--night-bg);color:var(--night);border:1px solid var(--night-brd)';}
   renderSummary();
 }
-
-// ═══════════════════════════════════════════════════
-// SUMMARY — status filter
-// ═══════════════════════════════════════════════════
 function setSumFlt(v){
-  sumFlt = v;
-  ['all','Pending','Running','Completed','Partial'].forEach(x=>{
-    const el = document.getElementById('sf-'+x); if(!el) return;
-    el.className = 'chip';
-    if(x === v){
-      if(x==='all')         el.classList.add('call');
-      else if(x==='Pending')   el.classList.add('cp');
-      else if(x==='Running')   el.classList.add('cr');
-      else if(x==='Completed') el.classList.add('cc');
-      else if(x==='Partial')   el.style.cssText='background:#154EA0;color:#fff;border-color:#154EA0;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;';
-    } else {
-      if(x==='Partial') el.style.cssText='background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;';
-    }
-  });
+  sumFlt=v;
+  ['all','Pending','Running','Completed','Partial'].forEach(x=>{ const el=document.getElementById('sf-'+x);if(!el)return; el.className='chip'; if(x===v){if(x==='all')el.classList.add('call');else if(x==='Pending')el.classList.add('cp');else if(x==='Running')el.classList.add('cr');else if(x==='Completed')el.classList.add('cc');else if(x==='Partial')el.style.cssText='background:#154EA0;color:#fff;border-color:#154EA0;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;';} else{if(x==='Partial')el.style.cssText='background:#EAF2FF;color:#154EA0;border-color:#A8C0E8;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid;font-family:inherit;white-space:nowrap;';} });
   renderSummary();
 }
-
-function renderSummary(){
-  renderFloorCounts();
-  renderWaveDetail();
-}
-
-// For summary display: wave appears on a shift if
-//   Completed   → its endTime hour falls in that shift window
-//   Pending/Running → always shows on activeShift (current live work)
-function rowMatchesShift(r){
-  return waveShift(r) === activeShift;
-}
-
+function renderSummary(){renderFloorCounts();renderWaveDetail();}
+function rowMatchesShift(r){return waveShift(r)===activeShift;}
 function renderFloorCounts(){
-  const tbody = document.getElementById('fsum-body');
-  let tW=0,tR=0,tC=0,tP=0,tPick=0;
-  const rows = FL.map(f=>{
-    const sr = fd[f].filter(rowMatchesShift);
-    const running  = sr.filter(r=>r.status==='Running').length;
-    const comp     = sr.filter(r=>r.status==='Completed').length;
-    const pend     = sr.filter(r=>r.status==='Pending').length;
-    const pickers  = new Set(sr.filter(r=>r.userId).map(r=>r.userId)).size;
-    tW+=sr.length; tR+=running; tC+=comp; tP+=pend; tPick+=pickers;
-    return {f,total:sr.length,running,comp,pend,pickers};
-  });
-  if(!tW){
-    tbody.innerHTML=`<tr><td colspan="6"><div class="empty" style="padding:20px"><div class="empi">📊</div><p>No ${activeShift} shift waves</p></div></td></tr>`;
-    return;
-  }
-  tbody.innerHTML =
-    rows.map(({f,total,running,comp,pend,pickers})=>`
-      <tr>
-        <td><strong>Floor ${f}</strong></td>
-        <td><span class="cnt">${total}</span></td>
-        <td><span class="cnt r">${running}</span></td>
-        <td><span class="cnt g">${comp}</span></td>
-        <td><span class="cnt o">${pend}</span></td>
-        <td><span class="cnt">${pickers}</span></td>
-      </tr>`).join('') +
-    `<tr>
-      <td><strong>TOTAL</strong></td>
-      <td><span class="cnt">${tW}</span></td>
-      <td><span class="cnt r">${tR}</span></td>
-      <td><span class="cnt g">${tC}</span></td>
-      <td><span class="cnt o">${tP}</span></td>
-      <td><span class="cnt">${tPick}</span></td>
-    </tr>`;
+  const tbody=document.getElementById('fsum-body'); let tW=0,tR=0,tC=0,tP=0,tPick=0;
+  const rows=FL.map(f=>{ const sr=fd[f].filter(rowMatchesShift); const running=sr.filter(r=>r.status==='Running').length,comp=sr.filter(r=>r.status==='Completed').length,pend=sr.filter(r=>r.status==='Pending').length,pickers=new Set(sr.filter(r=>r.userId).map(r=>r.userId)).size; tW+=sr.length;tR+=running;tC+=comp;tP+=pend;tPick+=pickers;return{f,total:sr.length,running,comp,pend,pickers}; });
+  if(!tW){tbody.innerHTML=`<tr><td colspan="6"><div class="empty" style="padding:20px"><div class="empi">ðŸ“Š</div><p>No ${activeShift} shift waves</p></div></td></tr>`;return;}
+  tbody.innerHTML=rows.map(({f,total,running,comp,pend,pickers})=>`<tr><td><strong>Floor ${f}</strong></td><td><span class="cnt">${total}</span></td><td><span class="cnt r">${running}</span></td><td><span class="cnt g">${comp}</span></td><td><span class="cnt o">${pend}</span></td><td><span class="cnt">${pickers}</span></td></tr>`).join('')+`<tr><td><strong>TOTAL</strong></td><td><span class="cnt">${tW}</span></td><td><span class="cnt r">${tR}</span></td><td><span class="cnt g">${tC}</span></td><td><span class="cnt o">${tP}</span></td><td><span class="cnt">${tPick}</span></td></tr>`;
 }
-
 function renderWaveDetail(){
-  // Collect all wave keys present in the active shift
-  const allK = new Set();
-  FL.forEach(f=>fd[f].filter(rowMatchesShift).forEach(r=>allK.add(r.wavekey)));
-
-  const tbody = document.getElementById('sum-body');
-  const q  = (document.getElementById('sum-q')?.value||'').toLowerCase().trim();
-  const by = document.getElementById('sum-by')?.value||'all';
-
-  if(!allK.size){
-    tbody.innerHTML=`<tr><td colspan="7"><div class="empty"><div class="empi">📊</div><p>No ${activeShift} shift waves yet</p></div></td></tr>`;
-    return;
-  }
-
+  const allK=new Set(); FL.forEach(f=>fd[f].filter(rowMatchesShift).forEach(r=>allK.add(r.wavekey)));
+  const tbody=document.getElementById('sum-body');
+  const q=(document.getElementById('sum-q')?.value||'').toLowerCase().trim();
+  const by=document.getElementById('sum-by')?.value||'all';
+  if(!allK.size){tbody.innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empi">ðŸ“Š</div><p>No ${activeShift} shift waves yet</p></div></td></tr>`;return;}
   const html=[];
   allK.forEach(wk=>{
-    const sts={}; let maxMins=null;
-    FL.forEach(f=>{
-      const row = fd[f].find(r=>r.wavekey===wk && rowMatchesShift(r));
-      sts[f] = row ? row.status : null;
-      if(row && row.status==='Completed' && row.completionMin!==''){
-        const m=Number(row.completionMin);
-        if(!isNaN(m) && (maxMins===null || m>maxMins)) maxMins=m;
-      }
-    });
-    const act = FL.filter(f=>sts[f]!==null); if(!act.length) return;
-    const done    = act.every(f=>sts[f]==='Completed');
-    const anyRun  = act.some(f=>sts[f]==='Running');
-    const ov = done ? 'Completed' : anyRun ? 'Running' : 'Pending';
-    const ct = (done && maxMins!==null) ? maxMins+' min' : '—';
-    let wkc='wk wkf';
-    let isPartial = false;
+    const sts={};let maxMins=null,waveType='';
+    FL.forEach(f=>{const row=fd[f].find(r=>r.wavekey===wk&&rowMatchesShift(r));sts[f]=row?row.status:null;if(row&&row.type&&!waveType)waveType=row.type;if(row&&row.status==='Completed'&&row.completionMin!==''){const m=Number(row.completionMin);if(!isNaN(m)&&(maxMins===null||m>maxMins))maxMins=m;}});
+    const act=FL.filter(f=>sts[f]!==null);if(!act.length)return;
+    const done=act.every(f=>sts[f]==='Completed'),anyRun=act.some(f=>sts[f]==='Running');
+    const ov=done?'Completed':anyRun?'Running':'Pending';
+    const ct=(done&&maxMins!==null)?maxMins+' min':'â€”';
+    let wkc='wk wkf',isPartial=false;
     FL.forEach(f=>{const row=fd[f].find(r=>r.wavekey===wk);if(row&&row.allocQty<row.orderQty){wkc='wk wkp';isPartial=true;}});
-
-    // Apply summary status filter
-    if(sumFlt !== 'all'){
-      if(sumFlt === 'Partial' && !isPartial) return;
-      if(sumFlt !== 'Partial' && ov !== sumFlt) return;
-    }
-
-    // Search filter
-    if(q){
-      if(by==='wavekey' && !wk.toLowerCase().includes(q)) return;
-      if(by==='status'  && !ov.toLowerCase().includes(q)) return;
-      if(by==='all' && ![wk,ov,...FL.map(f=>sts[f]||'')].some(v=>v.toLowerCase().includes(q))) return;
-    }
-
-    const fcols = FL.map(f=>sts[f]
-      ? `<td><span class="fb fb-${sts[f].toLowerCase()}">${sts[f]}</span></td>`
-      : `<td><span class="fb fb-na">N/A</span></td>`).join('');
-    html.push(`<tr><td style="background:#F0F7FB;border-left:4px solid #F5A623;padding-left:14px;"><span class="${wkc}">${wk}</span></td>${fcols}<td style="background:#F5F9FC;"><span class="fb fb-${ov.toLowerCase()}">${ov}</span></td><td style="background:#F5F9FC;">${ct!=='—'?`<span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#00324F,#0073AB);color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;box-shadow:0 2px 5px rgba(0,50,79,.25);">&#x23F1; ${ct}</span>`:'<span style="color:#B0C8D8;font-size:13px;font-weight:700;">&#8212;</span>'}</td></tr>`);
+    if(sumFlt!=='all'){if(sumFlt==='Partial'&&!isPartial)return;if(sumFlt!=='Partial'&&ov!==sumFlt)return;}
+    if(q){if(by==='wavekey'&&!wk.toLowerCase().includes(q))return;if(by==='status'&&!ov.toLowerCase().includes(q))return;if(by==='all'&&![wk,ov,waveType,...FL.map(f=>sts[f]||'')].some(v=>v.toLowerCase().includes(q)))return;}
+    const fcols=FL.map(f=>sts[f]?`<td><span class="fb fb-${sts[f].toLowerCase()}">${sts[f]}</span></td>`:`<td><span class="fb fb-na">N/A</span></td>`).join('');
+    const typeCell=`<td style="background:#F0F7FB;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txm);font-weight:600;">${waveType||'â€”'}</span></td>`;
+    html.push(`<tr><td style="background:#F0F7FB;border-left:4px solid #F5A623;padding-left:14px;"><span class="${wkc}">${wk}</span></td>${typeCell}${fcols}<td style="background:#F5F9FC;"><span class="fb fb-${ov.toLowerCase()}">${ov}</span></td><td style="background:#F5F9FC;">${ct!=='â€”'?`<span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#00324F,#0073AB);color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;box-shadow:0 2px 5px rgba(0,50,79,.25);">â± ${ct}</span>`:'<span style="color:#B0C8D8;font-size:13px;font-weight:700;">â€”</span>'}</td></tr>`);
   });
-
-  tbody.innerHTML = html.length ? html.join('') : `<tr><td colspan="7"><div class="empty"><div class="empi">🔍</div><p>No results</p></div></td></tr>`;
+  tbody.innerHTML=html.length?html.join(''):`<tr><td colspan="8"><div class="empty"><div class="empi">ðŸ”</div><p>No results</p></div></td></tr>`;
 }
 
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // DASHBOARD
-// ═══════════════════════════════════════════════════
-function setDashShift(s){
-  dashShift = s;
-  document.getElementById('dstab-day').className   = 'chip'+(s==='day'?' call':'');
-  document.getElementById('dstab-night').className = 'chip'+(s==='night'?' call':'');
-  renderDashboard();
-}
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function setDashShift(s){ dashShift=s; document.getElementById('dstab-day').className='chip'+(s==='day'?' call':''); document.getElementById('dstab-night').className='chip'+(s==='night'?' call':''); renderDashboard(); }
 function renderDashboard(){
-  let picked=0, shortPick=0;
-  const fp={A:0,B:0,C:0,D:0};
-  const typeMap={};
-
-  // For avg completion: collect max completionMin per wave key across all floors
-  const waveMaxTime={};  // wavekey -> max completionMin across all floors
-  // For short pick AND picked qty: use Floor A as master (same wave on all 4 floors — avoid 4x count)
-  const waveShortPick={};  // wavekey -> (orderQty - allocQty)  [completed only]
-
-  // Floor-wise picker counts — loop all floors
-  FL.forEach(f=>{
-    const sr = fd[f].filter(r=>waveShift(r)===dashShift);
-    fp[f] = new Set(sr.filter(r=>r.userId).map(r=>r.userId)).size;
-    // Collect max completionMin per wave across all floors
-    sr.forEach(r=>{
-      if(r.status==='Completed'){
-        const t = Number(r.completionMin);
-        if(r.completionMin!=='' && !isNaN(t)){
-          if(waveMaxTime[r.wavekey]===undefined || t>waveMaxTime[r.wavekey])
-            waveMaxTime[r.wavekey]=t;
-        }
-      }
-    });
-  });
-
-  // Picked qty + Short pick: Floor A only (one entry per unique wave — avoids 4x multiplication)
-  fd['A'].filter(r=>waveShift(r)===dashShift && r.status==='Completed').forEach(r=>{
-    picked += r.allocQty;                                        // sum allocQty once per wave
-    const diff = Math.max(0, r.orderQty - r.allocQty);
-    waveShortPick[r.wavekey] = diff;
-  });
-  shortPick = Object.values(waveShortPick).reduce((a,b)=>a+b, 0);
-
-  // Avg completion = average of the max time recorded per wave
-  const maxTimes = Object.values(waveMaxTime);
-  const avg = maxTimes.length ? Math.round(maxTimes.reduce((a,b)=>a+b,0)/maxTimes.length) : null;
-
-  // PPO from Floor A (same wave on all floors — avoid double count)
-  fd['A'].filter(r=>waveShift(r)===dashShift).forEach(r=>{
-    const t=r.type||'Unknown';
-    if(!typeMap[t]) typeMap[t]={oqty:0,noo:0,cnt:0};
-    typeMap[t].oqty+=r.orderQty;
-    typeMap[t].noo+=Number(r.noOfOrders)||0;
-    typeMap[t].cnt++;
-  });
-
-  document.getElementById('d-picked').textContent = picked.toLocaleString();
-  document.getElementById('d-short').textContent  = shortPick.toLocaleString();
-  document.getElementById('d-avg').textContent = avg!==null ? avg+' min' : '—';
-
-  const tot = Object.values(fp).reduce((a,b)=>a+b,0);
-  document.getElementById('d-fp').innerHTML =
-    FL.map(f=>`<div class="fpc"><div class="fpc-l">Floor ${f}</div><div class="fpc-n">${fp[f]}</div><div class="fpc-s">Unique Pickers</div></div>`).join('') +
-    `<div class="fpc tot"><div class="fpc-l">All Floors</div><div class="fpc-n">${tot}</div><div class="fpc-s">Total Sum</div></div>`;
-
-  const ppo = Object.entries(typeMap).map(([t,d])=>{
-    const v = d.noo>0 ? (d.oqty/d.noo).toFixed(2) : '—';
-    return `<div class="ppocard"><div class="ppo-t">${t}</div><div class="ppo-v">${v}</div><div class="ppo-s">Pieces/Order · ${d.cnt} waves</div></div>`;
-  }).join('');
-  document.getElementById('d-ppo').innerHTML = ppo||'<div style="color:var(--txm);font-size:13px">No data yet.</div>';
+  let picked=0,shortPick=0;
+  const fp={A:0,B:0,C:0,D:0},typeMap={},waveMaxTime={},waveShortPick={};
+  FL.forEach(f=>{ const sr=fd[f].filter(r=>waveShift(r)===dashShift); fp[f]=new Set(sr.filter(r=>r.userId).map(r=>r.userId)).size; sr.forEach(r=>{ if(r.status==='Completed'){const t=Number(r.completionMin);if(r.completionMin!==''&&!isNaN(t)){if(waveMaxTime[r.wavekey]===undefined||t>waveMaxTime[r.wavekey])waveMaxTime[r.wavekey]=t;}} }); });
+  fd['A'].filter(r=>waveShift(r)===dashShift&&r.status==='Completed').forEach(r=>{ picked+=r.allocQty; waveShortPick[r.wavekey]=Math.max(0,r.orderQty-r.allocQty); });
+  shortPick=Object.values(waveShortPick).reduce((a,b)=>a+b,0);
+  const maxTimes=Object.values(waveMaxTime); const avg=maxTimes.length?Math.round(maxTimes.reduce((a,b)=>a+b,0)/maxTimes.length):null;
+  fd['A'].filter(r=>waveShift(r)===dashShift).forEach(r=>{ const t=r.type||'Unknown'; if(!typeMap[t])typeMap[t]={oqty:0,noo:0,cnt:0}; typeMap[t].oqty+=r.orderQty;typeMap[t].noo+=Number(r.noOfOrders)||0;typeMap[t].cnt++; });
+  document.getElementById('d-picked').textContent=picked.toLocaleString();
+  document.getElementById('d-short').textContent=shortPick.toLocaleString();
+  document.getElementById('d-avg').textContent=avg!==null?avg+' min':'â€”';
+  let totalOqty=0,totalNoo=0; Object.values(typeMap).forEach(d=>{totalOqty+=d.oqty;totalNoo+=d.noo;});
+  document.getElementById('d-total-ppo').textContent=totalNoo>0?(totalOqty/totalNoo).toFixed(2):'â€”';
+  const tot=Object.values(fp).reduce((a,b)=>a+b,0);
+  document.getElementById('d-fp').innerHTML=FL.map(f=>`<div class="fpc"><div class="fpc-l">Floor ${f}</div><div class="fpc-n">${fp[f]}</div><div class="fpc-s">Unique Pickers</div></div>`).join('')+`<div class="fpc tot"><div class="fpc-l">All Floors</div><div class="fpc-n">${tot}</div><div class="fpc-s">Total Sum</div></div>`;
+  const ppo=Object.entries(typeMap).map(([t,d])=>`<div class="ppocard"><div class="ppo-t">${t}</div><div class="ppo-v">${d.noo>0?(d.oqty/d.noo).toFixed(2):'â€”'}</div><div class="ppo-s">Pieces/Order Â· ${d.cnt} waves</div></div>`).join('');
+  document.getElementById('d-ppo').innerHTML=ppo||'<div style="color:var(--txm);font-size:13px">No data yet.</div>';
 }
 
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // QR
-// ═══════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function openQR(wk,f){
-  const r=fd[f].find(x=>x.wavekey===wk); if(!r) return;
+  const r=fd[f].find(x=>x.wavekey===wk);if(!r)return;
   document.getElementById('qrwave').textContent=wk;
-  document.getElementById('qrmeta').textContent=`Floor ${f} · ${r.type}`;
+  document.getElementById('qrmeta').textContent=`Floor ${f} Â· ${r.type}`;
   document.getElementById('qroq').textContent=r.orderQty;
   document.getElementById('qraq').textContent=r.allocQty;
   const sc={Pending:'var(--pend)',Running:'var(--run)',Completed:'var(--comp)'};
-  const se=document.getElementById('qrst'); se.textContent=r.status; se.style.color=sc[r.status]||'';
+  const se=document.getElementById('qrst');se.textContent=r.status;se.style.color=sc[r.status]||'';
   document.getElementById('qrcont').innerHTML='';
   new QRCode(document.getElementById('qrcont'),{text:wk,width:180,height:180,colorDark:'#00243D',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
   document.getElementById('qrov').classList.add('open');
 }
-function closeQR(e,force){
-  if(force||(e&&e.target===document.getElementById('qrov')))
-    document.getElementById('qrov').classList.remove('open');
+function closeQR(e,force){ if(force||(e&&e.target===document.getElementById('qrov')))document.getElementById('qrov').classList.remove('open'); }
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// EXPORT
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function exportFloor(f){
+  // Check rights
+  if(role==='supervisor'&&!rights.sup.export){toast('âš  Export not permitted',true);return;}
+  if(role==='floor'&&!rights.tl.export){toast('âš  Export not permitted',true);return;}
+  const rows=fd[f]; if(!rows.length){toast('No data for Floor '+f,true);return;}
+  const headers=['Wave Key','Orders','Order Qty','Alloc Qty','Type','Status','User ID','User Name','Upload Time','Start Time','End Time','Done (min)'];
+  const data=rows.map(r=>[r.wavekey,r.noOfOrders,r.orderQty,r.allocQty,r.type,r.status,r.userId,r.userName,r.uploadTime,r.startTime,r.endTime,r.completionMin!==''?r.completionMin:'']);
+  const ws=XLSX.utils.aoa_to_sheet([headers,...data]);
+  ws['!cols']=[14,8,10,10,14,12,10,18,18,18,18,10].map(w=>({wch:w}));
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Floor '+f);
+  XLSX.writeFile(wb,'WMS_Floor'+f+'_'+_dateStamp()+'.xlsx');
+  toast('âœ… Floor '+f+' exported');
 }
-
-// ═══════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════
-function fmtTime(d){
-  return d.toLocaleString('en-IN',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+function exportSummary(){
+  const allK=[],seen=new Set();
+  FL.forEach(f=>fd[f].filter(rowMatchesShift).forEach(r=>{if(!seen.has(r.wavekey)){seen.add(r.wavekey);allK.push(r.wavekey);}}));
+  if(!allK.length){toast('No data',true);return;}
+  const headers=['Wave Key','Type','Floor A','Floor B','Floor C','Floor D','Overall','Completion (min)'];
+  const data=allK.map(wk=>{
+    const sts={};let maxMins=null,waveType='';
+    FL.forEach(f=>{const row=fd[f].find(r=>r.wavekey===wk&&rowMatchesShift(r));sts[f]=row?row.status:'N/A';if(row&&row.type&&!waveType)waveType=row.type;if(row&&row.status==='Completed'&&row.completionMin!==''){const m=Number(row.completionMin);if(!isNaN(m)&&(maxMins===null||m>maxMins))maxMins=m;}});
+    const act=FL.filter(f=>sts[f]!=='N/A');const done=act.every(f=>sts[f]==='Completed'),anyRun=act.some(f=>sts[f]==='Running');
+    const ov=done?'Completed':anyRun?'Running':'Pending';
+    return[wk,waveType,sts.A,sts.B,sts.C,sts.D,ov,maxMins!==null?maxMins:''];
+  });
+  const ws=XLSX.utils.aoa_to_sheet([headers,...data]);ws['!cols']=[14,14,12,12,12,12,12,14].map(w=>({wch:w}));
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Summary');
+  FL.forEach(f=>{const fRows=fd[f].filter(rowMatchesShift);if(!fRows.length)return;const fH=['Wave Key','Orders','Order Qty','Alloc Qty','Type','Status','User ID','User Name','Upload Time','Start Time','End Time','Done (min)'];const fD=fRows.map(r=>[r.wavekey,r.noOfOrders,r.orderQty,r.allocQty,r.type,r.status,r.userId,r.userName,r.uploadTime,r.startTime,r.endTime,r.completionMin!==''?r.completionMin:'']);const ws2=XLSX.utils.aoa_to_sheet([fH,...fD]);ws2['!cols']=[14,8,10,10,14,12,10,18,18,18,18,10].map(w=>({wch:w}));XLSX.utils.book_append_sheet(wb,ws2,'Floor '+f);});
+  XLSX.writeFile(wb,'WMS_Summary_'+_dateStamp()+'.xlsx');
+  toast('âœ… Summary exported');
 }
-function parseTime(s){
-  try{
-    const p=s.split(', ');
-    const [d,m,y]=p[0].split('/');
-    const [h,mi,se]=p[1].split(':');
-    return new Date(2000+parseInt(y), parseInt(m)-1, parseInt(d), parseInt(h), parseInt(mi), parseInt(se));
-  } catch(e){ return new Date(); }
-}
+function _dateStamp(){ const d=new Date(); return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0'); }
 
-// ─── Auto-timers ───
-// Every 5 minutes: re-evaluate shift (handles 07:00 and 19:00 crossover automatically)
-setInterval(()=>{
-  if(!role) return;
-  applyCrossover(); // move Pending/Running to current shift if boundary crossed
-  // Re-render all tables
-  FL.forEach(f=>renderTable(f));
-  if(document.getElementById('panel-summary').classList.contains('active'))   renderSummary();
-  if(document.getElementById('panel-dashboard').classList.contains('active')) renderDashboard();
-  // Auto-purge D-1 completed waves (catches midnight)
-  purgeD1();
-}, 5*60*1000);
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// CHAT
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+const CHAT_MAX=200;
+let chatOpen=false,chatLastRead=0,chatFBListener=null,chatLatestMsgs=[];
+function chatDisplayName(){ if(role==='supervisor')return'Supervisor'; if(role==='admin')return'Admin'; if(role==='floor')return'Floor '+myFloor+' TL'; return'Unknown'; }
 
-// Every 60s: refresh overdue indicators & 1-min lockout re-checks
-setInterval(()=>{ if(role) FL.forEach(f=>renderTable(f)); }, 60*1000);
-// Every 5s: re-render tables to update 1-min Completed lockout countdown
-setInterval(()=>{ if(role) FL.forEach(f=>renderTable(f)); }, 5*1000);
-
-// ═══════════════════════════════════════════════════════
-// PICKING WAR ROOM — CHAT
-// Uses localStorage as shared store (all users on same browser/device)
-// Polls every 2s for new messages
-// ═══════════════════════════════════════════════════════
-const CHAT_MAX    = 200;
-let chatOpen      = false;
-let chatLastRead  = 0;
-let chatPollTimer = null;   // unused with Firebase but kept for destroyChat compat
-let chatSenderName = '';
-let chatFBListener = null;  // Firebase onValue unsubscribe ref
-
-function chatDisplayName(){
-  if(role === 'supervisor') return 'Supervisor';
-  if(role === 'floor') return 'Floor ' + myFloor + ' TL';
-  return 'Unknown';
+function updateChatCount(){
+  const el=document.getElementById('chat-msg-count'); if(!el)return;
+  el.textContent=chatLatestMsgs.length+' messages in history';
 }
 
 function sendChatMsg(){
-  const inp = document.getElementById('chat-inp');
-  const txt = String(inp.value||'').trim();
-  if(!txt) return;
-  inp.value = '';
-  const clientTs = Date.now();
-  const msg = {
-    ts: clientTs,
-    sender: chatDisplayName(),
-    role: role,
-    floor: myFloor || '',
-    text: txt
-  };
-  // Single atomic push — Firebase generates key server-side ensuring correct order
-  db.ref(FB_CHAT).push(msg).catch(e=>{ console.warn('chat send error:',e); toast('Failed to send message',true); });
-  chatLastRead = clientTs;
+  const inp=document.getElementById('chat-inp'); const txt=String(inp.value||'').trim(); if(!txt)return;
+  inp.value='';
+  const clientTs=Date.now();
+  db.ref(FB_CHAT).push({ts:clientTs,sender:chatDisplayName(),role,floor:myFloor||'',text:txt}).catch(e=>{console.warn('chat send:',e);toast('Failed to send',true);});
+  chatLastRead=clientTs;
 }
 
 function deleteChatMsg(fbKey){
-  if(role !== 'supervisor') return;
-  if(!confirm('Delete this message?')) return;
-  db.ref(FB_CHAT+'/'+fbKey).remove().catch(e=>{ console.warn('delete msg error:',e); toast('Failed to delete message', true); });
+  if(role!=='admin'&&role!=='supervisor')return;
+  if(!confirm('Delete this message?'))return;
+  db.ref(FB_CHAT+'/'+fbKey).remove().catch(e=>{console.warn('delete msg:',e);toast('Failed to delete',true);});
 }
 
-function renderChatMsgs(msgs, scrollBottom){
-  const box = document.getElementById('chat-msgs');
-  if(!box) return;
-  const me = chatDisplayName();
+// Delete ALL chat (admin only, password protected)
+function openDeleteChat(){
+  const ov=document.getElementById('delchat-ov');
+  document.getElementById('delchat-pw').value='';
+  document.getElementById('delchat-err').style.display='none';
+  ov.style.display='flex';
+  setTimeout(()=>document.getElementById('delchat-pw').focus(),100);
+}
+function closeDeleteChat(){ document.getElementById('delchat-ov').style.display='none'; }
+function confirmDeleteChat(){
+  const pw=document.getElementById('delchat-pw').value;
+  if(pw!==ADMIN_PIN){ document.getElementById('delchat-err').style.display='block'; document.getElementById('delchat-pw').value=''; document.getElementById('delchat-pw').focus(); return; }
+  db.ref(FB_CHAT).remove().then(()=>{ toast('âœ… All chat messages deleted'); updateChatCount(); closeDeleteChat(); }).catch(e=>{ console.warn('delete chat:',e); toast('âš  Failed to delete chat',true); });
+}
+document.getElementById('delchat-ov')?.addEventListener('click',function(e){ if(e.target===this)closeDeleteChat(); });
 
-  if(!msgs.length){
-    box.innerHTML = '<div style="text-align:center;color:#7AAEC8;font-size:12px;padding:30px 10px;">No messages yet.<br>Start the conversation!</div>';
-    return;
-  }
-
-  let lastDate = '';
-  box.innerHTML = msgs.map(m=>{
-    const isMine = m.sender === me;
-    const d = new Date(m.ts);
-    const dateStr = d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
-    const timeStr = d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:false});
-
-    let dateSep = '';
-    if(dateStr !== lastDate){
-      lastDate = dateStr;
-      dateSep = `<div style="text-align:center;margin:8px 0 4px;"><span style="background:#DFF0FA;color:#4A7A9B;font-size:10px;font-weight:600;padding:3px 12px;border-radius:10px;">${dateStr}</span></div>`;
-    }
-
-    const bubbleBg    = isMine ? '#00243D' : (m.role==='supervisor' ? '#FEF3E7' : '#E5F6FF');
-    const bubbleColor = isMine ? '#fff'    : (m.role==='supervisor' ? '#7A3800' : '#00243D');
-    const nameColor   = m.role==='supervisor' ? '#C05E00' : '#0073AB';
-    const radius      = isMine ? '16px 16px 4px 16px' : '16px 16px 16px 4px';
-
-    const deleteBtn = (role==='supervisor' && m._fbKey)
-      ? `<button onclick="deleteChatMsg('${m._fbKey}')" title="Delete" style="background:transparent;border:none;cursor:pointer;font-size:12px;opacity:0.4;padding:2px;line-height:1;flex-shrink:0;align-self:center;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.4'">🗑</button>`
-      : '';
-
-    return `${dateSep}
-    <div style="display:flex;flex-direction:column;align-items:${isMine?'flex-end':'flex-start'};margin-bottom:6px;">
-      ${!isMine ? `<span style="font-size:10px;font-weight:700;color:${nameColor};margin:0 0 2px 6px;">${escapeHtml(m.sender)}</span>` : ''}
-      <div style="display:flex;align-items:flex-end;gap:4px;flex-direction:${isMine?'row-reverse':'row'};">
-        <div style="width:fit-content;max-width:240px;background:${bubbleBg};color:${bubbleColor};padding:7px 11px;border-radius:${radius};font-size:13px;line-height:1.45;overflow-wrap:break-word;word-break:break-word;white-space:normal;text-align:left;box-shadow:0 1px 2px rgba(0,0,0,.08);">${escapeHtml(String(m.text||''))}</div>
-        ${deleteBtn}
-      </div>
-      <span style="font-size:9px;color:#9BB8CC;margin-top:2px;${isMine?'margin-right:4px;':'margin-left:6px;'}">${timeStr}</span>
-    </div>`;
+function renderChatMsgs(msgs,scrollBottom){
+  const box=document.getElementById('chat-msgs'); if(!box)return;
+  const me=chatDisplayName();
+  if(!msgs.length){ box.innerHTML='<div style="text-align:center;color:#7AAEC8;font-size:12px;padding:30px 10px;">No messages yet.<br>Start the conversation!</div>'; return; }
+  let lastDate='';
+  box.innerHTML=msgs.map(m=>{
+    const isMine=m.sender===me;
+    const d=new Date(m.ts);
+    const dateStr=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+    const timeStr=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:false});
+    let dateSep='';
+    if(dateStr!==lastDate){lastDate=dateStr;dateSep=`<div style="text-align:center;margin:8px 0 4px;"><span style="background:#DFF0FA;color:#4A7A9B;font-size:10px;font-weight:600;padding:3px 12px;border-radius:10px;">${dateStr}</span></div>`;}
+    const bubbleBg=isMine?'#00243D':(m.role==='supervisor'||m.role==='admin'?'#FEF3E7':'#E5F6FF');
+    const bubbleColor=isMine?'#fff':(m.role==='supervisor'||m.role==='admin'?'#7A3800':'#00243D');
+    const nameColor=m.role==='supervisor'||m.role==='admin'?'#C05E00':'#0073AB';
+    const radius=isMine?'16px 16px 4px 16px':'16px 16px 16px 4px';
+    const canDel=(role==='admin'||role==='supervisor')&&m._fbKey;
+    const deleteBtn=canDel?`<button onclick="deleteChatMsg('${m._fbKey}')" style="background:transparent;border:none;cursor:pointer;font-size:12px;opacity:0.4;padding:2px;flex-shrink:0;align-self:center;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.4'">ðŸ—‘</button>`:'';
+    return `${dateSep}<div style="display:flex;flex-direction:column;align-items:${isMine?'flex-end':'flex-start'};margin-bottom:6px;">${!isMine?`<span style="font-size:10px;font-weight:700;color:${nameColor};margin:0 0 2px 6px;">${escapeHtml(m.sender)}</span>`:''}<div style="display:flex;align-items:flex-end;gap:4px;flex-direction:${isMine?'row-reverse':'row'};"><div style="width:fit-content;max-width:240px;background:${bubbleBg};color:${bubbleColor};padding:7px 11px;border-radius:${radius};font-size:13px;line-height:1.45;overflow-wrap:break-word;word-break:break-word;">${escapeHtml(String(m.text||''))}</div>${deleteBtn}</div><span style="font-size:9px;color:#9BB8CC;margin-top:2px;${isMine?'margin-right:4px;':'margin-left:6px;'}">${timeStr}</span></div>`;
   }).join('');
-
-  if(scrollBottom) box.scrollTop = box.scrollHeight;
+  if(scrollBottom)box.scrollTop=box.scrollHeight;
 }
-
-function escapeHtml(s){
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function pollChat(){ /* replaced by Firebase real-time listener */ }
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function toggleChat(){
-  chatOpen = !chatOpen;
-  const panel = document.getElementById('chat-panel');
-  const btn   = document.getElementById('chat-btn');
-  if(!panel) return;
-  if(chatOpen){
-    panel.style.display = 'flex';
-    panel.style.flexDirection = 'column';
-  } else {
-    panel.style.display = 'none';
-  }
-  if(chatOpen){
-    btn.style.background = '#0073AB';
-    // Mark all current messages as read
-    const badge = document.getElementById('chat-unread');
-    if(badge) badge.style.display='none';
-    chatLastRead = Date.now();
-    setTimeout(()=>document.getElementById('chat-inp')?.focus(), 100);
-  } else {
-    btn.style.background = '#00243D';
-  }
+  chatOpen=!chatOpen;
+  const panel=document.getElementById('chat-panel'); const btn=document.getElementById('chat-btn'); if(!panel)return;
+  panel.style.display=chatOpen?'flex':'none';
+  if(chatOpen){panel.style.flexDirection='column';btn.style.background='#0073AB';document.getElementById('chat-unread').style.display='none';chatLastRead=Date.now();if(chatLatestMsgs.length>0)renderChatMsgs(chatLatestMsgs,true);setTimeout(()=>document.getElementById('chat-inp')?.focus(),100);}
+  else{btn.style.background='#00243D';}
 }
 
 function initChat(){
-  const bubble = document.getElementById('chat-bubble');
-  if(bubble) bubble.style.display = 'block';
-  chatLastRead = Date.now(); // don't show old messages as unread on login
-
-  // Detach any existing listener
-  if(chatFBListener){
-    db.ref(FB_CHAT).off('value', chatFBListener);
-    chatFBListener = null;
-  }
-
-  // Attach Firebase real-time listener for chat
-  chatFBListener = db.ref(FB_CHAT).orderByKey().limitToLast(CHAT_MAX)
-    .on('value', snap=>{
-      const msgs = [];
-      snap.forEach(child=>{
-        const val = child.val();
-        msgs.push({
-          ...val,
-          ts: Number(val.ts) || 0,
-          text: String(val.text || ''),
-          _fbKey: child.key
-        });
-      });
-      // Sort strictly by Firebase push key (server-generated, always chronological)
-      msgs.sort((a, b) => a._fbKey < b._fbKey ? -1 : a._fbKey > b._fbKey ? 1 : 0);
-
-      if(chatOpen){
-        // Panel open — render and mark read
-        const box = document.getElementById('chat-msgs');
-        const atBottom = box ? (box.scrollHeight - box.scrollTop - box.clientHeight < 80) : true;
-        renderChatMsgs(msgs, atBottom);
-        if(msgs.length) chatLastRead = msgs[msgs.length-1].ts;
-        const badge = document.getElementById('chat-unread');
-        if(badge) badge.style.display='none';
-      } else {
-        // Panel closed — update unread badge
-        const unread = msgs.filter(m=>m.ts > chatLastRead && m.sender !== chatDisplayName()).length;
-        const badge = document.getElementById('chat-unread');
-        if(badge){
-          if(unread > 0){
-            badge.style.display='flex';
-            badge.textContent = unread > 99 ? '99+' : String(unread);
-          } else {
-            badge.style.display='none';
-          }
-        }
-      }
-    });
+  const bubble=document.getElementById('chat-bubble'); if(bubble)bubble.style.display='block';
+  chatLastRead=Date.now();
+  if(chatFBListener){db.ref(FB_CHAT).off('value',chatFBListener);chatFBListener=null;}
+  chatFBListener=db.ref(FB_CHAT).orderByKey().limitToLast(CHAT_MAX).on('value',snap=>{
+    const msgs=[];
+    snap.forEach(child=>{ const val=child.val(); msgs.push({...val,ts:Number(val.ts)||0,text:String(val.text||''),_fbKey:child.key}); });
+    msgs.sort((a,b)=>a._fbKey<b._fbKey?-1:a._fbKey>b._fbKey?1:0);
+    chatLatestMsgs=msgs;
+    updateChatCount();
+    if(chatOpen){const box=document.getElementById('chat-msgs');const atBottom=box?(box.scrollHeight-box.scrollTop-box.clientHeight<80):true;renderChatMsgs(msgs,atBottom);if(msgs.length)chatLastRead=msgs[msgs.length-1].ts;document.getElementById('chat-unread').style.display='none';}
+    else{const unread=msgs.filter(m=>m.ts>chatLastRead&&m.sender!==chatDisplayName()).length;const badge=document.getElementById('chat-unread');if(badge){badge.style.display=unread>0?'flex':'none';if(unread>0)badge.textContent=unread>99?'99+':String(unread);}}
+  });
 }
-
 function destroyChat(){
-  const bubble = document.getElementById('chat-bubble');
-  if(bubble) bubble.style.display = 'none';
-  chatOpen = false;
-  const panel = document.getElementById('chat-panel');
-  if(panel) panel.style.display='none';
-  // Detach Firebase chat listener
-  if(chatFBListener){
-    db.ref(FB_CHAT).off('value', chatFBListener);
-    chatFBListener = null;
-  }
-  if(chatPollTimer){ clearInterval(chatPollTimer); chatPollTimer=null; }
+  const bubble=document.getElementById('chat-bubble');if(bubble)bubble.style.display='none';
+  chatOpen=false;chatLatestMsgs=[];
+  const panel=document.getElementById('chat-panel');if(panel)panel.style.display='none';
+  if(chatFBListener){db.ref(FB_CHAT).off('value',chatFBListener);chatFBListener=null;}
 }
 
-
-// ═══════════════════════════════════════════════════
-// RESET ALL WAVES (Supervisor only, password protected)
-// ═══════════════════════════════════════════════════
-const RESET_PASS = 'GC@123';
-function openReset(){
-  const ov = document.getElementById('reset-ov');
-  document.getElementById('reset-pw').value = '';
-  document.getElementById('reset-err').style.display = 'none';
-  ov.style.display = 'flex';
-  setTimeout(()=>document.getElementById('reset-pw').focus(), 100);
+// Delete All Waves from Summary (Admin only, password protected)
+function openDeleteAllWaves(){
+  document.getElementById('delallwaves-pw').value='';
+  document.getElementById('delallwaves-err').style.display='none';
+  document.getElementById('delallwaves-ov').style.display='flex';
+  setTimeout(()=>document.getElementById('delallwaves-pw').focus(),100);
 }
-function closeReset(){
-  document.getElementById('reset-ov').style.display = 'none';
-}
-function confirmReset(){
-  const pw = document.getElementById('reset-pw').value;
-  if(pw !== RESET_PASS){
-    document.getElementById('reset-err').style.display = 'block';
-    document.getElementById('reset-pw').value = '';
-    document.getElementById('reset-pw').focus();
-    return;
-  }
-
-  // 1. Clear local state immediately
-  FL.forEach(f=>{ fd[f]=[]; });
-
-  // 2. Write empty arrays to Firebase for all 4 floors
-  //    (set empty object so listener fires and all devices clear too)
-  const emptyPayload = {};
-  FL.forEach(f=>{ emptyPayload[f] = []; });
-
-  db.ref(FB_WAVES).set(emptyPayload)
-    .then(()=>{
-      toast('\u2705 All waves deleted from database successfully');
-    })
-    .catch(e=>{
-      console.warn('reset error:', e);
-      toast('\u26A0 Reset failed — check database connection', true);
-    });
-
-  // 3. Update UI immediately (don't wait for Firebase callback)
+function closeDeleteAllWaves(){ document.getElementById('delallwaves-ov').style.display='none'; }
+function confirmDeleteAllWaves(){
+  const pw=document.getElementById('delallwaves-pw').value;
+  if(pw!==ADMIN_PIN){ document.getElementById('delallwaves-err').style.display='block'; document.getElementById('delallwaves-pw').value=''; document.getElementById('delallwaves-pw').focus(); return; }
+  FL.forEach(f=>{fd[f]=[];});
+  const ep={}; FL.forEach(f=>{ep[f]=[];});
+  db.ref(FB_WAVES).set(ep).then(()=>toast('âœ… All waves deleted successfully')).catch(()=>toast('âš  Delete failed â€” check connection',true));
   FL.forEach(f=>renderTable(f));
-  const sumPanel = document.getElementById('panel-summary');
-  if(sumPanel && sumPanel.classList.contains('active')) renderSummary();
-  const dashPanel = document.getElementById('panel-dashboard');
-  if(dashPanel && dashPanel.classList.contains('active')) renderDashboard();
+  renderSummary();
+  const dp=document.getElementById('panel-dashboard');if(dp&&dp.classList.contains('active'))renderDashboard();
+  const el=document.getElementById('us-wave');if(el)el.innerHTML='0 waves in system';
+  closeDeleteAllWaves();
+}
+document.getElementById('delallwaves-ov')?.addEventListener('click',function(e){if(e.target===this)closeDeleteAllWaves();});
 
-  // 4. Update upload counter
-  const el = document.getElementById('us-wave');
-  if(el) el.innerHTML = '0 waves in system';
 
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function openReset(){ document.getElementById('reset-pw').value=''; document.getElementById('reset-err').style.display='none'; document.getElementById('reset-ov').style.display='flex'; setTimeout(()=>document.getElementById('reset-pw').focus(),100); }
+function closeReset(){ document.getElementById('reset-ov').style.display='none'; }
+function confirmReset(){
+  if(role==='supervisor'&&!rights.sup.resetall){toast('âš  You do not have Reset All Waves permission',true);closeReset();return;}
+  const pw=document.getElementById('reset-pw').value;
+  if(pw!==RESET_PASS){document.getElementById('reset-err').style.display='block';document.getElementById('reset-pw').value='';document.getElementById('reset-pw').focus();return;}
+  FL.forEach(f=>{fd[f]=[];});
+  const ep={}; FL.forEach(f=>{ep[f]=[];});
+  db.ref(FB_WAVES).set(ep).then(()=>toast('âœ… All waves deleted')).catch(()=>toast('âš  Reset failed',true));
+  FL.forEach(f=>renderTable(f));
+  const sp=document.getElementById('panel-summary');if(sp&&sp.classList.contains('active'))renderSummary();
+  const dp=document.getElementById('panel-dashboard');if(dp&&dp.classList.contains('active'))renderDashboard();
+  const el=document.getElementById('us-wave');if(el)el.innerHTML='0 waves in system';
   closeReset();
 }
-// Close reset modal on overlay click
-document.getElementById('reset-ov')?.addEventListener('click', function(e){
-  if(e.target === this) closeReset();
-});
+document.getElementById('reset-ov')?.addEventListener('click',function(e){if(e.target===this)closeReset();});
 
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// HELPERS
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+function fmtTime(d){ return d.toLocaleString('en-IN',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}); }
+function parseTime(s){ try{const p=s.split(', ');const[d,m,y]=p[0].split('/');const[h,mi,se]=p[1].split(':');return new Date(2000+parseInt(y),parseInt(m)-1,parseInt(d),parseInt(h),parseInt(mi),parseInt(se));}catch(e){return new Date();} }
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// AUTO TIMERS
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+setInterval(()=>{ if(!role)return; applyCrossover(); FL.forEach(f=>renderTable(f)); const sp=document.getElementById('panel-summary');if(sp&&sp.classList.contains('active'))renderSummary(); const dp=document.getElementById('panel-dashboard');if(dp&&dp.classList.contains('active'))renderDashboard(); purgeD1(); },5*60*1000);
+setInterval(()=>{ if(role)FL.forEach(f=>renderTable(f)); },60*1000);
+setInterval(()=>{ if(role)FL.forEach(f=>renderTable(f)); },5*1000);
 </script>
 </body>
 </html>

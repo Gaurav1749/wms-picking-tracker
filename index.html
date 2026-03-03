@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WMS Picking Tracker â€” Maersk</title>
+<title>WMS Picking Tracker — Maersk</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -313,7 +313,7 @@ tbody tr:hover td{background:#EAF4FC;}
         <rect x="54" y="8" width="30" height="15" fill="#C0392B" rx="1"/>
         <rect x="88" y="8" width="30" height="15" fill="#F5A623" rx="1"/>
         <rect x="122" y="8" width="30" height="15" fill="#27AE60" rx="1"/>
-        <text x="110" y="48" font-size="10" fill="#F5A623" opacity=".8" text-anchor="middle">â˜… MAERSK</text>
+        <text x="110" y="48" font-size="10" fill="#F5A623" opacity=".8" text-anchor="middle">★ MAERSK</text>
       </g>
       <g transform="translate(60, 70)">
         <rect x="0" y="40" width="200" height="90" fill="#002B45" stroke="#004A7A" stroke-width="1.5"/>
@@ -360,7 +360,7 @@ tbody tr:hover td{background:#EAF4FC;}
     <div class="lcard-body">
       <label class="flabel">Role</label>
       <select class="fc" id="l-role" onchange="onRoleChg()">
-        <option value="">â€” Select Role â€”</option>
+        <option value="">— Select Role —</option>
         <option value="supervisor">Supervisor</option>
         <option value="floor">Floor TL</option>
         <option value="admin">Admin</option>
@@ -391,32 +391,32 @@ tbody tr:hover td{background:#EAF4FC;}
         <div class="hlogo-text">WMS <span>Picking</span> Tracker</div>
       </div>
       <div class="hdv"></div>
-      <div class="hrole" id="h-role">â€”</div>
+      <div class="hrole" id="h-role">—</div>
     </div>
     <div class="hdrr">
       <!-- Live Clock -->
       <div class="hdr-clock">
         <div class="hdr-clock-time" id="hdr-time">00:00:00</div>
-        <div class="hdr-clock-date" id="hdr-date">â€”</div>
+        <div class="hdr-clock-date" id="hdr-date">—</div>
       </div>
       <!-- Refresh Button -->
       <button class="refreshbtn" id="refresh-btn" onclick="doRefresh()" title="Refresh Data">
         <svg id="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
         Refresh
       </button>
-      <div class="ubadge" id="h-badge">â€”</div>
+      <div class="ubadge" id="h-badge">—</div>
       <button class="logoutbtn" onclick="doLogout()">Sign Out</button>
     </div>
   </div>
 
   <div class="tabs">
-    <button class="tbtn" id="tb-A" onclick="showTab('A')">ðŸ­ Floor A</button>
-    <button class="tbtn" id="tb-B" onclick="showTab('B')">ðŸ­ Floor B</button>
-    <button class="tbtn" id="tb-C" onclick="showTab('C')">ðŸ­ Floor C</button>
-    <button class="tbtn" id="tb-D" onclick="showTab('D')">ðŸ­ Floor D</button>
-    <button class="tbtn" id="tb-summary" onclick="showTab('summary')">ðŸ“Š Summary</button>
-    <button class="tbtn locked" id="tb-dashboard" onclick="showTab('dashboard')">ðŸ“ˆ Dashboard</button>
-    <button class="tbtn locked" id="tb-rights" onclick="showTab('rights')">ðŸ” Rights</button>
+    <button class="tbtn" id="tb-A" onclick="showTab('A')">🏭 Floor A</button>
+    <button class="tbtn" id="tb-B" onclick="showTab('B')">🏭 Floor B</button>
+    <button class="tbtn" id="tb-C" onclick="showTab('C')">🏭 Floor C</button>
+    <button class="tbtn" id="tb-D" onclick="showTab('D')">🏭 Floor D</button>
+    <button class="tbtn" id="tb-summary" onclick="showTab('summary')">📊 Summary</button>
+    <button class="tbtn locked" id="tb-dashboard" onclick="showTab('dashboard')">📈 Dashboard</button>
+    <button class="tbtn locked" id="tb-rights" onclick="showTab('rights')">🔐 Rights</button>
   </div>
 
   <div class="content">
@@ -424,7 +424,7 @@ tbody tr:hover td{background:#EAF4FC;}
     <!-- FLOOR PANELS -->
     <div class="tpanel" id="panel-A">
       <div class="fbar">
-        <div class="sw"><span class="si">ðŸ”</span><input type="text" placeholder="Search wavesâ€¦" id="srch-A" oninput="renderTable('A')"></div>
+        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-A" oninput="renderTable('A')"></div>
         <select class="sby" id="sby-A" onchange="renderTable('A')">
           <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
           <option value="userId">User ID</option><option value="type">Type</option>
@@ -448,7 +448,7 @@ tbody tr:hover td{background:#EAF4FC;}
 
     <div class="tpanel" id="panel-B">
       <div class="fbar">
-        <div class="sw"><span class="si">ðŸ”</span><input type="text" placeholder="Search wavesâ€¦" id="srch-B" oninput="renderTable('B')"></div>
+        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-B" oninput="renderTable('B')"></div>
         <select class="sby" id="sby-B" onchange="renderTable('B')">
           <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
           <option value="userId">User ID</option><option value="type">Type</option>
@@ -472,7 +472,7 @@ tbody tr:hover td{background:#EAF4FC;}
 
     <div class="tpanel" id="panel-C">
       <div class="fbar">
-        <div class="sw"><span class="si">ðŸ”</span><input type="text" placeholder="Search wavesâ€¦" id="srch-C" oninput="renderTable('C')"></div>
+        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-C" oninput="renderTable('C')"></div>
         <select class="sby" id="sby-C" onchange="renderTable('C')">
           <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
           <option value="userId">User ID</option><option value="type">Type</option>
@@ -496,7 +496,7 @@ tbody tr:hover td{background:#EAF4FC;}
 
     <div class="tpanel" id="panel-D">
       <div class="fbar">
-        <div class="sw"><span class="si">ðŸ”</span><input type="text" placeholder="Search wavesâ€¦" id="srch-D" oninput="renderTable('D')"></div>
+        <div class="sw"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="srch-D" oninput="renderTable('D')"></div>
         <select class="sby" id="sby-D" onchange="renderTable('D')">
           <option value="all">All Fields</option><option value="wavekey">Wave Key</option>
           <option value="userId">User ID</option><option value="type">Type</option>
@@ -523,11 +523,11 @@ tbody tr:hover td{background:#EAF4FC;}
       <div id="sum-uploads"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
         <div class="shift-tabs">
-          <button class="stab day act" id="stab-day" onclick="setShift('day')">â˜€ï¸ Day Shift <span style="font-size:10px;opacity:.65;margin-left:2px">07:00 â€“ 19:00</span></button>
-          <button class="stab night" id="stab-night" onclick="setShift('night')">ðŸŒ™ Night Shift <span style="font-size:10px;opacity:.65;margin-left:2px">19:00 â€“ 07:00</span></button>
+          <button class="stab day act" id="stab-day" onclick="setShift('day')">☀️ Day Shift <span style="font-size:10px;opacity:.65;margin-left:2px">07:00 – 19:00</span></button>
+          <button class="stab night" id="stab-night" onclick="setShift('night')">🌙 Night Shift <span style="font-size:10px;opacity:.65;margin-left:2px">19:00 – 07:00</span></button>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <div class="sw" style="min-width:200px;"><span class="si">ðŸ”</span><input type="text" placeholder="Search wavesâ€¦" id="sum-q" oninput="renderSummary()"></div>
+          <div class="sw" style="min-width:200px;"><span class="si">🔍</span><input type="text" placeholder="Search waves…" id="sum-q" oninput="renderSummary()"></div>
           <select class="sby" id="sum-by" onchange="renderSummary()">
             <option value="all">All Fields</option><option value="wavekey">Wave Key</option><option value="status">Overall Status</option>
           </select>
@@ -545,8 +545,8 @@ tbody tr:hover td{background:#EAF4FC;}
       </div>
       <div class="tcard" style="margin-bottom:16px;">
         <div style="padding:11px 14px;background:var(--surf2);border-bottom:1.5px solid var(--brd);display:flex;align-items:center;gap:10px;">
-          <span style="font-size:13px;font-weight:700;color:var(--mb)">ðŸ“Š Floor-wise Counts</span>
-          <span id="shift-lbl" style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--day-bg);color:var(--day-col);border:1px solid var(--day-brd)">â˜€ï¸ Day Shift</span>
+          <span style="font-size:13px;font-weight:700;color:var(--mb)">📊 Floor-wise Counts</span>
+          <span id="shift-lbl" style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--day-bg);color:var(--day-col);border:1px solid var(--day-brd)">☀️ Day Shift</span>
         </div>
         <div class="twrap"><table class="fst">
           <thead><tr><th>Floor</th><th>Total Waves</th><th>In Progress</th><th>Completed</th><th>Pending</th><th>Total Pickers</th></tr></thead>
@@ -557,7 +557,7 @@ tbody tr:hover td{background:#EAF4FC;}
         <div style="font-size:15px;font-weight:700;color:var(--mb);">Wave Detail</div>
         <div style="display:flex;gap:8px;align-items:center;">
           <button class="upbtn alt" onclick="exportSummary()" style="font-size:11px;padding:6px 14px;">&#x2B07; Export Summary XLSX</button>
-          <button id="sum-delete-all-btn" class="upbtn" onclick="openDeleteAllWaves()" style="font-size:11px;padding:6px 14px;background:#C0392B;display:none;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">ðŸ—‘ Delete All Waves</button>
+          <button id="sum-delete-all-btn" class="upbtn" onclick="openDeleteAllWaves()" style="font-size:11px;padding:6px 14px;background:#C0392B;display:none;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">🗑 Delete All Waves</button>
         </div>
       </div>
       <div class="tcard"><div class="twrap"><table>
@@ -572,7 +572,7 @@ tbody tr:hover td{background:#EAF4FC;}
         <tbody id="sum-body"></tbody>
       </table></div></div>
       <div id="roster-wrap" style="display:none!important;visibility:hidden;">
-        <div style="font-size:15px;font-weight:700;color:var(--mb);margin-bottom:10px;">ðŸ‘¥ Roster</div>
+        <div style="font-size:15px;font-weight:700;color:var(--mb);margin-bottom:10px;">👥 Roster</div>
         <div class="tcard"><div class="twrap"><table class="rt">
           <thead><tr><th>User ID</th><th>Name</th><th>Floor</th><th>Shift</th></tr></thead>
           <tbody id="roster-body"></tbody>
@@ -583,23 +583,23 @@ tbody tr:hover td{background:#EAF4FC;}
     <!-- DASHBOARD -->
     <div class="tpanel" id="panel-dashboard">
       <div id="dash-lock" class="lockover" style="display:none">
-        <div style="font-size:44px">ðŸ”’</div><div style="font-size:16px;font-weight:700;">Supervisor / Admin Access Only</div>
+        <div style="font-size:44px">🔒</div><div style="font-size:16px;font-weight:700;">Supervisor / Admin Access Only</div>
       </div>
       <div id="dash-content">
         <div class="sectitle">Operations Dashboard</div>
         <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-          <button class="chip call" id="dstab-day" onclick="setDashShift('day')">â˜€ï¸ Day Shift</button>
-          <button class="chip" id="dstab-night" onclick="setDashShift('night')">ðŸŒ™ Night Shift</button>
+          <button class="chip call" id="dstab-day" onclick="setDashShift('day')">☀️ Day Shift</button>
+          <button class="chip" id="dstab-night" onclick="setDashShift('night')">🌙 Night Shift</button>
         </div>
         <div class="kgrid">
-          <div class="kpi"><div class="kpi-lbl">Total Picked Qty</div><div class="kpi-val grn" id="d-picked">0</div><div class="kpi-sub">Alloc Qty Â· Completed waves</div></div>
-          <div class="kpi"><div class="kpi-lbl">Total Wave Short Pick</div><div class="kpi-val red" id="d-short">0</div><div class="kpi-sub">Order âˆ’ Alloc Â· Completed only</div></div>
-          <div class="kpi"><div class="kpi-lbl">Avg Wave Completion</div><div class="kpi-val blu" id="d-avg">â€”</div><div class="kpi-sub">Average minutes per wave</div></div>
-          <div class="kpi"><div class="kpi-lbl">Total PPO</div><div class="kpi-val blu" id="d-total-ppo">â€”</div><div class="kpi-sub">Pieces Per Order Â· All Types</div></div>
+          <div class="kpi"><div class="kpi-lbl">Total Picked Qty</div><div class="kpi-val grn" id="d-picked">0</div><div class="kpi-sub">Alloc Qty · Completed waves</div></div>
+          <div class="kpi"><div class="kpi-lbl">Total Wave Short Pick</div><div class="kpi-val red" id="d-short">0</div><div class="kpi-sub">Order − Alloc · Completed only</div></div>
+          <div class="kpi"><div class="kpi-lbl">Avg Wave Completion</div><div class="kpi-val blu" id="d-avg">—</div><div class="kpi-sub">Average minutes per wave</div></div>
+          <div class="kpi"><div class="kpi-lbl">Total PPO</div><div class="kpi-val blu" id="d-total-ppo">—</div><div class="kpi-sub">Pieces Per Order · All Types</div></div>
         </div>
         <div class="sectitle">Floor-wise Pickers</div>
         <div class="fprow" id="d-fp"></div>
-        <div class="sectitle">Order Type â€” PPO (Pieces Per Order)</div>
+        <div class="sectitle">Order Type — PPO (Pieces Per Order)</div>
         <div class="ppogrid" id="d-ppo"></div>
       </div>
     </div>
@@ -607,15 +607,15 @@ tbody tr:hover td{background:#EAF4FC;}
     <!-- RIGHTS MANAGER (Admin only) -->
     <div class="tpanel" id="panel-rights">
       <div id="rights-lock" class="lockover" style="display:none">
-        <div style="font-size:44px">ðŸ”’</div><div style="font-size:16px;font-weight:700;">Admin Access Only</div>
+        <div style="font-size:44px">🔒</div><div style="font-size:16px;font-weight:700;">Admin Access Only</div>
       </div>
       <div id="rights-content">
-        <div class="sectitle">ðŸ” Access Rights Manager</div>
+        <div class="sectitle">🔐 Access Rights Manager</div>
         <p style="font-size:12px;color:var(--txm);margin-bottom:18px;">Control what each role can see and do. Changes take effect immediately for all active sessions.</p>
         <div class="rights-grid">
           <!-- Supervisor Rights -->
           <div class="rights-card">
-            <div class="rights-card-hd">ðŸ‘¤ Supervisor Rights</div>
+            <div class="rights-card-hd">👤 Supervisor Rights</div>
             <div class="toggle-row">
               <div><div class="toggle-label">View All Floors</div><div class="toggle-sub">Can see Floor A, B, C, D tabs</div></div>
               <label class="tog"><input type="checkbox" id="r-sup-allfloors" onchange="saveRights()" checked disabled><span class="tog-sl"></span></label>
@@ -649,15 +649,15 @@ tbody tr:hover td{background:#EAF4FC;}
               <label class="tog"><input type="checkbox" id="r-sup-delete" onchange="saveRights()"><span class="tog-sl"></span></label>
             </div>
             <div class="toggle-row">
-              <div><div class="toggle-label">Reset All Waves</div><div class="toggle-sub">Can use Danger Zone â€” Reset All Waves</div></div>
+              <div><div class="toggle-label">Reset All Waves</div><div class="toggle-sub">Can use Danger Zone — Reset All Waves</div></div>
               <label class="tog"><input type="checkbox" id="r-sup-resetall" onchange="saveRights()"><span class="tog-sl"></span></label>
             </div>
           </div>
           <!-- Floor TL Rights -->
           <div class="rights-card">
-            <div class="rights-card-hd">ðŸ­ Floor TL Rights</div>
+            <div class="rights-card-hd">🏭 Floor TL Rights</div>
             <div class="toggle-row">
-              <div><div class="toggle-label">View Own Floor Only</div><div class="toggle-sub">Locked â€” TLs always see own floor</div></div>
+              <div><div class="toggle-label">View Own Floor Only</div><div class="toggle-sub">Locked — TLs always see own floor</div></div>
               <label class="tog"><input type="checkbox" id="r-tl-ownfloor" checked disabled><span class="tog-sl"></span></label>
             </div>
             <div class="toggle-row">
@@ -688,13 +688,13 @@ tbody tr:hover td{background:#EAF4FC;}
         </div>
 
         <!-- Chat Management -->
-        <div class="sectitle">ðŸ’¬ Chat Management</div>
+        <div class="sectitle">💬 Chat Management</div>
         <div class="up-card" style="max-width:500px;border-color:#F5A8A4;background:#FFF8F8;">
-          <div class="up-card-hd" style="color:#C0392B;">âš  Delete All Chat History</div>
+          <div class="up-card-hd" style="color:#C0392B;">⚠ Delete All Chat History</div>
           <p style="font-size:12px;color:var(--txm);margin-bottom:12px;">Permanently removes all messages from the Picking War Room chat. This cannot be undone.</p>
           <div class="up-row">
-            <button class="upbtn" onclick="openDeleteChat()" style="background:#C0392B;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">ðŸ—‘ Delete All Chat</button>
-            <span style="font-size:11px;color:#C0392B;font-weight:500;" id="chat-msg-count">Loadingâ€¦</span>
+            <button class="upbtn" onclick="openDeleteChat()" style="background:#C0392B;" onmouseover="this.style.background='#962D22'" onmouseout="this.style.background='#C0392B'">🗑 Delete All Chat</button>
+            <span style="font-size:11px;color:#C0392B;font-weight:500;" id="chat-msg-count">Loading…</span>
           </div>
         </div>
       </div>
@@ -778,7 +778,7 @@ tbody tr:hover td{background:#EAF4FC;}
       <div id="delallwaves-err" style="color:#C0392B;font-size:11px;margin-bottom:12px;display:none;font-weight:600;">&#x2715; Incorrect password.</div>
       <div style="display:flex;gap:10px;justify-content:flex-end;">
         <button onclick="closeDeleteAllWaves()" style="padding:9px 20px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:#4A7A9B;border:1.5px solid #C5DFF0;">Cancel</button>
-        <button onclick="confirmDeleteAllWaves()" style="padding:9px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#C0392B;color:#fff;border:none;">ðŸ—‘ Delete All Waves</button>
+        <button onclick="confirmDeleteAllWaves()" style="padding:9px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#C0392B;color:#fff;border:none;">🗑 Delete All Waves</button>
       </div>
     </div>
   </div>
@@ -787,7 +787,7 @@ tbody tr:hover td{background:#EAF4FC;}
   <div id="delchat-ov" style="display:none;position:fixed;inset:0;z-index:1100;background:rgba(0,20,40,.60);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
     <div style="background:#fff;border-radius:16px;padding:32px 34px;width:420px;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:pop .2s ease;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
-        <div style="width:40px;height:40px;background:#FDECEA;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">ðŸ’¬</div>
+        <div style="width:40px;height:40px;background:#FDECEA;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">💬</div>
         <div>
           <div style="font-size:16px;font-weight:700;color:#C0392B;">Delete All Chat History</div>
           <div style="font-size:11px;color:#7A3800;margin-top:1px;">This action cannot be undone</div>
@@ -804,7 +804,7 @@ tbody tr:hover td{background:#EAF4FC;}
       <div id="delchat-err" style="color:#C0392B;font-size:11px;margin-bottom:12px;display:none;font-weight:600;">&#x2715; Incorrect password.</div>
       <div style="display:flex;gap:10px;justify-content:flex-end;">
         <button onclick="closeDeleteChat()" style="padding:9px 20px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:#4A7A9B;border:1.5px solid #C5DFF0;">Cancel</button>
-        <button onclick="confirmDeleteChat()" style="padding:9px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#C0392B;color:#fff;border:none;">ðŸ—‘ Delete All Messages</button>
+        <button onclick="confirmDeleteChat()" style="padding:9px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;background:#C0392B;color:#fff;border:none;">🗑 Delete All Messages</button>
       </div>
     </div>
   </div>
@@ -814,15 +814,15 @@ tbody tr:hover td{background:#EAF4FC;}
 <!-- QR MODAL -->
 <div class="qrov" id="qrov" onclick="closeQR(event)">
   <div class="qrbox">
-    <button class="qrcls" onclick="closeQR(null,true)">âœ•</button>
+    <button class="qrcls" onclick="closeQR(null,true)">✕</button>
     <div class="qrlbl">Wave Key QR Code</div>
-    <div class="qrwave" id="qrwave">â€”</div>
-    <div class="qrmeta" id="qrmeta">â€”</div>
+    <div class="qrwave" id="qrwave">—</div>
+    <div class="qrmeta" id="qrmeta">—</div>
     <div class="qrwrap"><div id="qrcont"></div></div>
     <div class="qrrow">
-      <div class="qrri"><div class="qrrl">Order Qty</div><div class="qrrv" id="qroq" style="color:var(--ml)">â€”</div></div>
-      <div class="qrri"><div class="qrrl">Alloc Qty</div><div class="qrrv" id="qraq" style="color:var(--comp)">â€”</div></div>
-      <div class="qrri"><div class="qrrl">Status</div><div class="qrrv" id="qrst">â€”</div></div>
+      <div class="qrri"><div class="qrrl">Order Qty</div><div class="qrrv" id="qroq" style="color:var(--ml)">—</div></div>
+      <div class="qrri"><div class="qrrl">Alloc Qty</div><div class="qrrv" id="qraq" style="color:var(--comp)">—</div></div>
+      <div class="qrri"><div class="qrrl">Status</div><div class="qrrv" id="qrst">—</div></div>
     </div>
   </div>
 </div>
@@ -830,8 +830,8 @@ tbody tr:hover td{background:#EAF4FC;}
 <!-- EDIT MODAL -->
 <div class="mov" id="edit-mov" onclick="closeEdit(event)">
   <div class="mbox">
-    <button class="mcls" onclick="closeEdit(null,true)">âœ•</button>
-    <h2>âœï¸ Edit Wave Key</h2>
+    <button class="mcls" onclick="closeEdit(null,true)">✕</button>
+    <h2>✏️ Edit Wave Key</h2>
     <input type="hidden" id="edit-orig">
     <div class="mgrid">
       <div class="mf"><label>Wave Key</label><input type="text" id="edit-wk"></div>
@@ -854,7 +854,7 @@ tbody tr:hover td{background:#EAF4FC;}
 <div id="toast"></div>
 
 <script>
-// â”€â”€ Stars â”€â”€
+// ── Stars ──
 (function(){
   const c=document.getElementById('ls-stars'); if(!c) return;
   for(let i=0;i<80;i++){
@@ -865,9 +865,9 @@ tbody tr:hover td{background:#EAF4FC;}
   }
 })();
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // FIREBASE
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 const firebaseConfig={
   apiKey:"AIzaSyCgDyu1fG9xykc1bnOqtdb-xH0DcxS5oUY",
   authDomain:"wms-picking-tracker.firebaseapp.com",
@@ -891,9 +891,9 @@ const ADMIN_PIN = 'GK@123';
 const RESET_PASS= 'GC@123';
 const FL=['A','B','C','D'];
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // SESSION PERSISTENCE
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // Save login state to sessionStorage so page refresh doesn't log out.
 // sessionStorage is cleared when the browser tab is closed (natural logout).
 function saveSession(){
@@ -914,16 +914,16 @@ function clearSession(){
   try{ sessionStorage.removeItem('wms_role'); sessionStorage.removeItem('wms_floor'); }catch(e){}
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // STATE
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 let role=null, myFloor=null;
 let activeShift='day', dashShift='day';
 let appReady=false;
 let fd={A:[],B:[],C:[],D:[]};
 let rosterDB={};
 
-// Rights state â€” defaults (what was original behaviour)
+// Rights state — defaults (what was original behaviour)
 let rights = {
   sup: {
     dashboard: true,
@@ -954,9 +954,9 @@ const DEFAULT_ROSTER={
 let flt={A:'all',B:'all',C:'all',D:'all'};
 let sumFlt='all';
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // LIVE CLOCK
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function updateClock(){
   const now=new Date();
   const timeStr=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
@@ -969,9 +969,9 @@ function updateClock(){
 updateClock();
 setInterval(updateClock,1000);
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // REFRESH BUTTON
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function doRefresh(){
   const btn=document.getElementById('refresh-btn');
   btn.classList.add('spin');
@@ -985,17 +985,17 @@ function doRefresh(){
     if(sp&&sp.classList.contains('active')) renderSummary();
     const dp=document.getElementById('panel-dashboard');
     if(dp&&dp.classList.contains('active')) renderDashboard();
-    toast('âœ… Data refreshed');
+    toast('✅ Data refreshed');
   }).catch(()=>{
-    toast('âš  Refresh failed â€” check connection',true);
+    toast('⚠ Refresh failed — check connection',true);
   }).finally(()=>{
     setTimeout(()=>btn.classList.remove('spin'),600);
   });
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// RIGHTS â€” Firebase sync
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
+// RIGHTS — Firebase sync
+// ═══════════════════════════════════════
 let rightsListenerReady=false;
 function attachRightsListener(){
   db.ref(FB_RIGHTS).on('value',snap=>{
@@ -1035,7 +1035,7 @@ function saveRights(){
   rights=newRights;
   db.ref(FB_RIGHTS).set(newRights).catch(e=>console.warn('rights save error:',e));
   applyRightsUI();
-  toast('âœ… Rights updated');
+  toast('✅ Rights updated');
 }
 
 function syncRightsToggles(){
@@ -1072,9 +1072,9 @@ function applyRightsUI(){
   }
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // SHIFT HELPERS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function curShift(){ const h=new Date().getHours(); return(h>=7&&h<19)?'day':'night'; }
 function shiftOfDate(d){ const h=new Date(d).getHours(); return(h>=7&&h<19)?'day':'night'; }
 function waveShift(r){
@@ -1093,9 +1093,9 @@ function applyCrossover(){
   if(changed) saveWaves();
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // PERSISTENCE
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function waveToFB(r){ return{...r,uploadDate:r.uploadDate?r.uploadDate.toISOString():null,startDate:r.startDate?r.startDate.toISOString():null}; }
 function waveFromFB(r){ return{...r,uploadDate:r.uploadDate?new Date(r.uploadDate):null,startDate:r.startDate?new Date(r.startDate):null}; }
 function saveWaves(){ const p={}; FL.forEach(f=>{p[f]=fd[f].map(waveToFB);}); db.ref(FB_WAVES).set(p).catch(e=>console.warn('saveWaves:',e)); }
@@ -1135,18 +1135,18 @@ attachRosterListener();
 attachRightsListener();
 activeShift=curShift(); dashShift=curShift();
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // PURGE D-1
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function purgeD1(){
   const tm=new Date(); tm.setHours(0,0,0,0); let changed=false;
   FL.forEach(f=>{ const b=fd[f].length; fd[f]=fd[f].filter(r=>{ if(r.status!=='Completed')return true; if(!r.endTime)return true; try{return parseTime(r.endTime)>=tm;}catch(e){return true;} }); if(fd[f].length!==b)changed=true; });
   if(changed)saveWaves();
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // TOAST
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 let _tt=null;
 function toast(msg,warn=false){
   const el=document.getElementById('toast');
@@ -1154,9 +1154,9 @@ function toast(msg,warn=false){
   if(_tt)clearTimeout(_tt); _tt=setTimeout(()=>el.className='',3600);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// LOGIN / LOGOUT â€” with session persistence
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
+// LOGIN / LOGOUT — with session persistence
+// ═══════════════════════════════════════
 function onRoleChg(){
   const v=document.getElementById('l-role').value;
   document.getElementById('l-fw').style.display=v==='floor'?'block':'none';
@@ -1180,8 +1180,8 @@ function doLogin(){
 function enterApp(){
   document.getElementById('ls').style.display='none';
   document.getElementById('app').style.display='flex';
-  document.getElementById('h-badge').textContent=role==='supervisor'?'ðŸ‘¤ Supervisor':role==='admin'?'ðŸ”‘ Admin':`ðŸ‘¤ Floor ${myFloor} TL`;
-  document.getElementById('h-role').textContent=role==='supervisor'?'Supervisor View':role==='admin'?'Admin View':`Floor ${myFloor} â€” Team Lead`;
+  document.getElementById('h-badge').textContent=role==='supervisor'?'👤 Supervisor':role==='admin'?'🔑 Admin':`👤 Floor ${myFloor} TL`;
+  document.getElementById('h-role').textContent=role==='supervisor'?'Supervisor View':role==='admin'?'Admin View':`Floor ${myFloor} — Team Lead`;
   activeShift=curShift(); dashShift=curShift();
   setupAccess();
 
@@ -1194,9 +1194,9 @@ function enterApp(){
 
   if(appReady){ go(); }
   else{
-    toast('ðŸ”„ Connectingâ€¦');
-    const iv=setInterval(()=>{ if(appReady){clearInterval(iv);go();toast('âœ… Connected!');} },200);
-    setTimeout(()=>{ if(!appReady){clearInterval(iv);appReady=true;go();toast('âš  Offline mode',true);} },8000);
+    toast('🔄 Connecting…');
+    const iv=setInterval(()=>{ if(appReady){clearInterval(iv);go();toast('✅ Connected!');} },200);
+    setTimeout(()=>{ if(!appReady){clearInterval(iv);appReady=true;go();toast('⚠ Offline mode',true);} },8000);
   }
 }
 
@@ -1212,7 +1212,7 @@ function doLogout(){
   destroyChat();
 }
 
-// â”€â”€ Auto-restore session on page load â”€â”€
+// ── Auto-restore session on page load ──
 (function restoreSession(){
   const sess=loadSession();
   if(sess&&sess.role){
@@ -1226,9 +1226,9 @@ function doLogout(){
   }
 })();
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // ACCESS SETUP
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function setupAccess(){
   const sup=role==='supervisor', admin=role==='admin', tl=role==='floor';
   const supOrAdmin=sup||admin;
@@ -1251,7 +1251,7 @@ function setupAccess(){
   document.getElementById('dash-lock').style.display   =(supOrAdmin||rights.tl.dashboard&&tl)?'none':'flex';
   document.getElementById('dash-content').style.display=(supOrAdmin||rights.tl.dashboard&&tl)?'block':'none';
 
-  // Rights tab â€” admin only
+  // Rights tab — admin only
   const rTab=document.getElementById('tb-rights');
   if(admin){ rTab.classList.remove('locked'); }
   else{ rTab.classList.add('locked'); }
@@ -1274,22 +1274,22 @@ function setupAccess(){
     const showRoster=admin||rights.sup.roster;
     ua.innerHTML=`<div class="up-grid">
       ${showUpload?`<div class="up-card">
-        <div class="up-card-hd">ðŸ“¥ Wave Dump Upload</div>
+        <div class="up-card-hd">📥 Wave Dump Upload</div>
         <div class="up-row">
           <input type="file" id="fi-wave" accept=".csv,.xlsx,.xls" style="display:none" onchange="importWaves(event)">
-          <button class="upbtn" onclick="document.getElementById('fi-wave').click()">ðŸ“‚ Upload Wave Excel / CSV</button>
+          <button class="upbtn" onclick="document.getElementById('fi-wave').click()">📂 Upload Wave Excel / CSV</button>
           <span class="upst ok" id="us-wave">${countWaves()} waves in system</span>
         </div>
         <div style="margin-top:7px;font-size:10.5px;color:var(--txm)">Required: <b>Wavekey, OrderQty, AllocatedQty</b></div>
       </div>`:''}
       ${showRoster?`<div class="up-card">
-        <div class="up-card-hd">ðŸ‘¥ Roster Upload</div>
+        <div class="up-card-hd">👥 Roster Upload</div>
         <div class="up-row">
           <input type="file" id="fi-roster" accept=".csv,.xlsx,.xls" style="display:none" onchange="importRoster(event)">
-          <button class="upbtn alt" onclick="document.getElementById('fi-roster').click()">ðŸ“‚ Upload Roster Excel / CSV</button>
+          <button class="upbtn alt" onclick="document.getElementById('fi-roster').click()">📂 Upload Roster Excel / CSV</button>
           <span class="upst ok" id="us-roster">${Object.keys(rosterDB).length} users in roster</span>
         </div>
-        <div style="margin-top:7px;font-size:10.5px;color:var(--txm)">Required: <b>UserID, Name</b> Â· Optional: <b>Floor, Shift</b></div>
+        <div style="margin-top:7px;font-size:10.5px;color:var(--txm)">Required: <b>UserID, Name</b> · Optional: <b>Floor, Shift</b></div>
       </div>`:''}
       ${admin?`<div class="up-card" style="border-color:#F5A8A4;background:#FFF8F8;max-width:280px;">
         <div class="up-card-hd" style="color:#C0392B;">&#x26A0; Danger Zone</div>
@@ -1307,7 +1307,7 @@ function setupAccess(){
     ua.innerHTML='';
   }
 
-  // Delete All Waves button in Summary â€” admin only
+  // Delete All Waves button in Summary — admin only
   const sumDelBtn=document.getElementById('sum-delete-all-btn');
   if(sumDelBtn) sumDelBtn.style.display=admin?'':'none';
 
@@ -1325,9 +1325,9 @@ function setupAccess(){
 
 function countWaves(){ return fd['A']?fd['A'].length:0; }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // IMPORT WAVES
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function importWaves(evt){ const f=evt.target.files[0]; if(!f)return; readFile(f,rows=>pushWaves(rows,f.name)); }
 function readFile(file,cb){
   const csv=file.name.toLowerCase().endsWith('.csv');
@@ -1357,14 +1357,14 @@ function pushWaves(rows,fname){
   deduped.forEach(row=>{ const wk=String(row[wkC]||'').trim(); if(!wk)return; if(fd['A'].find(r=>r.wavekey===wk)){skipped++;return;} FL.forEach(f=>{fd[f].push({wavekey:wk,noOfOrders:row[noC]||0,orderQty:Number(row[oqC])||0,allocQty:Number(row[aqC])||0,type:row[bkC]||'',status:'Pending',assignedShift:curShift(),uploadTime:nowStr,uploadDate:now,startTime:'',startDate:null,endTime:'',userId:'',userName:'',completionMin:''});}); added++; });
   FL.forEach(f=>{ fd[f].sort((a,b)=>{ const na=parseFloat(a.wavekey.replace(/[^0-9.]/g,'')),nb=parseFloat(b.wavekey.replace(/[^0-9.]/g,'')); if(!isNaN(na)&&!isNaN(nb))return na-nb; return String(a.wavekey).localeCompare(String(b.wavekey)); }); });
   saveWaves();
-  const el=document.getElementById('us-wave'); if(el)el.innerHTML=`âœ… ${added} added Â· ${skipped} dup skipped Â· ${nowStr}`;
+  const el=document.getElementById('us-wave'); if(el)el.innerHTML=`✅ ${added} added · ${skipped} dup skipped · ${nowStr}`;
   FL.forEach(f=>renderTable(f));
-  toast(`âœ… ${added} waves added${skipped?` Â· ${skipped} duplicates skipped`:''}`);
+  toast(`✅ ${added} waves added${skipped?` · ${skipped} duplicates skipped`:''}`);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // ROSTER IMPORT
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function importRoster(evt){ const f=evt.target.files[0]; if(!f)return; readFile(f,rows=>buildRoster(rows,f.name)); }
 function buildRoster(rows,fname){
   if(!rows.length){alert('No rows.');return;}
@@ -1376,16 +1376,16 @@ function buildRoster(rows,fname){
   const nr=Object.assign({},DEFAULT_ROSTER);
   rows.forEach(row=>{ const uid=String(row[uidC]||'').trim().toUpperCase(); const name=String(row[nmC]||'').trim(); if(!uid||!name)return; nr[uid]={name,floor:flC?String(row[flC]||'').trim():'',shift:shC?String(row[shC]||'').trim():''}; });
   rosterDB=nr; saveRoster();
-  const el=document.getElementById('us-roster'); if(el)el.innerHTML=`âœ… ${Object.keys(rosterDB).length} users Â· ${fname}`;
+  const el=document.getElementById('us-roster'); if(el)el.innerHTML=`✅ ${Object.keys(rosterDB).length} users · ${fname}`;
   FL.forEach(f=>{fd[f].forEach(r=>{if(r.userId)r.userName=getName(r.userId);});}); saveWaves(); FL.forEach(f=>renderTable(f));
-  toast(`âœ… Roster updated â€” ${Object.keys(rosterDB).length} users`);
+  toast(`✅ Roster updated — ${Object.keys(rosterDB).length} users`);
 }
 function getName(uid){ if(!uid)return''; const u=rosterDB[uid]; return u?u.name:'Unknown'; }
 function renderRoster(){}
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // FILTER STATE
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function setFlt(f,v){
   flt[f]=v;
   ['all','Pending','Running','Completed','Partial'].forEach(x=>{
@@ -1408,9 +1408,9 @@ function filteredRows(f){
   });
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // UID COMMIT
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function uidCommit(f,i,inp){
   const r=fd[f][i]; if(!r)return;
   const newVal=inp.value.replace(/[\r\n\t]/g,'').trim().toUpperCase();
@@ -1420,9 +1420,9 @@ function uidCommit(f,i,inp){
   onUID(f,i,inp);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // RENDER TABLE
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function renderTable(f){
   const tbody=document.getElementById('tbody-'+f); if(!tbody)return;
   const activeEl=document.activeElement;
@@ -1431,7 +1431,7 @@ function renderTable(f){
   const now=new Date();
   if(!rows.length){
     const msg=fd[f].length?'No results for current filter':'Awaiting supervisor wave upload';
-    const ico=fd[f].length?'ðŸ”':'ðŸ“¦';
+    const ico=fd[f].length?'🔍':'📦';
     tbody.innerHTML=`<tr><td colspan="13"><div class="empty"><div class="empi">${ico}</div><p>${msg}</p></div></td></tr>`;
     return;
   }
@@ -1441,7 +1441,7 @@ function renderTable(f){
     const partial=r.allocQty<r.orderQty;
     const overdue=r.status==='Pending'&&r.uploadDate&&(now-new Date(r.uploadDate))/60000>=120;
     const wkCls='wk '+(partial?'wkp':'wkf')+(overdue?' wkov':'');
-    const ovTag=overdue?`<span class="ovtag">âš  OVERDUE</span>`:'';
+    const ovTag=overdue?`<span class="ovtag">⚠ OVERDUE</span>`:'';
     const isPend=r.status==='Pending',isRun=r.status==='Running',isDone=r.status==='Completed';
     let statusCell;
     if(admin){
@@ -1452,29 +1452,29 @@ function renderTable(f){
       const startedAt=runningStartTimes[f+'-'+r.wavekey]||(r.startDate?new Date(r.startDate).getTime():null);
       const elapsed=startedAt?(Date.now()-startedAt):99999999;
       const locked=elapsed<30000; const secsLeft=locked?Math.ceil((30000-elapsed)/1000):0;
-      statusCell=`<div class="schips"><span class="fb fb-running" style="margin-right:4px;">Running</span><button class="schip sc ${locked?'dis':''}" onclick="setSt('${f}',${ri},'Completed')">${locked?`â³ ${secsLeft}s`:'âœ” Complete'}</button></div>`;
+      statusCell=`<div class="schips"><span class="fb fb-running" style="margin-right:4px;">Running</span><button class="schip sc ${locked?'dis':''}" onclick="setSt('${f}',${ri},'Completed')">${locked?`⏳ ${secsLeft}s`:'✔ Complete'}</button></div>`;
     } else {
       const cls=isPend?'fb-pending':isRun?'fb-running':'fb-completed';
       statusCell=`<span class="fb ${cls}">${r.status}</span>`;
     }
     const uidDis=(sup||isDone||(tl&&myFloor!==f))?'dis':'';
     let actCell='<td></td>';
-    if(admin){ actCell=`<td style="white-space:nowrap"><button class="abtn ebtn" onclick="openEdit('${r.wavekey}')">âœï¸</button><button class="abtn dbtn" style="margin-left:3px" onclick="delWave('${r.wavekey}')">ðŸ—‘</button></td>`; }
+    if(admin){ actCell=`<td style="white-space:nowrap"><button class="abtn ebtn" onclick="openEdit('${r.wavekey}')">✏️</button><button class="abtn dbtn" style="margin-left:3px" onclick="delWave('${r.wavekey}')">🗑</button></td>`; }
     else if(sup&&(rights.sup.edit||rights.sup.delete)){
-      const editBtn=rights.sup.edit?`<button class="abtn ebtn" onclick="openEdit('${r.wavekey}')">âœï¸</button>`:'';
-      const delBtn=rights.sup.delete?`<button class="abtn dbtn" style="margin-left:3px" onclick="delWave('${r.wavekey}')">ðŸ—‘</button>`:'';
+      const editBtn=rights.sup.edit?`<button class="abtn ebtn" onclick="openEdit('${r.wavekey}')">✏️</button>`:'';
+      const delBtn=rights.sup.delete?`<button class="abtn dbtn" style="margin-left:3px" onclick="delWave('${r.wavekey}')">🗑</button>`:'';
       actCell=`<td style="white-space:nowrap">${editBtn}${delBtn}</td>`;
     }
-    else if(tl&&myFloor===f&&rights.tl.delete){ actCell=`<td style="white-space:nowrap"><button class="abtn dbtn" onclick="delWave('${r.wavekey}')">ðŸ—‘</button></td>`; }
-    return `<tr><td><span class="${wkCls}" onclick="openQR('${r.wavekey}','${f}')">${r.wavekey}</span>${ovTag}</td><td>${r.noOfOrders}</td><td>${r.orderQty}</td><td>${r.allocQty}</td><td>${r.type}</td><td>${statusCell}</td><td><input class="uid-inp ${uidDis}" type="text" value="${r.userId}" placeholder="${isPend?'Scan to start':'Scan ID'}" ${uidDis?'disabled':''} onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();}" onblur="uidCommit('${f}',${ri},this)"></td><td class="uname">${r.userName||'â€”'}</td><td class="tc">${r.uploadTime}</td><td class="tc">${r.startTime||'â€”'}</td><td class="tc">${r.endTime||'â€”'}</td><td class="tc">${r.completionMin!==''?r.completionMin+' min':'â€”'}</td>${actCell}</tr>`;
+    else if(tl&&myFloor===f&&rights.tl.delete){ actCell=`<td style="white-space:nowrap"><button class="abtn dbtn" onclick="delWave('${r.wavekey}')">🗑</button></td>`; }
+    return `<tr><td><span class="${wkCls}" onclick="openQR('${r.wavekey}','${f}')">${r.wavekey}</span>${ovTag}</td><td>${r.noOfOrders}</td><td>${r.orderQty}</td><td>${r.allocQty}</td><td>${r.type}</td><td>${statusCell}</td><td><input class="uid-inp ${uidDis}" type="text" value="${r.userId}" placeholder="${isPend?'Scan to start':'Scan ID'}" ${uidDis?'disabled':''} onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();this.blur();}" onblur="uidCommit('${f}',${ri},this)"></td><td class="uname">${r.userName||'—'}</td><td class="tc">${r.uploadTime}</td><td class="tc">${r.startTime||'—'}</td><td class="tc">${r.endTime||'—'}</td><td class="tc">${r.completionMin!==''?r.completionMin+' min':'—'}</td>${actCell}</tr>`;
   }).join('');
 }
 
 const runningStartTimes={};
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // STATUS TRANSITIONS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function setSt(f,i,st){
   const r=fd[f][i]; if(!r)return;
   const now=new Date();
@@ -1488,31 +1488,31 @@ function setSt(f,i,st){
   }
   if(isTL&&st==='Completed'&&r.status==='Running'){
     const sa=runningStartTimes[f+'-'+r.wavekey]||(r.startDate?new Date(r.startDate).getTime():null);
-    if(sa&&(Date.now()-sa)<30000){toast(`â³ Wait ${Math.ceil((30000-(Date.now()-sa))/1000)}s`,true);return;}
+    if(sa&&(Date.now()-sa)<30000){toast(`⏳ Wait ${Math.ceil((30000-(Date.now()-sa))/1000)}s`,true);return;}
     r.endTime=fmtTime(now);r.completionMin=r.startDate?Math.round((now-new Date(r.startDate))/60000):0;r.status='Completed';saveWaves();renderTable(f);return;
   }
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // UID SCAN
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function onUID(f,i,inp){
   const r=fd[f][i]; if(!r)return;
   const uid=inp.value.trim().toUpperCase();
   if(!uid){r.userId='';r.userName='';saveWaves();renderTable(f);return;}
-  for(const fl of FL){ for(const row of fd[fl]){ if(row===r)continue; if(row.userId===uid&&row.status==='Running'){toast(`âš  ${uid} already running wave ${row.wavekey} on Floor ${fl}`,true);inp.value='';return;} } }
+  for(const fl of FL){ for(const row of fd[fl]){ if(row===r)continue; if(row.userId===uid&&row.status==='Running'){toast(`⚠ ${uid} already running wave ${row.wavekey} on Floor ${fl}`,true);inp.value='';return;} } }
   const canEdit=role==='admin'||(role==='floor'&&myFloor===f);
-  if(!canEdit){toast('âš  You can only edit your own floor.',true);inp.value='';return;}
+  if(!canEdit){toast('⚠ You can only edit your own floor.',true);inp.value='';return;}
   if(r.status==='Pending'){
-    const now=new Date(); r.startTime=fmtTime(now);r.startDate=now;r.status='Running';runningStartTimes[f+'-'+r.wavekey]=Date.now();r.userId=uid;r.userName=getName(uid);toast(`â–¶ Wave ${r.wavekey} started â€” ${r.userName||uid}`);
-  } else if(r.status==='Running'){ r.userId=uid;r.userName=getName(uid);toast(`âœ… ${r.userName||uid} reassigned to ${r.wavekey}`); }
+    const now=new Date(); r.startTime=fmtTime(now);r.startDate=now;r.status='Running';runningStartTimes[f+'-'+r.wavekey]=Date.now();r.userId=uid;r.userName=getName(uid);toast(`▶ Wave ${r.wavekey} started — ${r.userName||uid}`);
+  } else if(r.status==='Running'){ r.userId=uid;r.userName=getName(uid);toast(`✅ ${r.userName||uid} reassigned to ${r.wavekey}`); }
   else{inp.value=r.userId;return;}
   saveWaves();renderTable(f);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // EDIT / DELETE WAVE
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function openEdit(wk){ const r=fd['A'].find(x=>x.wavekey===wk);if(!r)return; document.getElementById('edit-orig').value=wk; document.getElementById('edit-wk').value=r.wavekey; document.getElementById('edit-no').value=r.noOfOrders; document.getElementById('edit-oq').value=r.orderQty; document.getElementById('edit-aq').value=r.allocQty; document.getElementById('edit-tp').value=r.type; document.getElementById('edit-mov').classList.add('open'); }
 function closeEdit(e,force){ if(force||(e&&e.target===document.getElementById('edit-mov')))document.getElementById('edit-mov').classList.remove('open'); }
 function saveEdit(){
@@ -1521,18 +1521,18 @@ function saveEdit(){
   if(!newWk){toast('Wave key empty.',true);return;}
   if(newWk!==orig&&fd['A'].find(r=>r.wavekey===newWk)){toast(`Wave key "${newWk}" exists.`,true);return;}
   FL.forEach(f=>{const r=fd[f].find(x=>x.wavekey===orig);if(!r)return;r.wavekey=newWk;r.noOfOrders=document.getElementById('edit-no').value||r.noOfOrders;r.orderQty=Number(document.getElementById('edit-oq').value)||r.orderQty;r.allocQty=Number(document.getElementById('edit-aq').value)||r.allocQty;r.type=document.getElementById('edit-tp').value.trim()||r.type;});
-  saveWaves();closeEdit(null,true);FL.forEach(f=>renderTable(f));toast(`âœ… Wave "${newWk}" updated`);
+  saveWaves();closeEdit(null,true);FL.forEach(f=>renderTable(f));toast(`✅ Wave "${newWk}" updated`);
 }
 function delWave(wk){
   // Permission check
-  if(role==='supervisor'&&!rights.sup.delete){toast('âš  You do not have delete permission',true);return;}
-  if(role==='floor'&&!rights.tl.delete){toast('âš  You do not have delete permission',true);return;}
+  if(role==='supervisor'&&!rights.sup.delete){toast('⚠ You do not have delete permission',true);return;}
+  if(role==='floor'&&!rights.tl.delete){toast('⚠ You do not have delete permission',true);return;}
   if(!confirm(`Delete wave "${wk}" from ALL floors?`))return;
-  FL.forEach(f=>{fd[f]=fd[f].filter(r=>r.wavekey!==wk);}); saveWaves();FL.forEach(f=>renderTable(f)); const sp=document.getElementById('panel-summary');if(sp&&sp.classList.contains('active'))renderSummary(); toast(`ðŸ—‘ Wave "${wk}" deleted`); }
+  FL.forEach(f=>{fd[f]=fd[f].filter(r=>r.wavekey!==wk);}); saveWaves();FL.forEach(f=>renderTable(f)); const sp=document.getElementById('panel-summary');if(sp&&sp.classList.contains('active'))renderSummary(); toast(`🗑 Wave "${wk}" deleted`); }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // TABS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function showTab(id){
   if(id==='dashboard'&&role!=='supervisor'&&role!=='admin'&&!rights.tl.dashboard)return;
   if(id==='rights'&&role!=='admin')return;
@@ -1546,16 +1546,16 @@ function showTab(id){
   if(id==='rights'){syncRightsToggles();updateChatCount();}
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // SUMMARY
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function setShift(s){
   activeShift=s;
   document.getElementById('stab-day').classList.toggle('act',s==='day');
   document.getElementById('stab-night').classList.toggle('act',s==='night');
   const lbl=document.getElementById('shift-lbl');
-  if(s==='day'){lbl.textContent='â˜€ï¸ Day Shift';lbl.style.cssText='font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--day-bg);color:var(--day-col);border:1px solid var(--day-brd)';}
-  else{lbl.textContent='ðŸŒ™ Night Shift';lbl.style.cssText='font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--night-bg);color:var(--night);border:1px solid var(--night-brd)';}
+  if(s==='day'){lbl.textContent='☀️ Day Shift';lbl.style.cssText='font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--day-bg);color:var(--day-col);border:1px solid var(--day-brd)';}
+  else{lbl.textContent='🌙 Night Shift';lbl.style.cssText='font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:var(--night-bg);color:var(--night);border:1px solid var(--night-brd)';}
   renderSummary();
 }
 function setSumFlt(v){
@@ -1568,7 +1568,7 @@ function rowMatchesShift(r){return waveShift(r)===activeShift;}
 function renderFloorCounts(){
   const tbody=document.getElementById('fsum-body'); let tW=0,tR=0,tC=0,tP=0,tPick=0;
   const rows=FL.map(f=>{ const sr=fd[f].filter(rowMatchesShift); const running=sr.filter(r=>r.status==='Running').length,comp=sr.filter(r=>r.status==='Completed').length,pend=sr.filter(r=>r.status==='Pending').length,pickers=new Set(sr.filter(r=>r.userId).map(r=>r.userId)).size; tW+=sr.length;tR+=running;tC+=comp;tP+=pend;tPick+=pickers;return{f,total:sr.length,running,comp,pend,pickers}; });
-  if(!tW){tbody.innerHTML=`<tr><td colspan="6"><div class="empty" style="padding:20px"><div class="empi">ðŸ“Š</div><p>No ${activeShift} shift waves</p></div></td></tr>`;return;}
+  if(!tW){tbody.innerHTML=`<tr><td colspan="6"><div class="empty" style="padding:20px"><div class="empi">📊</div><p>No ${activeShift} shift waves</p></div></td></tr>`;return;}
   tbody.innerHTML=rows.map(({f,total,running,comp,pend,pickers})=>`<tr><td><strong>Floor ${f}</strong></td><td><span class="cnt">${total}</span></td><td><span class="cnt r">${running}</span></td><td><span class="cnt g">${comp}</span></td><td><span class="cnt o">${pend}</span></td><td><span class="cnt">${pickers}</span></td></tr>`).join('')+`<tr><td><strong>TOTAL</strong></td><td><span class="cnt">${tW}</span></td><td><span class="cnt r">${tR}</span></td><td><span class="cnt g">${tC}</span></td><td><span class="cnt o">${tP}</span></td><td><span class="cnt">${tPick}</span></td></tr>`;
 }
 function renderWaveDetail(){
@@ -1576,7 +1576,7 @@ function renderWaveDetail(){
   const tbody=document.getElementById('sum-body');
   const q=(document.getElementById('sum-q')?.value||'').toLowerCase().trim();
   const by=document.getElementById('sum-by')?.value||'all';
-  if(!allK.size){tbody.innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empi">ðŸ“Š</div><p>No ${activeShift} shift waves yet</p></div></td></tr>`;return;}
+  if(!allK.size){tbody.innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empi">📊</div><p>No ${activeShift} shift waves yet</p></div></td></tr>`;return;}
   const html=[];
   allK.forEach(wk=>{
     const sts={};let maxMins=null,waveType='';
@@ -1584,21 +1584,21 @@ function renderWaveDetail(){
     const act=FL.filter(f=>sts[f]!==null);if(!act.length)return;
     const done=act.every(f=>sts[f]==='Completed'),anyRun=act.some(f=>sts[f]==='Running');
     const ov=done?'Completed':anyRun?'Running':'Pending';
-    const ct=(done&&maxMins!==null)?maxMins+' min':'â€”';
+    const ct=(done&&maxMins!==null)?maxMins+' min':'—';
     let wkc='wk wkf',isPartial=false;
     FL.forEach(f=>{const row=fd[f].find(r=>r.wavekey===wk);if(row&&row.allocQty<row.orderQty){wkc='wk wkp';isPartial=true;}});
     if(sumFlt!=='all'){if(sumFlt==='Partial'&&!isPartial)return;if(sumFlt!=='Partial'&&ov!==sumFlt)return;}
     if(q){if(by==='wavekey'&&!wk.toLowerCase().includes(q))return;if(by==='status'&&!ov.toLowerCase().includes(q))return;if(by==='all'&&![wk,ov,waveType,...FL.map(f=>sts[f]||'')].some(v=>v.toLowerCase().includes(q)))return;}
     const fcols=FL.map(f=>sts[f]?`<td><span class="fb fb-${sts[f].toLowerCase()}">${sts[f]}</span></td>`:`<td><span class="fb fb-na">N/A</span></td>`).join('');
-    const typeCell=`<td style="background:#F0F7FB;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txm);font-weight:600;">${waveType||'â€”'}</span></td>`;
-    html.push(`<tr><td style="background:#F0F7FB;border-left:4px solid #F5A623;padding-left:14px;"><span class="${wkc}">${wk}</span></td>${typeCell}${fcols}<td style="background:#F5F9FC;"><span class="fb fb-${ov.toLowerCase()}">${ov}</span></td><td style="background:#F5F9FC;">${ct!=='â€”'?`<span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#00324F,#0073AB);color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;box-shadow:0 2px 5px rgba(0,50,79,.25);">â± ${ct}</span>`:'<span style="color:#B0C8D8;font-size:13px;font-weight:700;">â€”</span>'}</td></tr>`);
+    const typeCell=`<td style="background:#F0F7FB;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txm);font-weight:600;">${waveType||'—'}</span></td>`;
+    html.push(`<tr><td style="background:#F0F7FB;border-left:4px solid #F5A623;padding-left:14px;"><span class="${wkc}">${wk}</span></td>${typeCell}${fcols}<td style="background:#F5F9FC;"><span class="fb fb-${ov.toLowerCase()}">${ov}</span></td><td style="background:#F5F9FC;">${ct!=='—'?`<span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#00324F,#0073AB);color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;box-shadow:0 2px 5px rgba(0,50,79,.25);">⏱ ${ct}</span>`:'<span style="color:#B0C8D8;font-size:13px;font-weight:700;">—</span>'}</td></tr>`);
   });
-  tbody.innerHTML=html.length?html.join(''):`<tr><td colspan="8"><div class="empty"><div class="empi">ðŸ”</div><p>No results</p></div></td></tr>`;
+  tbody.innerHTML=html.length?html.join(''):`<tr><td colspan="8"><div class="empty"><div class="empi">🔍</div><p>No results</p></div></td></tr>`;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // DASHBOARD
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function setDashShift(s){ dashShift=s; document.getElementById('dstab-day').className='chip'+(s==='day'?' call':''); document.getElementById('dstab-night').className='chip'+(s==='night'?' call':''); renderDashboard(); }
 function renderDashboard(){
   let picked=0,shortPick=0;
@@ -1610,22 +1610,22 @@ function renderDashboard(){
   fd['A'].filter(r=>waveShift(r)===dashShift).forEach(r=>{ const t=r.type||'Unknown'; if(!typeMap[t])typeMap[t]={oqty:0,noo:0,cnt:0}; typeMap[t].oqty+=r.orderQty;typeMap[t].noo+=Number(r.noOfOrders)||0;typeMap[t].cnt++; });
   document.getElementById('d-picked').textContent=picked.toLocaleString();
   document.getElementById('d-short').textContent=shortPick.toLocaleString();
-  document.getElementById('d-avg').textContent=avg!==null?avg+' min':'â€”';
+  document.getElementById('d-avg').textContent=avg!==null?avg+' min':'—';
   let totalOqty=0,totalNoo=0; Object.values(typeMap).forEach(d=>{totalOqty+=d.oqty;totalNoo+=d.noo;});
-  document.getElementById('d-total-ppo').textContent=totalNoo>0?(totalOqty/totalNoo).toFixed(2):'â€”';
+  document.getElementById('d-total-ppo').textContent=totalNoo>0?(totalOqty/totalNoo).toFixed(2):'—';
   const tot=Object.values(fp).reduce((a,b)=>a+b,0);
   document.getElementById('d-fp').innerHTML=FL.map(f=>`<div class="fpc"><div class="fpc-l">Floor ${f}</div><div class="fpc-n">${fp[f]}</div><div class="fpc-s">Unique Pickers</div></div>`).join('')+`<div class="fpc tot"><div class="fpc-l">All Floors</div><div class="fpc-n">${tot}</div><div class="fpc-s">Total Sum</div></div>`;
-  const ppo=Object.entries(typeMap).map(([t,d])=>`<div class="ppocard"><div class="ppo-t">${t}</div><div class="ppo-v">${d.noo>0?(d.oqty/d.noo).toFixed(2):'â€”'}</div><div class="ppo-s">Pieces/Order Â· ${d.cnt} waves</div></div>`).join('');
+  const ppo=Object.entries(typeMap).map(([t,d])=>`<div class="ppocard"><div class="ppo-t">${t}</div><div class="ppo-v">${d.noo>0?(d.oqty/d.noo).toFixed(2):'—'}</div><div class="ppo-s">Pieces/Order · ${d.cnt} waves</div></div>`).join('');
   document.getElementById('d-ppo').innerHTML=ppo||'<div style="color:var(--txm);font-size:13px">No data yet.</div>';
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // QR
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function openQR(wk,f){
   const r=fd[f].find(x=>x.wavekey===wk);if(!r)return;
   document.getElementById('qrwave').textContent=wk;
-  document.getElementById('qrmeta').textContent=`Floor ${f} Â· ${r.type}`;
+  document.getElementById('qrmeta').textContent=`Floor ${f} · ${r.type}`;
   document.getElementById('qroq').textContent=r.orderQty;
   document.getElementById('qraq').textContent=r.allocQty;
   const sc={Pending:'var(--pend)',Running:'var(--run)',Completed:'var(--comp)'};
@@ -1636,13 +1636,13 @@ function openQR(wk,f){
 }
 function closeQR(e,force){ if(force||(e&&e.target===document.getElementById('qrov')))document.getElementById('qrov').classList.remove('open'); }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // EXPORT
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function exportFloor(f){
   // Check rights
-  if(role==='supervisor'&&!rights.sup.export){toast('âš  Export not permitted',true);return;}
-  if(role==='floor'&&!rights.tl.export){toast('âš  Export not permitted',true);return;}
+  if(role==='supervisor'&&!rights.sup.export){toast('⚠ Export not permitted',true);return;}
+  if(role==='floor'&&!rights.tl.export){toast('⚠ Export not permitted',true);return;}
   const rows=fd[f]; if(!rows.length){toast('No data for Floor '+f,true);return;}
   const headers=['Wave Key','Orders','Order Qty','Alloc Qty','Type','Status','User ID','User Name','Upload Time','Start Time','End Time','Done (min)'];
   const data=rows.map(r=>[r.wavekey,r.noOfOrders,r.orderQty,r.allocQty,r.type,r.status,r.userId,r.userName,r.uploadTime,r.startTime,r.endTime,r.completionMin!==''?r.completionMin:'']);
@@ -1650,7 +1650,7 @@ function exportFloor(f){
   ws['!cols']=[14,8,10,10,14,12,10,18,18,18,18,10].map(w=>({wch:w}));
   const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Floor '+f);
   XLSX.writeFile(wb,'WMS_Floor'+f+'_'+_dateStamp()+'.xlsx');
-  toast('âœ… Floor '+f+' exported');
+  toast('✅ Floor '+f+' exported');
 }
 function exportSummary(){
   const allK=[],seen=new Set();
@@ -1668,13 +1668,13 @@ function exportSummary(){
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Summary');
   FL.forEach(f=>{const fRows=fd[f].filter(rowMatchesShift);if(!fRows.length)return;const fH=['Wave Key','Orders','Order Qty','Alloc Qty','Type','Status','User ID','User Name','Upload Time','Start Time','End Time','Done (min)'];const fD=fRows.map(r=>[r.wavekey,r.noOfOrders,r.orderQty,r.allocQty,r.type,r.status,r.userId,r.userName,r.uploadTime,r.startTime,r.endTime,r.completionMin!==''?r.completionMin:'']);const ws2=XLSX.utils.aoa_to_sheet([fH,...fD]);ws2['!cols']=[14,8,10,10,14,12,10,18,18,18,18,10].map(w=>({wch:w}));XLSX.utils.book_append_sheet(wb,ws2,'Floor '+f);});
   XLSX.writeFile(wb,'WMS_Summary_'+_dateStamp()+'.xlsx');
-  toast('âœ… Summary exported');
+  toast('✅ Summary exported');
 }
 function _dateStamp(){ const d=new Date(); return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0'); }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // CHAT
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 const CHAT_MAX=200;
 let chatOpen=false,chatLastRead=0,chatFBListener=null,chatLatestMsgs=[];
 function chatDisplayName(){ if(role==='supervisor')return'Supervisor'; if(role==='admin')return'Admin'; if(role==='floor')return'Floor '+myFloor+' TL'; return'Unknown'; }
@@ -1710,7 +1710,7 @@ function closeDeleteChat(){ document.getElementById('delchat-ov').style.display=
 function confirmDeleteChat(){
   const pw=document.getElementById('delchat-pw').value;
   if(pw!==ADMIN_PIN){ document.getElementById('delchat-err').style.display='block'; document.getElementById('delchat-pw').value=''; document.getElementById('delchat-pw').focus(); return; }
-  db.ref(FB_CHAT).remove().then(()=>{ toast('âœ… All chat messages deleted'); updateChatCount(); closeDeleteChat(); }).catch(e=>{ console.warn('delete chat:',e); toast('âš  Failed to delete chat',true); });
+  db.ref(FB_CHAT).remove().then(()=>{ toast('✅ All chat messages deleted'); updateChatCount(); closeDeleteChat(); }).catch(e=>{ console.warn('delete chat:',e); toast('⚠ Failed to delete chat',true); });
 }
 document.getElementById('delchat-ov')?.addEventListener('click',function(e){ if(e.target===this)closeDeleteChat(); });
 
@@ -1731,7 +1731,7 @@ function renderChatMsgs(msgs,scrollBottom){
     const nameColor=m.role==='supervisor'||m.role==='admin'?'#C05E00':'#0073AB';
     const radius=isMine?'16px 16px 4px 16px':'16px 16px 16px 4px';
     const canDel=(role==='admin'||role==='supervisor')&&m._fbKey;
-    const deleteBtn=canDel?`<button onclick="deleteChatMsg('${m._fbKey}')" style="background:transparent;border:none;cursor:pointer;font-size:12px;opacity:0.4;padding:2px;flex-shrink:0;align-self:center;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.4'">ðŸ—‘</button>`:'';
+    const deleteBtn=canDel?`<button onclick="deleteChatMsg('${m._fbKey}')" style="background:transparent;border:none;cursor:pointer;font-size:12px;opacity:0.4;padding:2px;flex-shrink:0;align-self:center;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.4'">🗑</button>`:'';
     return `${dateSep}<div style="display:flex;flex-direction:column;align-items:${isMine?'flex-end':'flex-start'};margin-bottom:6px;">${!isMine?`<span style="font-size:10px;font-weight:700;color:${nameColor};margin:0 0 2px 6px;">${escapeHtml(m.sender)}</span>`:''}<div style="display:flex;align-items:flex-end;gap:4px;flex-direction:${isMine?'row-reverse':'row'};"><div style="width:fit-content;max-width:240px;background:${bubbleBg};color:${bubbleColor};padding:7px 11px;border-radius:${radius};font-size:13px;line-height:1.45;overflow-wrap:break-word;word-break:break-word;">${escapeHtml(String(m.text||''))}</div>${deleteBtn}</div><span style="font-size:9px;color:#9BB8CC;margin-top:2px;${isMine?'margin-right:4px;':'margin-left:6px;'}">${timeStr}</span></div>`;
   }).join('');
   if(scrollBottom)box.scrollTop=box.scrollHeight;
@@ -1780,7 +1780,7 @@ function confirmDeleteAllWaves(){
   if(pw!==ADMIN_PIN){ document.getElementById('delallwaves-err').style.display='block'; document.getElementById('delallwaves-pw').value=''; document.getElementById('delallwaves-pw').focus(); return; }
   FL.forEach(f=>{fd[f]=[];});
   const ep={}; FL.forEach(f=>{ep[f]=[];});
-  db.ref(FB_WAVES).set(ep).then(()=>toast('âœ… All waves deleted successfully')).catch(()=>toast('âš  Delete failed â€” check connection',true));
+  db.ref(FB_WAVES).set(ep).then(()=>toast('✅ All waves deleted successfully')).catch(()=>toast('⚠ Delete failed — check connection',true));
   FL.forEach(f=>renderTable(f));
   renderSummary();
   const dp=document.getElementById('panel-dashboard');if(dp&&dp.classList.contains('active'))renderDashboard();
@@ -1790,16 +1790,16 @@ function confirmDeleteAllWaves(){
 document.getElementById('delallwaves-ov')?.addEventListener('click',function(e){if(e.target===this)closeDeleteAllWaves();});
 
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function openReset(){ document.getElementById('reset-pw').value=''; document.getElementById('reset-err').style.display='none'; document.getElementById('reset-ov').style.display='flex'; setTimeout(()=>document.getElementById('reset-pw').focus(),100); }
 function closeReset(){ document.getElementById('reset-ov').style.display='none'; }
 function confirmReset(){
-  if(role==='supervisor'&&!rights.sup.resetall){toast('âš  You do not have Reset All Waves permission',true);closeReset();return;}
+  if(role==='supervisor'&&!rights.sup.resetall){toast('⚠ You do not have Reset All Waves permission',true);closeReset();return;}
   const pw=document.getElementById('reset-pw').value;
   if(pw!==RESET_PASS){document.getElementById('reset-err').style.display='block';document.getElementById('reset-pw').value='';document.getElementById('reset-pw').focus();return;}
   FL.forEach(f=>{fd[f]=[];});
   const ep={}; FL.forEach(f=>{ep[f]=[];});
-  db.ref(FB_WAVES).set(ep).then(()=>toast('âœ… All waves deleted')).catch(()=>toast('âš  Reset failed',true));
+  db.ref(FB_WAVES).set(ep).then(()=>toast('✅ All waves deleted')).catch(()=>toast('⚠ Reset failed',true));
   FL.forEach(f=>renderTable(f));
   const sp=document.getElementById('panel-summary');if(sp&&sp.classList.contains('active'))renderSummary();
   const dp=document.getElementById('panel-dashboard');if(dp&&dp.classList.contains('active'))renderDashboard();
@@ -1808,15 +1808,15 @@ function confirmReset(){
 }
 document.getElementById('reset-ov')?.addEventListener('click',function(e){if(e.target===this)closeReset();});
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // HELPERS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 function fmtTime(d){ return d.toLocaleString('en-IN',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}); }
 function parseTime(s){ try{const p=s.split(', ');const[d,m,y]=p[0].split('/');const[h,mi,se]=p[1].split(':');return new Date(2000+parseInt(y),parseInt(m)-1,parseInt(d),parseInt(h),parseInt(mi),parseInt(se));}catch(e){return new Date();} }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 // AUTO TIMERS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════════════════════════
 setInterval(()=>{ if(!role)return; applyCrossover(); FL.forEach(f=>renderTable(f)); const sp=document.getElementById('panel-summary');if(sp&&sp.classList.contains('active'))renderSummary(); const dp=document.getElementById('panel-dashboard');if(dp&&dp.classList.contains('active'))renderDashboard(); purgeD1(); },5*60*1000);
 setInterval(()=>{ if(role)FL.forEach(f=>renderTable(f)); },60*1000);
 setInterval(()=>{ if(role)FL.forEach(f=>renderTable(f)); },5*1000);

@@ -66,9 +66,9 @@ body{background:var(--bg);color:var(--tx);font-family:'IBM Plex Sans',sans-serif
 .hrole{font-size:11px;color:rgba(255,255,255,.55);font-weight:500;letter-spacing:.2px;}
 .hdrr{display:flex;align-items:center;gap:10px;}
 /* Live clock in header */
-.hdr-clock{display:flex;flex-direction:column;align-items:flex-end;padding:4px 12px;background:rgba(0,115,171,.18);border:1px solid rgba(66,176,213,.25);border-radius:8px;}
+.hdr-clock{display:flex;flex-direction:row;align-items:center;gap:8px;padding:4px 12px;background:rgba(0,115,171,.18);border:1px solid rgba(66,176,213,.25);border-radius:8px;}
 .hdr-clock-time{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:#fff;line-height:1.1;}
-.hdr-clock-date{font-size:9.5px;color:rgba(255,255,255,.55);font-weight:500;letter-spacing:.3px;margin-top:1px;}
+.hdr-clock-date{font-size:9.5px;color:rgba(255,255,255,.55);font-weight:500;letter-spacing:.3px;}
 /* Refresh button */
 .refreshbtn{background:rgba(66,176,213,.15);border:1px solid rgba(66,176,213,.3);color:#A8D8F0;padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s;display:flex;align-items:center;gap:5px;}
 .refreshbtn:hover{background:rgba(66,176,213,.28);color:#fff;border-color:rgba(66,176,213,.6);}
@@ -396,8 +396,8 @@ tbody tr:hover td{background:#EAF4FC;}
     <div class="hdrr">
       <!-- Live Clock -->
       <div class="hdr-clock">
-        <div class="hdr-clock-time" id="hdr-time">00:00:00</div>
         <div class="hdr-clock-date" id="hdr-date">—</div>
+        <div class="hdr-clock-time" id="hdr-time">00:00:00</div>
       </div>
       <!-- Refresh Button -->
       <button class="refreshbtn" id="refresh-btn" onclick="doRefresh()" title="Refresh Data">
@@ -655,6 +655,10 @@ tbody tr:hover td{background:#EAF4FC;}
             <div class="toggle-row">
               <div><div class="toggle-label">Change Wave Status</div><div class="toggle-sub">Can switch Pending / Running / Completed</div></div>
               <label class="tog"><input type="checkbox" id="r-sup-changestatus" onchange="saveRights()"><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Edit Wave Start / End Time</div><div class="toggle-sub">Can edit start and end time of a wave key</div></div>
+              <label class="tog"><input type="checkbox" id="r-sup-edittimes" onchange="saveRights()"><span class="tog-sl"></span></label>
             </div>
           </div>
           <!-- Floor TL Rights -->
@@ -914,6 +918,12 @@ tbody tr:hover td{background:#EAF4FC;}
     <div class="mgrid full">
       <div class="mf"><label>Type / BuildParmKey</label><input type="text" id="edit-tp"></div>
     </div>
+    <div id="edit-times-section" style="display:none;">
+      <div class="mgrid">
+        <div class="mf"><label>Start Time <span style="font-size:9px;color:var(--txm)">(DD/MM/YY, HH:MM:SS)</span></label><input type="text" id="edit-st" placeholder="e.g. 04/03/25, 09:30:00"></div>
+        <div class="mf"><label>End Time <span style="font-size:9px;color:var(--txm)">(DD/MM/YY, HH:MM:SS)</span></label><input type="text" id="edit-et" placeholder="e.g. 04/03/25, 10:15:00"></div>
+      </div>
+    </div>
     <div class="macts">
       <button class="mbtn sec" onclick="closeEdit(null,true)">Cancel</button>
       <button class="mbtn pri" onclick="saveEdit()">Save to All Floors</button>
@@ -1118,7 +1128,8 @@ function saveRights(){
       export:document.getElementById('r-sup-export')?.checked||false,
       delete:document.getElementById('r-sup-delete')?.checked||false,
       resetall:document.getElementById('r-sup-resetall')?.checked||false,
-      changestatus:document.getElementById('r-sup-changestatus')?.checked||false
+      changestatus:document.getElementById('r-sup-changestatus')?.checked||false,
+      edittimes:document.getElementById('r-sup-edittimes')?.checked||false
     },
     tl:{
       dashboard:document.getElementById('r-tl-dashboard')?.checked||false,
@@ -1144,6 +1155,7 @@ function syncRightsToggles(){
     'r-sup-delete':    rights.sup.delete,
     'r-sup-resetall':  rights.sup.resetall,
     'r-sup-changestatus': rights.sup.changestatus,
+    'r-sup-edittimes':    rights.sup.edittimes,
     'r-tl-dashboard':  rights.tl.dashboard,
     'r-tl-export':     rights.tl.export,
     'r-tl-delete':     rights.tl.delete,
@@ -1609,6 +1621,7 @@ function setSt(f,i,st){
 
   if(hasFullControl){
     if(st===r.status)return;
+    if(st==='Completed'&&(!r.userId||r.userId.trim()===''||!r.userName||r.userName.trim()===''||r.userName==='Unknown')){toast('⚠ Cannot complete wave — user ID/name is unknown. Please assign a valid picker first.',true);return;}
     if(st==='Running'&&!r.startTime){r.startTime=fmtTime(now);r.startDate=now;runningStartTimes[f+'-'+r.wavekey]=Date.now();}
     if(st==='Completed'){if(!r.startTime){r.startTime=fmtTime(now);r.startDate=now;}r.endTime=fmtTime(now);r.completionMin=r.startDate?Math.round((now-new Date(r.startDate))/60000):0;}
     if(st==='Pending'){r.startTime='';r.startDate=null;r.endTime='';r.completionMin='';r.userId='';r.userName='';delete runningStartTimes[f+'-'+r.wavekey];}
@@ -1616,6 +1629,7 @@ function setSt(f,i,st){
   }
   // Default TL: only Completed allowed on Running waves after 30s
   if(isTL&&st==='Completed'&&r.status==='Running'){
+    if(!r.userId||r.userId.trim()===''||!r.userName||r.userName.trim()===''||r.userName==='Unknown'){toast('⚠ Cannot complete wave — user ID/name is unknown. Please assign a valid picker first.',true);return;}
     const sa=runningStartTimes[f+'-'+r.wavekey]||(r.startDate?new Date(r.startDate).getTime():null);
     if(sa&&(Date.now()-sa)<30000){toast(`⏳ Wait ${Math.ceil((30000-(Date.now()-sa))/1000)}s`,true);return;}
     r.endTime=fmtTime(now);r.completionMin=r.startDate?Math.round((now-new Date(r.startDate))/60000):0;r.status='Completed';saveWaves();renderTable(f);return;
@@ -1642,14 +1656,22 @@ function onUID(f,i,inp){
 // ═══════════════════════════════════════
 // EDIT / DELETE WAVE
 // ═══════════════════════════════════════
-function openEdit(wk){ const r=fd['A'].find(x=>x.wavekey===wk);if(!r)return; document.getElementById('edit-orig').value=wk; document.getElementById('edit-wk').value=r.wavekey; document.getElementById('edit-no').value=r.noOfOrders; document.getElementById('edit-oq').value=r.orderQty; document.getElementById('edit-aq').value=r.allocQty; document.getElementById('edit-tp').value=r.type; document.getElementById('edit-mov').classList.add('open'); }
+function openEdit(wk){ const r=fd['A'].find(x=>x.wavekey===wk);if(!r)return; document.getElementById('edit-orig').value=wk; document.getElementById('edit-wk').value=r.wavekey; document.getElementById('edit-no').value=r.noOfOrders; document.getElementById('edit-oq').value=r.orderQty; document.getElementById('edit-aq').value=r.allocQty; document.getElementById('edit-tp').value=r.type; const canEditTimes=role==='admin'||(role==='supervisor'&&rights.sup.edittimes); const tsec=document.getElementById('edit-times-section'); if(tsec){tsec.style.display=canEditTimes?'':'none';} if(canEditTimes){ document.getElementById('edit-st').value=r.startTime||''; document.getElementById('edit-et').value=r.endTime||''; } document.getElementById('edit-mov').classList.add('open'); }
 function closeEdit(e,force){ if(force||(e&&e.target===document.getElementById('edit-mov')))document.getElementById('edit-mov').classList.remove('open'); }
 function saveEdit(){
   const orig=document.getElementById('edit-orig').value;
   const newWk=document.getElementById('edit-wk').value.trim();
   if(!newWk){toast('Wave key empty.',true);return;}
   if(newWk!==orig&&fd['A'].find(r=>r.wavekey===newWk)){toast(`Wave key "${newWk}" exists.`,true);return;}
-  FL.forEach(f=>{const r=fd[f].find(x=>x.wavekey===orig);if(!r)return;r.wavekey=newWk;r.noOfOrders=document.getElementById('edit-no').value||r.noOfOrders;r.orderQty=Number(document.getElementById('edit-oq').value)||r.orderQty;r.allocQty=Number(document.getElementById('edit-aq').value)||r.allocQty;r.type=document.getElementById('edit-tp').value.trim()||r.type;});
+  const canEditTimes=role==='admin'||(role==='supervisor'&&rights.sup.edittimes);
+  FL.forEach(f=>{const r=fd[f].find(x=>x.wavekey===orig);if(!r)return;r.wavekey=newWk;r.noOfOrders=document.getElementById('edit-no').value||r.noOfOrders;r.orderQty=Number(document.getElementById('edit-oq').value)||r.orderQty;r.allocQty=Number(document.getElementById('edit-aq').value)||r.allocQty;r.type=document.getElementById('edit-tp').value.trim()||r.type;
+    if(canEditTimes){
+      const stVal=document.getElementById('edit-st').value.trim();
+      const etVal=document.getElementById('edit-et').value.trim();
+      if(stVal!==undefined){r.startTime=stVal;r.startDate=stVal?parseTime(stVal):null;}
+      if(etVal!==undefined){r.endTime=etVal;if(etVal&&r.startDate){const endD=parseTime(etVal);r.completionMin=Math.round((endD-new Date(r.startDate))/60000);}else if(!etVal){r.completionMin='';}}
+    }
+  });
   saveWaves();closeEdit(null,true);FL.forEach(f=>renderTable(f));toast(`✅ Wave "${newWk}" updated`);
 }
 function delWave(wk){
@@ -1696,7 +1718,7 @@ function renderSummary(){renderFloorCounts();renderWaveDetail();}
 function rowMatchesShift(r){return waveShift(r)===activeShift;}
 function renderFloorCounts(){
   const tbody=document.getElementById('fsum-body'); let tW=0,tR=0,tC=0,tP=0,tPick=0;
-  const rows=FL.map(f=>{ const sr=fd[f].filter(rowMatchesShift); const running=sr.filter(r=>r.status==='Running').length,comp=sr.filter(r=>r.status==='Completed').length,pend=sr.filter(r=>r.status==='Pending').length,pickers=new Set(sr.filter(r=>r.userId).map(r=>r.userId)).size; tW+=sr.length;tR+=running;tC+=comp;tP+=pend;tPick+=pickers;return{f,total:sr.length,running,comp,pend,pickers}; });
+  const rows=FL.map(f=>{ const sr=fd[f].filter(rowMatchesShift); const running=sr.filter(r=>r.status==='Running').length,comp=sr.filter(r=>r.status==='Completed').length,pend=sr.filter(r=>r.status==='Pending').length,pickers=new Set(sr.filter(r=>r.status==='Running'&&r.userId).map(r=>r.userId)).size; tW+=sr.length;tR+=running;tC+=comp;tP+=pend;tPick+=pickers;return{f,total:sr.length,running,comp,pend,pickers}; });
   if(!tW){tbody.innerHTML=`<tr><td colspan="6"><div class="empty" style="padding:20px"><div class="empi">📊</div><p>No ${activeShift} shift waves</p></div></td></tr>`;return;}
   tbody.innerHTML=rows.map(({f,total,running,comp,pend,pickers})=>`<tr><td><strong>Floor ${f}</strong></td><td><span class="cnt">${total}</span></td><td><span class="cnt r">${running}</span></td><td><span class="cnt g">${comp}</span></td><td><span class="cnt o">${pend}</span></td><td><span class="cnt">${pickers}</span></td></tr>`).join('')+`<tr><td><strong>TOTAL</strong></td><td><span class="cnt">${tW}</span></td><td><span class="cnt r">${tR}</span></td><td><span class="cnt g">${tC}</span></td><td><span class="cnt o">${tP}</span></td><td><span class="cnt">${tPick}</span></td></tr>`;
 }
@@ -1729,14 +1751,18 @@ function renderWaveDetail(){
 // DASHBOARD
 // ═══════════════════════════════════════
 function setDashShift(s){ dashShift=s; document.getElementById('dstab-day').className='chip'+(s==='day'?' call':''); document.getElementById('dstab-night').className='chip'+(s==='night'?' call':''); renderDashboard(); }
+// Wave types excluded from Short Pick and PPO calculations
+const EXCLUDED_WAVE_TYPES=['AJO_Single','HM_Single','MYN_Single','MYNSglPty1','NYK_Single'];
+function isExcludedType(type){ return EXCLUDED_WAVE_TYPES.includes((type||'').trim()); }
+
 function renderDashboard(){
   let picked=0,shortPick=0;
   const fp={A:0,B:0,C:0,D:0},typeMap={},waveMaxTime={},waveShortPick={};
-  FL.forEach(f=>{ const sr=fd[f].filter(r=>waveShift(r)===dashShift); fp[f]=new Set(sr.filter(r=>r.userId).map(r=>r.userId)).size; sr.forEach(r=>{ if(r.status==='Completed'){const t=Number(r.completionMin);if(r.completionMin!==''&&!isNaN(t)){if(waveMaxTime[r.wavekey]===undefined||t>waveMaxTime[r.wavekey])waveMaxTime[r.wavekey]=t;}} }); });
-  fd['A'].filter(r=>waveShift(r)===dashShift&&r.status==='Completed').forEach(r=>{ picked+=r.allocQty; waveShortPick[r.wavekey]=Math.max(0,r.orderQty-r.allocQty); });
+  FL.forEach(f=>{ const sr=fd[f].filter(r=>waveShift(r)===dashShift); fp[f]=new Set(sr.filter(r=>r.status==='Running'&&r.userId).map(r=>r.userId)).size; sr.forEach(r=>{ if(r.status==='Completed'){const t=Number(r.completionMin);if(r.completionMin!==''&&!isNaN(t)){if(waveMaxTime[r.wavekey]===undefined||t>waveMaxTime[r.wavekey])waveMaxTime[r.wavekey]=t;}} }); });
+  fd['A'].filter(r=>waveShift(r)===dashShift&&r.status==='Completed').forEach(r=>{ picked+=r.allocQty; if(!isExcludedType(r.type)){waveShortPick[r.wavekey]=Math.max(0,r.orderQty-r.allocQty);} });
   shortPick=Object.values(waveShortPick).reduce((a,b)=>a+b,0);
   const maxTimes=Object.values(waveMaxTime); const avg=maxTimes.length?Math.round(maxTimes.reduce((a,b)=>a+b,0)/maxTimes.length):null;
-  fd['A'].filter(r=>waveShift(r)===dashShift).forEach(r=>{ const t=r.type||'Unknown'; if(!typeMap[t])typeMap[t]={oqty:0,noo:0,cnt:0}; typeMap[t].oqty+=r.orderQty;typeMap[t].noo+=Number(r.noOfOrders)||0;typeMap[t].cnt++; });
+  fd['A'].filter(r=>waveShift(r)===dashShift&&!isExcludedType(r.type)).forEach(r=>{ const t=r.type||'Unknown'; if(!typeMap[t])typeMap[t]={oqty:0,noo:0,cnt:0}; typeMap[t].oqty+=r.orderQty;typeMap[t].noo+=Number(r.noOfOrders)||0;typeMap[t].cnt++; });
   document.getElementById('d-picked').textContent=picked.toLocaleString();
   document.getElementById('d-short').textContent=shortPick.toLocaleString();
   document.getElementById('d-avg').textContent=avg!==null?avg+' min':'—';
